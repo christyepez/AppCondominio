@@ -38,8 +38,8 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 
 | Order | Task | Story | Classification | Status |
 |---:|---|---|---|---|
-| 1 | Authentication/JWT integration | S02-01 | REUSE/ADAPT | PLANNED |
-| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | PLANNED |
+| 1 | Portal-compatible JWT validation and authenticated identity context | S02-01 | REUSE/ADAPT | VALIDATED |
+| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | PARTIALLY BLOCKED |
 | 3 | Permission authorization | S02-03 | REUSE/EXTEND | PLANNED |
 | 4 | Menu registration | S02-04 | EXTEND | PLANNED |
 | 5 | Audit integration | S02-05 | ADAPT | PLANNED |
@@ -48,6 +48,36 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 | 8 | Catalog integration | S02-08 | EXTEND/ADAPT | PLANNED |
 | 9 | Configuration integration | S02-09 | EXTEND/ADAPT | PLANNED |
 | 10 | Distributed health and resilience | S02-10 | ADAPT | PLANNED |
+
+## S02-01 validation evidence
+
+Branch: `feature/s02-s02-01-portal-jwt-validation`.
+Base: Sprint 01 validated head `b6175c73a92cbe4ff81e16d27b680881323ec424`.
+Implementation commit: `899258329925327f23d27090a2a0d312907b2a30`.
+Validated CI run: `34161895440`.
+
+Validated behavior:
+
+- JWT bearer validation matches the current PortalCorporativo Security API contract.
+- Canonical issuer: `portal-corporativo`.
+- Canonical audience: `portal-corporativo-clients`.
+- Signing secret is supplied externally and is not committed.
+- Lifetime validation and one-minute clock skew are enabled.
+- Signed `permission` claims are exposed through the local current-identity adapter.
+- `/api/session` requires authentication and exposes the resolved local identity view.
+- Organizations endpoints and technical messaging endpoint require authentication.
+- Gitleaks, NuGet vulnerability scan, build, unit tests, architecture tests, SQL integration tests, npm audit, Angular build and Docker build all passed.
+
+Portal limitation: PortalCorporativo Security API currently validates JWTs but does not provide production login/token issuance/OAuth/OIDC. AppCondominio does not duplicate or invent an IdP; production login remains BLOCKED until Portal supplies that capability.
+
+## S02-02 blocker
+
+The current PortalCorporativo contract does not define canonical signed claims for AppCondominio `TenantId` or `CommunityId`. Therefore:
+
+- authenticated user identity and permissions may be consumed from the validated JWT;
+- `TenantId` claim mapping is BLOCKED until Portal defines the signed claim/contract;
+- `CommunityId` is an AppCondominio domain scope and must be resolved through an authorized membership/context mechanism, not trusted from an arbitrary client header or query parameter;
+- no temporary `tenantId`/`communityId` claim names will be invented.
 
 ## Execution rule
 

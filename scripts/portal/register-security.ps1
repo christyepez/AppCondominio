@@ -24,13 +24,16 @@ function Invoke-PortalRegistration {
         [Parameter(Mandatory = $true)] $Payload
     )
 
-    $response = Invoke-WebRequest \
-        -Uri "$base$Path" \
-        -Method Post \
-        -Headers $headers \
-        -ContentType "application/json" \
-        -Body ($Payload | ConvertTo-Json -Depth 8) \
-        -SkipHttpErrorCheck
+    $request = @{
+        Uri = "$base$Path"
+        Method = "Post"
+        Headers = $headers
+        ContentType = "application/json"
+        Body = ($Payload | ConvertTo-Json -Depth 8)
+        SkipHttpErrorCheck = $true
+    }
+
+    $response = Invoke-WebRequest @request
 
     if (($response.StatusCode -ge 200 -and $response.StatusCode -lt 300) -or $response.StatusCode -eq 409) {
         return

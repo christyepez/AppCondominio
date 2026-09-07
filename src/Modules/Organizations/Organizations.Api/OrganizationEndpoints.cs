@@ -1,3 +1,4 @@
+using AppCondominio.Contracts.Security;
 using AppCondominio.Modules.Organizations.Application.CreateOrganization;
 using AppCondominio.Modules.Organizations.Application.GetOrganizationById;
 using Microsoft.AspNetCore.Builder;
@@ -14,8 +15,11 @@ public static class OrganizationEndpoints
             .WithTags("Organizations")
             .RequireAuthorization();
 
-        group.MapPost("/", CreateAsync);
-        group.MapGet("/{id:guid}", GetByIdAsync);
+        group.MapPost("/", CreateAsync)
+            .RequireAuthorization(AppCondominioPermissions.Organizations.Manage);
+
+        group.MapGet("/{id:guid}", GetByIdAsync)
+            .RequireAuthorization(AppCondominioPermissions.Organizations.Read);
 
         return endpoints;
     }

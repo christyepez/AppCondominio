@@ -6,9 +6,25 @@ The product is implemented in 18 two-week sprints. Every sprint delivers a deplo
 
 ## Technology baseline
 
-All backend components use .NET 10 / ASP.NET Core 10 and target `net10.0`. This includes APIs, workers, domain/application/infrastructure projects, tests, EF Core tooling, Docker runtime/build images and CI jobs. Package versions are centralized and use stable .NET 10 servicing releases.
+Backend:
 
-Frontend remains Angular aligned with PortalCorporativo. Transactional persistence is SQL Server; Redis and RabbitMQ provide distributed cache and asynchronous messaging.
+- .NET 10 / ASP.NET Core 10
+- `net10.0` for APIs, workers, libraries and tests
+- EF Core 10 stable servicing line
+
+Frontend:
+
+- Angular 21 LTS (`21.2.x`)
+- TypeScript `5.9.x`
+- Node 20.19+ compatible build environment
+
+Transactional persistence is SQL Server; Redis and RabbitMQ provide distributed cache and asynchronous messaging. Serilog/Seq and OpenTelemetry provide the initial observability foundation.
+
+### Portal frontend compatibility decision
+
+PortalCorporativo currently uses Angular 18. AppCondominio initially aligned to that version, but Sprint 1 `npm audit` found 58 vulnerabilities, including 32 high and 1 critical, with advisories affecting Angular runtime as well as build tooling. AppCondominio therefore moved to Angular 21 LTS.
+
+This does not change the Portal-first strategy. AppCondominio reuses Portal capabilities through APIs, contracts, routes, menus, configuration and UX conventions. It MUST NOT downgrade its frontend framework merely to match the Portal runtime. See `docs/adr/ADR-001-angular-security-baseline.md`.
 
 ## Architecture strategy
 
@@ -41,18 +57,20 @@ Prefer squash merge so each story produces one traceable main-line commit.
 
 A PR cannot merge until applicable gates pass:
 
-- .NET 10 SDK/runtime validation
-- backend restore/build
+- .NET 10 restore and Release build
+- NuGet direct/transitive vulnerability scan
 - backend unit tests
 - architecture tests
-- integration tests
-- Angular lint/test/build
+- SQL Server integration tests
+- npm high/critical vulnerability scan
+- Angular production build
 - Docker image build using .NET 10 images
-- secret scan
-- dependency/vulnerability scan
+- Gitleaks secret scan
 - tenant-isolation tests for tenant-owned features
 - migration validation for database changes
 - documentation/task-index update
+
+GitHub Dependency Review may be enabled later when the repository Dependency Graph is available; it is not relied upon as the sole vulnerability gate.
 
 ## Environment strategy
 
@@ -62,7 +80,7 @@ Local uses Docker Compose. DEV deploys after validated merge when CI is enabled.
 
 Initial services:
 
-- appcondominio-web
+- appcondominio-web (Angular 21 + Nginx)
 - appcondominio-api (.NET 10)
 - appcondominio-worker (.NET 10)
 - sqlserver
@@ -93,7 +111,7 @@ PortalCorporativo capabilities are integrated through local application ports/ad
 
 ## Sprint roadmap
 
-1. Foundation: repository, .NET 10/Angular skeleton, SQL Server, Docker, Redis, RabbitMQ, Worker, observability, CI and architecture tests.
+1. Foundation: repository, .NET 10/Angular 21 skeleton, SQL Server, Docker, Redis, RabbitMQ, Worker, observability, CI and architecture tests.
 2. Portal integration: Security, tenant/user context, permissions, menu, audit, notifications, content, catalogs and configuration.
 3. SaaS: organizations, plans, subscriptions, white-label and module limits.
 4. Communities and physical structure.
@@ -112,15 +130,30 @@ PortalCorporativo capabilities are integrated through local application ports/ad
 17. Governance.
 18. Production readiness.
 
+## Sprint 1 validated baseline
+
+GitHub Actions run `34161344428` validated the final Sprint 1 baseline with:
+
+- Gitleaks: PASS
+- .NET restore: PASS
+- NuGet vulnerability scan: PASS
+- .NET 10 Release build: PASS
+- unit tests: PASS
+- architecture tests: PASS
+- SQL Server/Testcontainers integration tests: PASS
+- npm vulnerability scan: PASS
+- Angular 21 production build: PASS
+- Docker build for API/Worker/Web: PASS
+
 ## First implementation sequence
 
 1. S01-01 repository standards and .NET 10 solution skeleton.
 2. S01-02 backend host + modular bootstrapper.
 3. S01-03 reference Organizations module.
 4. S01-04 SQL Server + EF Core 10 + migrations.
-5. S01-05 Angular shell integration skeleton.
+5. S01-05 Angular shell.
 6. S01-06 Docker Compose with .NET 10 images.
 7. S01-07 RabbitMQ/Redis/Worker.
 8. S01-08 observability/error handling.
-9. S01-09 automated test foundation on .NET 10.
-10. S01-10 GitHub Actions and security gates using .NET 10 SDK.
+9. S01-09 automated test foundation.
+10. S01-10 GitHub Actions and security gates.

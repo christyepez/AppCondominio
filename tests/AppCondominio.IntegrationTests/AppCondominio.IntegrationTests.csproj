@@ -1,10 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><IsPackable>false</IsPackable></PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
     <PackageReference Include="Testcontainers.MsSql" />
+    <ProjectReference Include="..\..\src\AppCondominio.Api\AppCondominio.Api.csproj" />
+    <ProjectReference Include="..\..\src\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Modules\Organizations\Organizations.Infrastructure\Organizations.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

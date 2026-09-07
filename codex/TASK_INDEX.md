@@ -29,8 +29,8 @@ Sprint 01 final validated CI run: `34161344428`.
 | 6 | Notification integration | S02-06 | ADAPT | BLOCKED |
 | 7 | Content/File integration | S02-07 | ADAPT | BLOCKED |
 | 8 | Catalog integration | S02-08 | EXTEND/ADAPT | BLOCKED |
-| 9 | Configuration integration | S02-09 | EXTEND/ADAPT | NEXT |
-| 10 | Distributed health and resilience | S02-10 | ADAPT | PLANNED |
+| 9 | Configuration integration | S02-09 | EXTEND/ADAPT | BLOCKED |
+| 10 | Distributed health and resilience | S02-10 | ADAPT | NEXT |
 
 ## S02-01 validation
 Branch `feature/s02-s02-01-portal-jwt-validation`; PR `#2`; CI `34161895440`. JWT validation matches Portal issuer/audience/signature/lifetime behavior and exposes signed `permission` claims. Portal production token issuance/OAuth/OIDC remains unavailable.
@@ -54,9 +54,12 @@ Branch `feature/s02-s02-06-portal-notification-integration`; PR `#7`; ADR `docs/
 Branch `feature/s02-s02-07-portal-content-integration`; PR `#8`; ADR `docs/adr/ADR-005-content-file-api-contract-required.md`. Portal Content currently has only placeholder contracts and a bootstrap endpoint.
 
 ## S02-08 blocker
-Branch `feature/s02-s02-08-portal-catalog-integration`; ADR `docs/adr/ADR-006-catalog-api-contract-required.md`.
+Branch `feature/s02-s02-08-portal-catalog-integration`; PR `#9`; ADR `docs/adr/ADR-006-catalog-api-contract-required.md`. Portal Catalog currently has only placeholder contracts and a bootstrap endpoint.
 
-`Portal.Catalog.Contracts` currently contains only a placeholder and Portal Catalog API exposes only a bootstrap root endpoint. AppCondominio will not invent DTOs/endpoints or create a competing generic catalog engine. S02-08 remains BLOCKED until PortalCorporativo implements documented catalog definitions/items, scope/tenant resolution, authorization, lifecycle and effective lookup contracts.
+## S02-09 blocker
+Branch `feature/s02-s02-09-portal-configuration-integration`; ADR `docs/adr/ADR-007-configuration-tenant-resolution-required.md`.
+
+Portal Configuration has functional Global/Tenant/Module/User contracts, but its current service hard-codes tenant `default` on create, resolve and scope lookup. Because Conjunto al Día is multi-tenant/white-label, AppCondominio will not treat `default` as a production substitute, invent a tenant header/query convention or duplicate the configuration engine. S02-09 remains BLOCKED until Portal derives TenantId from a trusted authenticated context while preserving its existing scope precedence model.
 
 ## Execution rule
 Do not start a task whose required dependency is not merged or explicitly accepted as a stable base. Each completed task must record branch, base commit, final commit, validations and next step.

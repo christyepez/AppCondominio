@@ -4,13 +4,13 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 namespace AppCondominio.Api.Health;
 
 public sealed class RabbitMqHealthCheck(
-    IBus bus) : IHealthCheck
+    IBusHealth busHealth) : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
-        var status = bus.CheckHealth();
+        var status = busHealth.CheckHealth();
 
         return Task.FromResult(status.Status switch
         {

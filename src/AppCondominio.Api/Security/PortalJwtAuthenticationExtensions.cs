@@ -40,7 +40,18 @@ public static class PortalJwtAuthenticationExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            foreach (var permission in AppCondominioPermissions.All)
+            {
+                options.AddPolicy(
+                    permission,
+                    policy => policy
+                        .RequireAuthenticatedUser()
+                        .RequireClaim(AppCondominioPermissions.ClaimType, permission));
+            }
+        });
+
         return services;
     }
 }

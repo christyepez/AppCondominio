@@ -31,6 +31,21 @@ TargetFramework: net10.0
 
 This applies to API projects, application/domain/infrastructure libraries, workers, tests, EF Core migrations, Docker images and CI jobs. Stable 10.x packages must be used; preview framework packages are not allowed unless explicitly approved.
 
+## Mandatory frontend runtime
+
+AppCondominio frontend MUST use the current approved secure baseline:
+
+```text
+Angular 21 LTS
+Angular runtime: 21.2.x
+Angular CLI/build tooling: 21.2.x
+TypeScript: 5.9.x
+```
+
+Do not downgrade AppCondominio to PortalCorporativo's current Angular 18 baseline. Sprint 1 security validation found high/critical vulnerabilities in that line. Portal integration must therefore be achieved through APIs, contracts, routes, configuration and visual conventions rather than by requiring identical Angular runtime versions.
+
+Any future Angular major-version change requires an explicit architecture/security story and successful `npm audit`, production build and Docker build.
+
 ## Mandatory classification
 
 Every task MUST declare one classification before implementation:
@@ -50,7 +65,7 @@ Do not create AppCondominio implementations for authentication, global users, gl
 Required architectural style:
 
 - .NET 10 / ASP.NET Core 10
-- Angular aligned with PortalCorporativo
+- Angular 21 LTS secure frontend baseline
 - SQL Server
 - Redis
 - RabbitMQ
@@ -128,9 +143,11 @@ A story is complete only when applicable checks pass:
 - Audit impact assessed.
 - Notification impact assessed.
 - Configuration/menu impact assessed.
+- NuGet/npm vulnerability gates pass.
 - Unit tests pass.
 - Integration tests pass.
 - Architecture tests pass.
+- Frontend production build passes.
 - Docker build succeeds.
 - No secrets committed.
 - Documentation and `codex/TASK_INDEX.md` updated.
@@ -144,7 +161,7 @@ Agent:
 Task:
 Story:
 Sprint:
-Runtime: .NET 10
+Runtime: .NET 10 / Angular 21 LTS as applicable
 Base Commit:
 Branch:
 Commit:

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Cross-cutting infrastructure adapters owned by AppCondominio.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+  </ItemGroup>
+</Project>

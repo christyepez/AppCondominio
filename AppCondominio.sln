@@ -1,0 +1,48 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.SharedKernel", "src\AppCondominio.SharedKernel\AppCondominio.SharedKernel.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512101}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.Contracts", "src\AppCondominio.Contracts\AppCondominio.Contracts.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512102}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.Infrastructure", "src\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512103}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.Bootstrapper", "src\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512104}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.Api", "src\AppCondominio.Api\AppCondominio.Api.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512105}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppCondominio.Worker", "src\AppCondominio.Worker\AppCondominio.Worker.csproj", "{4FA2F75D-C3EC-49B8-B405-4DF499512106}"
+EndProject
+Global
+  GlobalSection(SolutionConfigurationPlatforms) = preSolution
+    Debug|Any CPU = Debug|Any CPU
+    Release|Any CPU = Release|Any CPU
+  EndGlobalSection
+  GlobalSection(ProjectConfigurationPlatforms) = postSolution
+    {4FA2F75D-C3EC-49B8-B405-4DF499512101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512101}.Release|Any CPU.Build.0 = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512102}.Release|Any CPU.Build.0 = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512103}.Release|Any CPU.Build.0 = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512104}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512104}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512104}.Release|Any CPU.Build.0 = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512105}.Release|Any CPU.Build.0 = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {4FA2F75D-C3EC-49B8-B405-4DF499512106}.Release|Any CPU.Build.0 = Release|Any CPU
+  EndGlobalSection
+EndGlobal

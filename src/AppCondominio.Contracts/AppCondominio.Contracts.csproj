@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Public contracts used by AppCondominio hosts and integration boundaries.</Description>
+  </PropertyGroup>
+</Project>

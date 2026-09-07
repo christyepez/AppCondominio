@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <AssemblyName>AppCondominio.Api</AssemblyName>
+    <RootNamespace>AppCondominio.Api</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj" />
+    <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+  </ItemGroup>
+</Project>

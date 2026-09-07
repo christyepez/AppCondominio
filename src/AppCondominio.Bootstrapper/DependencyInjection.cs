@@ -13,7 +13,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services.AddOrganizationsModule();
+        services.AddOrganizationsModule(configuration);
         return services;
     }
 }

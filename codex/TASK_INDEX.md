@@ -27,8 +27,8 @@ Sprint 01 final validated CI run: `34161344428`.
 | 4 | Menu registration | S02-04 | EXTEND | VALIDATED |
 | 5 | Audit integration | S02-05 | ADAPT | BLOCKED |
 | 6 | Notification integration | S02-06 | ADAPT | BLOCKED |
-| 7 | Content/File integration | S02-07 | ADAPT | NEXT |
-| 8 | Catalog integration | S02-08 | EXTEND/ADAPT | PLANNED |
+| 7 | Content/File integration | S02-07 | ADAPT | BLOCKED |
+| 8 | Catalog integration | S02-08 | EXTEND/ADAPT | NEXT |
 | 9 | Configuration integration | S02-09 | EXTEND/ADAPT | PLANNED |
 | 10 | Distributed health and resilience | S02-10 | ADAPT | PLANNED |
 
@@ -64,14 +64,19 @@ Portal Audit write requires `portal.audit.write` but trusts request-body `ActorI
 
 ## S02-06 blocker
 
-Branch `feature/s02-s02-06-portal-notification-integration`.
-Decision: `docs/adr/ADR-004-notification-service-identity-and-tenant.md`.
+Branch `feature/s02-s02-06-portal-notification-integration`; PR `#7`; ADR `docs/adr/ADR-004-notification-service-identity-and-tenant.md`.
 
 Portal Notification supports templates, immediate/scheduled sending and idempotency, but runtime send/schedule require `portal.notification.send`, recipients are caller supplied, and the current service hard-codes `Tenant = "default"`. Portal has no documented workload/service identity or tenant-aware domain-notification ingestion contract.
 
-AppCondominio will not grant ordinary users transverse notification-send authority, use end-user JWTs as general system credentials, assume production tenant `default`, store static bearer tokens, or duplicate Portal template/provider/retry engines. Templates will be added with concrete bounded-context use cases rather than speculatively.
+AppCondominio will not grant ordinary users transverse notification-send authority, use end-user JWTs as general system credentials, assume production tenant `default`, store static bearer tokens, or duplicate Portal template/provider/retry engines.
 
-S02-06 remains BLOCKED until Portal supplies trusted service identity and tenant-aware notification semantics.
+## S02-07 blocker
+
+Branch `feature/s02-s02-07-portal-content-integration`; ADR `docs/adr/ADR-005-content-file-api-contract-required.md`.
+
+The current `Portal.Content.Contracts` contains only a placeholder and Portal Content API exposes only a bootstrap root endpoint. No upload/download/metadata/versioning/authorization/tenant ownership contract currently exists.
+
+AppCondominio will not build a competing generic file engine, write to Portal storage internals, invent Content API endpoints/DTOs or bind domain models to an assumed storage provider. S02-07 remains BLOCKED until PortalCorporativo implements a reusable, authorized, tenant-aware Content/File contract with explicit security and untrusted-upload handling.
 
 ## Execution rule
 

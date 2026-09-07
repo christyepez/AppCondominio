@@ -36,6 +36,22 @@ jobs:
         run: dotnet test tests/AppCondominio.ArchitectureTests/AppCondominio.ArchitectureTests.csproj -c Release --logger trx
       - name: Integration tests
         run: dotnet test tests/AppCondominio.IntegrationTests/AppCondominio.IntegrationTests.csproj -c Release --logger trx
+      - name: Validate Portal provisioning assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scripts = Get-ChildItem 'scripts/portal/*.ps1'
+          foreach ($script in $scripts) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($script.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error "$($script.Name): $($_.Message)" }
+              exit 1
+            }
+          }
+          Get-Content 'infrastructure/portal/security/appcondominio-security-registration.json' -Raw | ConvertFrom-Json | Out-Null
+          Get-Content 'infrastructure/portal/menu/appcondominio-menu-registration.json' -Raw | ConvertFrom-Json | Out-Null
 
   frontend:
     runs-on: ubuntu-latest

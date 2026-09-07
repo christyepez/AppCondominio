@@ -40,9 +40,9 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 |---:|---|---|---|---|
 | 1 | Portal-compatible JWT validation and authenticated identity context | S02-01 | REUSE/ADAPT | VALIDATED |
 | 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | BLOCKED |
-| 3 | Permission authorization | S02-03 | REUSE/EXTEND | IMPLEMENTED / VALIDATION RUNNING |
-| 4 | Menu registration | S02-04 | EXTEND | PLANNED |
-| 5 | Audit integration | S02-05 | ADAPT | PLANNED |
+| 3 | Permission authorization | S02-03 | REUSE/EXTEND | VALIDATED |
+| 4 | Menu registration | S02-04 | EXTEND | IMPLEMENTED / VALIDATION RUNNING |
+| 5 | Audit integration | S02-05 | ADAPT | NEXT |
 | 6 | Notification integration | S02-06 | ADAPT | PLANNED |
 | 7 | Content/File integration | S02-07 | ADAPT | PLANNED |
 | 8 | Catalog integration | S02-08 | EXTEND/ADAPT | PLANNED |
@@ -74,24 +74,42 @@ Portal limitation: PortalCorporativo Security API currently validates JWTs but d
 
 S02-02 is documented in PR `#3`. Portal `UserResponse` includes TenantId, but the available user endpoint requires administrative `portal.security.manage`. AppCondominio will not elevate ordinary users or trust client-supplied tenant/community identifiers. Safe tenant resolution remains blocked pending a Portal self/service contract; community context remains blocked pending AppCondominio membership data.
 
-## S02-03 implementation
+## S02-03 validation
 
 Branch: `feature/s02-s02-03-portal-permission-authorization`.
 Base: S02-01 validated documentation head `ea0c5d3a1d963e1e4ace946f1b64dfca1ec93558`.
+PR: `#4` stacked against S02-01.
+Validated code run: `34162705886`.
+
+Passed Gitleaks, NuGet scan, .NET 10 build, unit tests, architecture tests, integration tests, npm audit, Angular build and Docker builds.
 
 Implemented:
 
 - shared permission contract in `AppCondominio.Contracts`;
-- Portal-compatible authorization policies requiring signed `permission` claims;
-- `appcondominio.organizations.read` for `GET /api/organizations/{id}`;
-- `appcondominio.organizations.manage` for `POST /api/organizations`;
-- Portal registration manifest for resource `appcondominio.organizations` and the two permission definitions;
-- PowerShell 7 provisioning script using the actual Portal Security resource/permission endpoints;
-- HTTP 409 handled as already registered for repeatable provisioning;
-- no role assignment is performed implicitly at application startup;
-- authorization tests cover anonymous denial, authenticated-without-permission denial, matching read permission, read-vs-manage separation and manage permission success.
+- `appcondominio.organizations.read` and `appcondominio.organizations.manage`;
+- endpoint-level authorization policies using signed Portal `permission` claims;
+- Portal Security registration manifest and PowerShell 7 provisioning script;
+- authorization tests separating read and manage capabilities.
 
-The first authorization test attempt intentionally exposed an external-infrastructure coupling in the test host (Redis required). The test was corrected to validate the policy slice directly rather than bypassing Redis/RabbitMQ requirements or weakening production startup validation.
+## S02-04 implementation
+
+Branch: `feature/s02-s02-04-portal-menu-registration`.
+Base: S02-03 head `63ef52c0a0ce9009229ce84da6c6cb67e19e82b4`.
+
+Implemented against the current Portal Menu contracts:
+
+- module code `appcondominio`, name `Conjunto al Día`;
+- Organizations navigation item pointing to the existing Angular `/organizations` route;
+- item resource `appcondominio.organizations` and permission `appcondominio.organizations.read` from S02-03;
+- Portal Menu registration manifest;
+- PowerShell 7 provisioning script using `GET /api/menu/modules/{moduleCode}`, `POST /api/menu` and `POST /api/menu/items`;
+- no speculative menu items for bounded contexts whose routes do not yet exist;
+- fail-closed behavior when an existing empty Portal menu cannot expose its MenuId through the current API contract;
+- CI validation for Portal PowerShell script syntax and registration JSON manifests.
+
+Current Portal limitation: module lookup returns menu items rather than a menu-definition DTO. Fully idempotent recovery of an existing empty menu requires a future Portal contract exposing MenuId for the module.
+
+Documentation: `docs/menu/portal-menu-registration.md`.
 
 Final validation remains pending the latest GitHub Actions run.
 

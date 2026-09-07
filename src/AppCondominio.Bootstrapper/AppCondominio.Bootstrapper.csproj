@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Composition root for AppCondominio modules and infrastructure.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Organizations\Organizations.Infrastructure\Organizations.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

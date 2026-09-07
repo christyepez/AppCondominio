@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main, 'foundation/**', 'feature/**', 'fix/**' ]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore application
+        run: dotnet restore AppCondominio.sln
+      - name: NuGet vulnerability scan
+        shell: bash
+        run: |
+          set -o pipefail
+          dotnet list AppCondominio.sln package --vulnerable --include-transitive | tee nuget-vulnerabilities.txt
+          if grep -q "has the following vulnerable packages" nuget-vulnerabilities.txt; then
+            echo "Vulnerable NuGet packages detected."
+            exit 1
+          fi
+      - name: Build application
+        run: dotnet build AppCondominio.sln -c Release --no-restore
+      - name: Unit tests
+        run: dotnet test tests/AppCondominio.UnitTests/AppCondominio.UnitTests.csproj -c Release --logger trx
+      - name: Architecture tests
+        run: dotnet test tests/AppCondominio.ArchitectureTests/AppCondominio.ArchitectureTests.csproj -c Release --logger trx
+      - name: Integration tests
+        run: dotnet test tests/AppCondominio.IntegrationTests/AppCondominio.IntegrationTests.csproj -c Release --logger trx
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/app-condominio-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: npm vulnerability scan
+        run: npm audit --audit-level=high
+      - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare CI environment
+        run: |
+          cp .env.example .env
+          sed -i 's/ChangeMeOutsideGit_123!/CiOnly_StrongPassword_123!/' .env
+          sed -i 's/ChangeMeOutsideGit/CiOnlyRabbitPassword/' .env
+      - name: Build images
+        run: docker compose build
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

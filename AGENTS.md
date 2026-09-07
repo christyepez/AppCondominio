@@ -15,8 +15,21 @@ Before changing code, Codex MUST read only the minimum context required, in this
 5. `CodexCommonAgents/registry/reusable-portal-apis.md`.
 6. `CodexCommonAgents/registry/do-not-duplicate.md`.
 7. `CodexCommonAgents/playbooks/portal-first-implementation.md`.
-8. The common agent assigned by the Coordinator Agent.
-9. A domain-specific file under `codex/agents/` only when required.
+8. `CodexCommonAgents/agents/03-backend-agent.md` for backend work.
+9. The common agent assigned by the Coordinator Agent.
+10. A domain-specific file under `codex/agents/` only when required.
+
+## Mandatory backend runtime
+
+All backend components in AppCondominio MUST target:
+
+```text
+.NET 10
+ASP.NET Core 10
+TargetFramework: net10.0
+```
+
+This applies to API projects, application/domain/infrastructure libraries, workers, tests, EF Core migrations, Docker images and CI jobs. Stable 10.x packages must be used; preview framework packages are not allowed unless explicitly approved.
 
 ## Mandatory classification
 
@@ -36,7 +49,7 @@ Do not create AppCondominio implementations for authentication, global users, gl
 
 Required architectural style:
 
-- .NET 8 / ASP.NET Core
+- .NET 10 / ASP.NET Core 10
 - Angular aligned with PortalCorporativo
 - SQL Server
 - Redis
@@ -103,12 +116,6 @@ Branch convention:
 
 `<type>/<sprint>-<story>-<short-description>`
 
-Examples:
-
-- `foundation/sprint-01-architecture`
-- `feature/s03-saas-001-create-organization`
-- `fix/s09-col-004-payment-allocation`
-
 ## Definition of Done
 
 A story is complete only when applicable checks pass:
@@ -137,6 +144,7 @@ Agent:
 Task:
 Story:
 Sprint:
+Runtime: .NET 10
 Base Commit:
 Branch:
 Commit:

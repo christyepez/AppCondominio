@@ -27,9 +27,9 @@ All components must run with Docker Compose and be portable between cloud and on
 
 ## Technology baseline
 
-Use the same technology family as PortalCorporativo:
+Use the same technology family as PortalCorporativo, with the AppCondominio backend standardized on .NET 10:
 
-- .NET 8 / ASP.NET Core
+- .NET 10 / ASP.NET Core 10
 - Angular
 - SQL Server
 - Redis
@@ -39,6 +39,8 @@ Use the same technology family as PortalCorporativo:
 - Seq
 - OpenTelemetry
 - GitHub Actions
+
+All backend projects, workers, tests, migrations, containers and CI build jobs target `net10.0`. Stable .NET 10 servicing packages are required; preview framework packages are not part of the production baseline.
 
 ## Architecture baseline
 
@@ -65,7 +67,7 @@ AppCondominio must integrate through contracts/adapters and must not duplicate t
 
 Repository: `christyepez/CodexCommonAgents`.
 
-Common agents/rules/playbooks are authoritative for cross-project architecture, security, quality, DevOps and PortalCorporativo reuse. AppCondominio stores only local context and condominium-domain extensions.
+Common agents/rules/playbooks are authoritative for cross-project architecture, security, quality, DevOps and PortalCorporativo reuse. Backend work must additionally apply `agents/03-backend-agent.md`. AppCondominio stores only local context and condominium-domain extensions.
 
 ## Domain bounded contexts
 
@@ -113,6 +115,7 @@ Common agents/rules/playbooks are authoritative for cross-project architecture, 
 
 ## Non-negotiable rules
 
+- Backend runtime is .NET 10 / ASP.NET Core 10.
 - Tenant isolation is enforced in backend code and tests.
 - No cross-module table access.
 - No secrets in Git.

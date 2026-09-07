@@ -39,8 +39,8 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 | Order | Task | Story | Classification | Status |
 |---:|---|---|---|---|
 | 1 | Portal-compatible JWT validation and authenticated identity context | S02-01 | REUSE/ADAPT | VALIDATED |
-| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | PARTIALLY BLOCKED |
-| 3 | Permission authorization | S02-03 | REUSE/EXTEND | PLANNED |
+| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | BLOCKED |
+| 3 | Permission authorization | S02-03 | REUSE/EXTEND | NEXT |
 | 4 | Menu registration | S02-04 | EXTEND | PLANNED |
 | 5 | Audit integration | S02-05 | ADAPT | PLANNED |
 | 6 | Notification integration | S02-06 | ADAPT | PLANNED |
@@ -55,6 +55,7 @@ Branch: `feature/s02-s02-01-portal-jwt-validation`.
 Base: Sprint 01 validated head `b6175c73a92cbe4ff81e16d27b680881323ec424`.
 Implementation commit: `899258329925327f23d27090a2a0d312907b2a30`.
 Validated CI run: `34161895440`.
+PR: `#2` stacked against `foundation/sprint-01-architecture`.
 
 Validated behavior:
 
@@ -70,14 +71,23 @@ Validated behavior:
 
 Portal limitation: PortalCorporativo Security API currently validates JWTs but does not provide production login/token issuance/OAuth/OIDC. AppCondominio does not duplicate or invent an IdP; production login remains BLOCKED until Portal supplies that capability.
 
-## S02-02 blocker
+## S02-02 blocking evidence
 
-The current PortalCorporativo contract does not define canonical signed claims for AppCondominio `TenantId` or `CommunityId`. Therefore:
+PortalCorporativo `UserResponse` includes `TenantId`, but the current endpoint that exposes it (`GET /api/security/users/{id}`) is inside the `/api/security` group protected by `portal.security.manage`. That administrative permission is not an acceptable dependency for ordinary AppCondominio users.
 
-- authenticated user identity and permissions may be consumed from the validated JWT;
-- `TenantId` claim mapping is BLOCKED until Portal defines the signed claim/contract;
-- `CommunityId` is an AppCondominio domain scope and must be resolved through an authorized membership/context mechanism, not trusted from an arbitrary client header or query parameter;
-- no temporary `tenantId`/`communityId` claim names will be invented.
+Portal currently provides no documented self-service current-user endpoint, canonical signed tenant claim, or workload/service-to-service contract for safe tenant lookup. Community membership is AppCondominio-owned and is not yet available in the domain model.
+
+Therefore:
+
+- authenticated UserId and permissions continue to come from the validated JWT implemented by S02-01;
+- TenantId resolution is BLOCKED until Portal provides a safe reusable contract;
+- CommunityId resolution is BLOCKED until an authenticated tenant exists and AppCondominio has community-membership/relationship data;
+- no temporary tenant/community claim names or trusted client headers will be introduced;
+- ordinary users will never receive `portal.security.manage` merely to resolve tenant context.
+
+Decision record: `docs/adr/ADR-002-tenant-community-context-resolution.md`.
+
+S02-03 may proceed independently by extending Portal Security with AppCondominio protected resources and permission definitions.
 
 ## Execution rule
 

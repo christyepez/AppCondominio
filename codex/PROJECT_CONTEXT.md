@@ -27,10 +27,8 @@ All components must run with Docker Compose and be portable between cloud and on
 
 ## Technology baseline
 
-Use the same technology family as PortalCorporativo, with the AppCondominio backend standardized on .NET 10:
-
-- .NET 10 / ASP.NET Core 10
-- Angular
+- .NET 10 / ASP.NET Core 10 (`net10.0`)
+- Angular 21 LTS, runtime 21.2.x
 - SQL Server
 - Redis
 - RabbitMQ
@@ -41,6 +39,8 @@ Use the same technology family as PortalCorporativo, with the AppCondominio back
 - GitHub Actions
 
 All backend projects, workers, tests, migrations, containers and CI build jobs target `net10.0`. Stable .NET 10 servicing packages are required; preview framework packages are not part of the production baseline.
+
+AppCondominio frontend intentionally uses Angular 21 LTS instead of PortalCorporativo's current Angular 18 line. Sprint 1 security scanning found high and critical vulnerabilities in the Angular 18 dependency graph, including runtime Angular advisories. Integration with PortalCorporativo therefore relies on APIs/contracts/configuration and compatible UX conventions, not identical frontend runtime versions. See `docs/adr/ADR-001-angular-security-baseline.md`.
 
 ## Architecture baseline
 
@@ -116,6 +116,7 @@ Common agents/rules/playbooks are authoritative for cross-project architecture, 
 ## Non-negotiable rules
 
 - Backend runtime is .NET 10 / ASP.NET Core 10.
+- Frontend baseline is Angular 21 LTS unless an explicit architecture/security story changes it.
 - Tenant isolation is enforced in backend code and tests.
 - No cross-module table access.
 - No secrets in Git.

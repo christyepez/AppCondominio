@@ -1,3 +1,4 @@
+using AppCondominio.Modules.Organizations.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +13,7 @@ public static class DependencyInjection
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
+        services.AddOrganizationsModule();
         return services;
     }
 }

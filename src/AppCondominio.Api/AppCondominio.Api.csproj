@@ -6,5 +6,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj" />
     <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+    <ProjectReference Include="..\Modules\Organizations\Organizations.Api\Organizations.Api.csproj" />
   </ItemGroup>
 </Project>

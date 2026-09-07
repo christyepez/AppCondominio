@@ -1,5 +1,6 @@
 using AppCondominio.Bootstrapper;
 using AppCondominio.Contracts;
+using AppCondominio.Modules.Organizations.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ app.MapGet("/", () => Results.Ok(new ServiceInfo(
 
 app.MapHealthChecks("/health/live");
 app.MapHealthChecks("/health/ready");
+app.MapOrganizationsEndpoints();
 
 app.Run();
 

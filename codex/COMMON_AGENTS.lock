@@ -1,0 +1,5 @@
+repository=christyepez/CodexCommonAgents
+branch=main
+commit=fc8c96a9d128465f724099bbd9bee5f85f5e4f12
+policy=pin-per-sprint
+update_rule=Update only through an explicit architecture/chore story after reviewing common-agent changes.

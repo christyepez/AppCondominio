@@ -11,7 +11,8 @@ public static class OrganizationEndpoints
     public static IEndpointRouteBuilder MapOrganizationsEndpoints(this IEndpointRouteBuilder endpoints)
     {
         RouteGroupBuilder group = endpoints.MapGroup("/api/organizations")
-            .WithTags("Organizations");
+            .WithTags("Organizations")
+            .RequireAuthorization();
 
         group.MapPost("/", CreateAsync);
         group.MapGet("/{id:guid}", GetByIdAsync);

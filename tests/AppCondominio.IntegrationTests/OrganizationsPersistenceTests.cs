@@ -7,7 +7,8 @@ namespace AppCondominio.IntegrationTests;
 
 public sealed class OrganizationsPersistenceTests : IAsyncLifetime
 {
-    private readonly MsSqlContainer _sql = new MsSqlBuilder().Build();
+    private const string SqlServerImage = "mcr.microsoft.com/mssql/server:2022-latest";
+    private readonly MsSqlContainer _sql = new MsSqlBuilder(SqlServerImage).Build();
 
     public Task InitializeAsync() => _sql.StartAsync();
 

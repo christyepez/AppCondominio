@@ -1,0 +1,18 @@
+{
+  "resource": {
+    "key": "appcondominio.organizations",
+    "name": "AppCondominio Organizations"
+  },
+  "permissions": [
+    {
+      "code": "appcondominio.organizations.read",
+      "resourceKey": "appcondominio.organizations",
+      "action": "read"
+    },
+    {
+      "code": "appcondominio.organizations.manage",
+      "resourceKey": "appcondominio.organizations",
+      "action": "manage"
+    }
+  ]
+}

@@ -3,6 +3,8 @@
     <Description>Cross-cutting infrastructure adapters owned by AppCondominio.</Description>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MassTransit.RabbitMQ" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
   </ItemGroup>
 </Project>

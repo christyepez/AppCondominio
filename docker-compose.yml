@@ -7,11 +7,17 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Organizations: Server=sqlserver,1433;Database=${SQLSERVER_DATABASE};User Id=sa;Password=${SQLSERVER_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False
+      ConnectionStrings__Redis: redis:6379
+      RabbitMq__Host: rabbitmq
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
     ports:
       - "${APP_HTTP_PORT}:8080"
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      sqlserver: { condition: service_healthy }
+      redis: { condition: service_started }
+      rabbitmq: { condition: service_started }
     networks: [appcondominio-network]
 
   appcondominio-worker:
@@ -21,9 +27,15 @@ services:
     environment:
       DOTNET_ENVIRONMENT: Development
       ConnectionStrings__Organizations: Server=sqlserver,1433;Database=${SQLSERVER_DATABASE};User Id=sa;Password=${SQLSERVER_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False
+      ConnectionStrings__Redis: redis:6379
+      RabbitMq__Host: rabbitmq
+      RabbitMq__VirtualHost: /
+      RabbitMq__Username: ${RABBITMQ_USER}
+      RabbitMq__Password: ${RABBITMQ_PASSWORD}
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      sqlserver: { condition: service_healthy }
+      redis: { condition: service_started }
+      rabbitmq: { condition: service_started }
     networks: [appcondominio-network]
 
   appcondominio-web:
@@ -32,8 +44,7 @@ services:
       dockerfile: frontend/app-condominio-web/Dockerfile
     ports:
       - "${WEB_HTTP_PORT}:8080"
-    depends_on:
-      - appcondominio-api
+    depends_on: [appcondominio-api]
     networks: [appcondominio-network]
 
   sqlserver:
@@ -43,8 +54,7 @@ services:
       MSSQL_SA_PASSWORD: ${SQLSERVER_SA_PASSWORD}
     ports:
       - "${SQLSERVER_PORT}:1433"
-    volumes:
-      - sqlserver-data:/var/opt/mssql
+    volumes: ["sqlserver-data:/var/opt/mssql"]
     healthcheck:
       test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '$$MSSQL_SA_PASSWORD' -C -Q 'SELECT 1' || exit 1"]
       interval: 10s
@@ -55,10 +65,13 @@ services:
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes
-    ports:
-      - "${REDIS_PORT}:6379"
-    volumes:
-      - redis-data:/data
+    ports: ["${REDIS_PORT}:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     networks: [appcondominio-network]
 
   rabbitmq:
@@ -69,18 +82,20 @@ services:
     ports:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_MANAGEMENT_PORT}:15672"
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
+    volumes: ["rabbitmq-data:/var/lib/rabbitmq"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
     networks: [appcondominio-network]
 
   seq:
     image: datalust/seq:2025.2
     environment:
       ACCEPT_EULA: "Y"
-    ports:
-      - "${SEQ_PORT}:80"
-    volumes:
-      - seq-data:/data
+    ports: ["${SEQ_PORT}:80"]
+    volumes: ["seq-data:/data"]
     networks: [appcondominio-network]
 
 volumes:

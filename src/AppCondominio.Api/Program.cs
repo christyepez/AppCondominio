@@ -1,17 +1,27 @@
+using AppCondominio.Api;
 using AppCondominio.Bootstrapper;
 using AppCondominio.Contracts;
 using AppCondominio.Contracts.Messaging;
 using AppCondominio.Infrastructure;
+using AppCondominio.Infrastructure.Observability;
 using AppCondominio.Modules.Organizations.Api;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAppCondominio(builder.Configuration);
 builder.Services.AddAppCondominioCache(builder.Configuration);
 builder.Services.AddAppCondominioMessaging(builder.Configuration);
+builder.Services.AddAppCondominioObservability(builder.Configuration, "AppCondominio.Api", includeAspNetCoreInstrumentation: true);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
+
+app.UseMiddleware<CorrelationIdMiddleware>();
+app.UseExceptionHandler();
+app.UseSerilogRequestLogging();
 
 app.MapGet("/", () => Results.Ok(new ServiceInfo(
     Service: "AppCondominio.Api",

@@ -4,6 +4,7 @@
     <RootNamespace>AppCondominio.Api</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" />
     <ProjectReference Include="..\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj" />
     <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
     <ProjectReference Include="..\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj" />

@@ -1,4 +1,5 @@
 using System.Text;
+using AppCondominio.Contracts.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

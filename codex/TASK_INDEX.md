@@ -19,18 +19,7 @@
 
 Final validated CI run: `34161344428`.
 
-Passed gates:
-
-- Gitleaks secret scan.
-- .NET 10 restore.
-- NuGet direct/transitive vulnerability scan.
-- .NET 10 Release build.
-- Unit tests.
-- Architecture tests.
-- SQL Server/Testcontainers integration tests and EF migration execution.
-- npm high/critical vulnerability scan.
-- Angular 21 LTS production build.
-- Docker builds for API, Worker and Web.
+Passed gates: Gitleaks, .NET 10 restore/build, NuGet vulnerability scan, unit tests, architecture tests, SQL Server/Testcontainers integration and EF migrations, npm vulnerability scan, Angular 21 production build and Docker builds.
 
 Security decision: Angular 18 alignment with the current PortalCorporativo frontend was rejected after CI found 58 vulnerabilities (32 high, 1 critical). AppCondominio uses Angular 21 LTS while preserving Portal integration through APIs/contracts/configuration. See `docs/adr/ADR-001-angular-security-baseline.md`.
 
@@ -42,8 +31,8 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 | 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | BLOCKED |
 | 3 | Permission authorization | S02-03 | REUSE/EXTEND | VALIDATED |
 | 4 | Menu registration | S02-04 | EXTEND | IMPLEMENTED / VALIDATION RUNNING |
-| 5 | Audit integration | S02-05 | ADAPT | NEXT |
-| 6 | Notification integration | S02-06 | ADAPT | PLANNED |
+| 5 | Audit integration | S02-05 | ADAPT | BLOCKED |
+| 6 | Notification integration | S02-06 | ADAPT | NEXT |
 | 7 | Content/File integration | S02-07 | ADAPT | PLANNED |
 | 8 | Catalog integration | S02-08 | EXTEND/ADAPT | PLANNED |
 | 9 | Configuration integration | S02-09 | EXTEND/ADAPT | PLANNED |
@@ -52,66 +41,50 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 ## S02-01 validation evidence
 
 Branch: `feature/s02-s02-01-portal-jwt-validation`.
-Base: Sprint 01 validated head `b6175c73a92cbe4ff81e16d27b680881323ec424`.
-Implementation commit: `899258329925327f23d27090a2a0d312907b2a30`.
 Validated CI run: `34161895440`.
-PR: `#2` stacked against `foundation/sprint-01-architecture`.
+PR: `#2` stacked against Sprint 01.
 
-Validated behavior:
-
-- JWT bearer validation matches the current PortalCorporativo Security API contract.
-- Canonical issuer: `portal-corporativo`.
-- Canonical audience: `portal-corporativo-clients`.
-- Signing secret is supplied externally and is not committed.
-- Lifetime validation and one-minute clock skew are enabled.
-- Signed `permission` claims are exposed through the local current-identity adapter.
-- `/api/session` requires authentication and exposes the resolved local identity view.
-- Organizations endpoints and technical messaging endpoint require authentication.
-
-Portal limitation: PortalCorporativo Security API currently validates JWTs but does not provide production login/token issuance/OAuth/OIDC. AppCondominio does not duplicate or invent an IdP; production login remains BLOCKED until Portal supplies that capability.
+JWT validation matches Portal issuer/audience/signature/lifetime behavior and exposes signed `permission` claims through the local identity adapter. Portal production token issuance/OAuth/OIDC remains unavailable; AppCondominio does not duplicate an IdP.
 
 ## S02-02 blocker
 
-S02-02 is documented in PR `#3`. Portal `UserResponse` includes TenantId, but the available user endpoint requires administrative `portal.security.manage`. AppCondominio will not elevate ordinary users or trust client-supplied tenant/community identifiers. Safe tenant resolution remains blocked pending a Portal self/service contract; community context remains blocked pending AppCondominio membership data.
+PR `#3`; ADR `docs/adr/ADR-002-tenant-community-context-resolution.md`.
+
+Portal `UserResponse` contains TenantId, but the current user endpoint requires administrative `portal.security.manage`. AppCondominio will not elevate ordinary users or trust client-supplied tenant/community identifiers. Safe tenant resolution requires a Portal self/service contract; CommunityId requires AppCondominio membership data.
 
 ## S02-03 validation
 
 Branch: `feature/s02-s02-03-portal-permission-authorization`.
-Base: S02-01 validated documentation head `ea0c5d3a1d963e1e4ace946f1b64dfca1ec93558`.
 PR: `#4` stacked against S02-01.
 Validated code run: `34162705886`.
 
-Passed Gitleaks, NuGet scan, .NET 10 build, unit tests, architecture tests, integration tests, npm audit, Angular build and Docker builds.
-
-Implemented:
-
-- shared permission contract in `AppCondominio.Contracts`;
-- `appcondominio.organizations.read` and `appcondominio.organizations.manage`;
-- endpoint-level authorization policies using signed Portal `permission` claims;
-- Portal Security registration manifest and PowerShell 7 provisioning script;
-- authorization tests separating read and manage capabilities.
+Implemented shared permission contracts, Organizations read/manage policies, Portal Security registration manifest/provisioning and authorization tests. All normal CI gates including Docker passed.
 
 ## S02-04 implementation
 
 Branch: `feature/s02-s02-04-portal-menu-registration`.
 Base: S02-03 head `63ef52c0a0ce9009229ce84da6c6cb67e19e82b4`.
+CI run in validation: `34163039648`.
 
-Implemented against the current Portal Menu contracts:
+Implemented:
 
-- module code `appcondominio`, name `Conjunto al Día`;
-- Organizations navigation item pointing to the existing Angular `/organizations` route;
-- item resource `appcondominio.organizations` and permission `appcondominio.organizations.read` from S02-03;
-- Portal Menu registration manifest;
-- PowerShell 7 provisioning script using `GET /api/menu/modules/{moduleCode}`, `POST /api/menu` and `POST /api/menu/items`;
-- no speculative menu items for bounded contexts whose routes do not yet exist;
-- fail-closed behavior when an existing empty Portal menu cannot expose its MenuId through the current API contract;
-- CI validation for Portal PowerShell script syntax and registration JSON manifests.
-
-Current Portal limitation: module lookup returns menu items rather than a menu-definition DTO. Fully idempotent recovery of an existing empty menu requires a future Portal contract exposing MenuId for the module.
+- Portal module `appcondominio` / `Conjunto al Día`;
+- Organizations item -> `/organizations`;
+- S02-03 resource/permission linkage;
+- Menu registration manifest and PowerShell 7 provisioning;
+- fail-closed behavior for the current Portal empty-menu/MenuId contract gap;
+- CI syntax validation of Portal provisioning scripts and JSON manifests.
 
 Documentation: `docs/menu/portal-menu-registration.md`.
 
-Final validation remains pending the latest GitHub Actions run.
+## S02-05 blocker
+
+Branch: `feature/s02-s02-05-portal-audit-integration`.
+Decision: `docs/adr/ADR-003-audit-ingestion-service-identity.md`.
+
+The current Portal Audit write contract requires `portal.audit.write` but trusts `ActorId` from the request body. Portal does not currently provide a documented workload/service-to-service identity for AppCondominio. Forwarding an ordinary end-user JWT would either require granting a transverse audit-write permission to users or permit forged actor metadata if the Audit API is directly reachable.
+
+Therefore AppCondominio will not implement an unsafe adapter, use a static bearer token, write directly to PortalAudit, or duplicate the audit engine. S02-05 remains BLOCKED until Portal provides trusted audit-ingestion identity/actor validation. Critical future audit delivery should additionally use a reliable outbox-based pattern rather than couple domain commits to a synchronous remote call.
 
 ## Execution rule
 

@@ -39,8 +39,8 @@ Security decision: Angular 18 alignment with the current PortalCorporativo front
 | Order | Task | Story | Classification | Status |
 |---:|---|---|---|---|
 | 1 | Portal-compatible JWT validation and authenticated identity context | S02-01 | REUSE/ADAPT | VALIDATED |
-| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | PARTIALLY BLOCKED |
-| 3 | Permission authorization | S02-03 | REUSE/EXTEND | PLANNED |
+| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | BLOCKED |
+| 3 | Permission authorization | S02-03 | REUSE/EXTEND | IMPLEMENTED / VALIDATION RUNNING |
 | 4 | Menu registration | S02-04 | EXTEND | PLANNED |
 | 5 | Audit integration | S02-05 | ADAPT | PLANNED |
 | 6 | Notification integration | S02-06 | ADAPT | PLANNED |
@@ -55,6 +55,7 @@ Branch: `feature/s02-s02-01-portal-jwt-validation`.
 Base: Sprint 01 validated head `b6175c73a92cbe4ff81e16d27b680881323ec424`.
 Implementation commit: `899258329925327f23d27090a2a0d312907b2a30`.
 Validated CI run: `34161895440`.
+PR: `#2` stacked against `foundation/sprint-01-architecture`.
 
 Validated behavior:
 
@@ -66,18 +67,33 @@ Validated behavior:
 - Signed `permission` claims are exposed through the local current-identity adapter.
 - `/api/session` requires authentication and exposes the resolved local identity view.
 - Organizations endpoints and technical messaging endpoint require authentication.
-- Gitleaks, NuGet vulnerability scan, build, unit tests, architecture tests, SQL integration tests, npm audit, Angular build and Docker build all passed.
 
 Portal limitation: PortalCorporativo Security API currently validates JWTs but does not provide production login/token issuance/OAuth/OIDC. AppCondominio does not duplicate or invent an IdP; production login remains BLOCKED until Portal supplies that capability.
 
 ## S02-02 blocker
 
-The current PortalCorporativo contract does not define canonical signed claims for AppCondominio `TenantId` or `CommunityId`. Therefore:
+S02-02 is documented in PR `#3`. Portal `UserResponse` includes TenantId, but the available user endpoint requires administrative `portal.security.manage`. AppCondominio will not elevate ordinary users or trust client-supplied tenant/community identifiers. Safe tenant resolution remains blocked pending a Portal self/service contract; community context remains blocked pending AppCondominio membership data.
 
-- authenticated user identity and permissions may be consumed from the validated JWT;
-- `TenantId` claim mapping is BLOCKED until Portal defines the signed claim/contract;
-- `CommunityId` is an AppCondominio domain scope and must be resolved through an authorized membership/context mechanism, not trusted from an arbitrary client header or query parameter;
-- no temporary `tenantId`/`communityId` claim names will be invented.
+## S02-03 implementation
+
+Branch: `feature/s02-s02-03-portal-permission-authorization`.
+Base: S02-01 validated documentation head `ea0c5d3a1d963e1e4ace946f1b64dfca1ec93558`.
+
+Implemented:
+
+- shared permission contract in `AppCondominio.Contracts`;
+- Portal-compatible authorization policies requiring signed `permission` claims;
+- `appcondominio.organizations.read` for `GET /api/organizations/{id}`;
+- `appcondominio.organizations.manage` for `POST /api/organizations`;
+- Portal registration manifest for resource `appcondominio.organizations` and the two permission definitions;
+- PowerShell 7 provisioning script using the actual Portal Security resource/permission endpoints;
+- HTTP 409 handled as already registered for repeatable provisioning;
+- no role assignment is performed implicitly at application startup;
+- authorization tests cover anonymous denial, authenticated-without-permission denial, matching read permission, read-vs-manage separation and manage permission success.
+
+The first authorization test attempt intentionally exposed an external-infrastructure coupling in the test host (Redis required). The test was corrected to validate the policy slice directly rather than bypassing Redis/RabbitMQ requirements or weakening production startup validation.
+
+Final validation remains pending the latest GitHub Actions run.
 
 ## Execution rule
 

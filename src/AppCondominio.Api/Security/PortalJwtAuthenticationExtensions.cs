@@ -1,4 +1,5 @@
 using System.Text;
+using AppCondominio.Contracts.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -40,7 +41,18 @@ public static class PortalJwtAuthenticationExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            foreach (var permission in AppCondominioPermissions.All)
+            {
+                options.AddPolicy(
+                    permission,
+                    policy => policy
+                        .RequireAuthenticatedUser()
+                        .RequireClaim(AppCondominioPermissions.ClaimType, permission));
+            }
+        });
+
         return services;
     }
 }

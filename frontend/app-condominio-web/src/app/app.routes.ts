@@ -11,6 +11,12 @@ export const routes: Routes = [
   { path: 'collections', loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent) },
   { path: 'banking', loadComponent: () => import('./features/banking/banking.component').then(m => m.BankingComponent) },
   { path: 'accounting', loadComponent: () => import('./features/accounting/accounting.component').then(m => m.AccountingComponent) },
+  { path: 'treasury', loadComponent: () => import('./features/treasury/treasury.component').then(m => m.TreasuryComponent) },
+  { path: 'budgeting', loadComponent: () => import('./features/budgeting/budgeting.component').then(m => m.BudgetingComponent) },
+  { path: 'procurement', loadComponent: () => import('./features/procurement/procurement.component').then(m => m.ProcurementComponent) },
+  { path: 'maintenance', loadComponent: () => import('./features/maintenance/maintenance.component').then(m => m.MaintenanceComponent) },
+  { path: 'reservations', loadComponent: () => import('./features/reservations/reservations.component').then(m => m.ReservationsComponent) },
+  { path: 'security', loadComponent: () => import('./features/security-operations/security-operations.component').then(m => m.SecurityOperationsComponent) },
   { path: 'governance', loadComponent: () => import('./features/governance/governance.component').then(m => m.GovernanceComponent) },
   { path: '**', redirectTo: 'dashboard' }
 ];

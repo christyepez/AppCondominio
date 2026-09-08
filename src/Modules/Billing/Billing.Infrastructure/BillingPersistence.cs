@@ -44,6 +44,6 @@ public static class DependencyInjection
     {
         string cs=configuration.GetConnectionString("Billing")??configuration.GetConnectionString("People")??configuration.GetConnectionString("Properties")??configuration.GetConnectionString("Organizations")??throw new InvalidOperationException("Billing connection string is required.");
         services.AddDbContext<BillingDbContext>(o=>o.UseSqlServer(cs,sql=>sql.MigrationsHistoryTable("__EFMigrationsHistory","billing")));
-        services.AddScoped<IBillingRepository,EfBillingRepository>();services.AddScoped<BillingService>();return services;
+        services.AddScoped<IBillingRepository,EfBillingRepository>();services.AddScoped<BillingService>();services.AddMonthlyBilling();return services;
     }
 }

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
+import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
 
 @Component({
   selector: 'app-billing',
@@ -19,7 +20,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Abrir período mensual</h3>
       <form class="form-grid" (ngSubmit)="openPeriod()">
-        <label>Community Id<input [(ngModel)]="period.communityId" name="periodCommunity" required></label>
+        <label>Comunidad<select [(ngModel)]="period.communityId" name="periodCommunity" required><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Año<input [(ngModel)]="period.year" name="year" type="number" required></label>
         <label>Mes<input [(ngModel)]="period.month" name="month" type="number" min="1" max="12" required></label>
         <label>Fecha emisión<input [(ngModel)]="period.issueDate" name="issueDate" type="date" required></label>
@@ -31,7 +32,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Estado de cuenta por unidad</h3>
       <div class="form-grid compact">
-        <label>Community Id<input [(ngModel)]="statement.communityId" name="statementCommunity"></label>
+        <label>Comunidad<select [(ngModel)]="statement.communityId" name="statementCommunity" ><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Unit Id<input [(ngModel)]="statement.unitId" name="statementUnit"></label>
         <div class="form-actions"><button class="button secondary" type="button" (click)="loadStatement()" [disabled]="busy || !statement.communityId || !statement.unitId">Consultar</button></div>
       </div>
@@ -39,14 +40,17 @@ import { API_BASE_URL } from '../../core/config/api.config';
     </section>
   `
 })
-export class BillingComponent {
+export class BillingComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly communityOptions = inject(CommunityOptionsService);
+  communities: CommunityOption[] = [];
   busy = false;
   error = '';
   message = '';
   statementResult: unknown;
   period = { communityId: '', year: new Date().getFullYear(), month: new Date().getMonth() + 1, issueDate: '', dueDate: '' };
   statement = { communityId: '', unitId: '' };
+ngOnInit():void{this.communityOptions.load().subscribe({next:items=>this.communities=items,error:()=>this.error='No se pudieron cargar las comunidades disponibles.'});}
 
   openPeriod(): void {
     this.busy = true; this.error = ''; this.message = '';

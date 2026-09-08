@@ -5,5 +5,6 @@
     <ProjectReference Include="..\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Organizations\Organizations.Infrastructure\Organizations.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Communities\Communities.Infrastructure\Communities.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Properties\Properties.Infrastructure\Properties.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,17 @@
+using AppCondominio.Contracts.Security;
+using AppCondominio.Modules.Maintenance.Application;
+using Microsoft.AspNetCore.Builder;using Microsoft.AspNetCore.Http;using Microsoft.AspNetCore.Routing;
+namespace AppCondominio.Modules.Maintenance.Api;
+public static class MaintenanceEndpoints
+{
+ public static IEndpointRouteBuilder MapMaintenanceEndpoints(this IEndpointRouteBuilder app){var g=app.MapGroup("/api/maintenance").RequireAuthorization();
+ g.MapPost("/assets",async(CreateAssetRequest r,MaintenanceService s,CancellationToken ct)=>Results.Ok(new{Id=await s.CreateAssetAsync(r.CommunityId,r.Code,r.Name,r.Category,r.Location,ct)})).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/assets/{assetId:guid}/plans",async(Guid assetId,CreatePlanRequest r,MaintenanceService s,CancellationToken ct)=>Results.Ok(new{Id=await s.CreatePreventivePlanAsync(assetId,r.Name,r.FrequencyDays,r.NextDueDate,ct)})).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/incidents",async(CreateIncidentRequest r,MaintenanceService s,CancellationToken ct)=>Results.Ok(new{Id=await s.ReportIncidentAsync(r.CommunityId,r.AssetId,r.Title,r.Description,r.Priority,r.ReportedBy,ct)})).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/work-orders",async(CreateWorkOrderRequest r,MaintenanceService s,CancellationToken ct)=>Results.Ok(new{Id=await s.CreateWorkOrderAsync(r.CommunityId,r.AssetId,r.IncidentId,r.PreventivePlanId,r.Number,r.Title,ct)})).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/work-orders/{id:guid}/assign",async(Guid id,AssignRequest r,MaintenanceService s,CancellationToken ct)=>{await s.AssignAsync(id,r.AssignedTo,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/work-orders/{id:guid}/start",async(Guid id,MaintenanceService s,CancellationToken ct)=>{await s.StartAsync(id,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapPost("/work-orders/{id:guid}/complete",async(Guid id,CompleteRequest r,MaintenanceService s,CancellationToken ct)=>{await s.CompleteAsync(id,r.ActualCost,r.ProcurementReference,r.CompletedOn,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Maintenance.Manage);
+ g.MapGet("/communities/{communityId:guid}/kpi",async(Guid communityId,DateOnly? asOf,MaintenanceService s,CancellationToken ct)=>Results.Ok(await s.GetKpiAsync(communityId,asOf??DateOnly.FromDateTime(DateTime.UtcNow),ct))).RequireAuthorization(AppCondominioPermissions.Maintenance.Read);return app;}
+}
+public sealed record CreateAssetRequest(Guid CommunityId,string Code,string Name,string Category,string Location);public sealed record CreatePlanRequest(string Name,int FrequencyDays,DateOnly NextDueDate);public sealed record CreateIncidentRequest(Guid CommunityId,Guid? AssetId,string Title,string Description,string Priority,string ReportedBy);public sealed record CreateWorkOrderRequest(Guid CommunityId,Guid? AssetId,Guid? IncidentId,Guid? PreventivePlanId,string Number,string Title);public sealed record AssignRequest(string AssignedTo);public sealed record CompleteRequest(decimal ActualCost,string? ProcurementReference,DateOnly CompletedOn);

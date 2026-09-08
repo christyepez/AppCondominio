@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /><ProjectReference Include="..\Maintenance.Application\Maintenance.Application.csproj" /><ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" /></ItemGroup></Project>

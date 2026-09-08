@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
+import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
 
 interface GovernanceKpi {
   openAssemblies: number;
@@ -22,7 +23,7 @@ interface GovernanceKpi {
 
     <div class="notice error" *ngIf="error">{{ error }}</div>
     <section class="panel form-grid compact">
-      <label class="wide">Community Id<input [(ngModel)]="communityId" name="communityId" placeholder="GUID de la comunidad"></label>
+      <label class="wide">Comunidad<select [(ngModel)]="communityId" name="communityId"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
       <div class="form-actions"><button class="button primary" type="button" (click)="load()" [disabled]="loading || !communityId">Consultar KPI</button></div>
     </section>
 
@@ -34,12 +35,21 @@ interface GovernanceKpi {
     </section>
   `
 })
-export class GovernanceComponent {
+export class GovernanceComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly communityOptions = inject(CommunityOptionsService);
+  communities: CommunityOption[] = [];
   communityId = '';
   loading = false;
   error = '';
   kpi?: GovernanceKpi;
+
+  ngOnInit(): void {
+    this.communityOptions.load().subscribe({
+      next: items => this.communities = items,
+      error: () => this.error = 'No se pudieron cargar las comunidades disponibles.'
+    });
+  }
 
   load(): void {
     this.loading = true; this.error = ''; this.kpi = undefined;

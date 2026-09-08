@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
+import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
 
 @Component({
   selector: 'app-properties',
@@ -18,7 +19,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <div class="notice success" *ngIf="message">{{ message }}</div>
 
     <section class="panel form-grid compact">
-      <label class="wide">Community Id<input [(ngModel)]="communityId" name="communityId" placeholder="GUID de la comunidad"></label>
+      <label class="wide">Comunidad<select [(ngModel)]="communityId" name="communityId"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
       <div class="form-actions">
         <button class="button secondary" type="button" (click)="validate()" [disabled]="busy || !communityId">Validar alícuotas</button>
         <button class="button primary" type="button" (click)="generateDemo()" [disabled]="busy || !communityId">Generar piloto 300 unidades</button>
@@ -36,14 +37,23 @@ import { API_BASE_URL } from '../../core/config/api.config';
     </section>
   `
 })
-export class PropertiesComponent {
+export class PropertiesComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly communityOptions = inject(CommunityOptionsService);
+  communities: CommunityOption[] = [];
   communityId = '';
   busy = false;
   error = '';
   message = '';
   validation: unknown;
   demoResult: unknown;
+
+  ngOnInit(): void {
+    this.communityOptions.load().subscribe({
+      next: items => this.communities = items,
+      error: () => this.error = 'No se pudieron cargar las comunidades disponibles.'
+    });
+  }
 
   validate(): void {
     this.run(() => this.http.get(`${API_BASE_URL}/properties/communities/${this.communityId}/coefficient-validation`), value => {

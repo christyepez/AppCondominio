@@ -47,20 +47,21 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 
 | Order | Capability | Status |
 |---:|---|---|
-| UI-01 | Admin shell, responsive navigation, live dashboard/session state | IN VALIDATION |
-| UI-02 | Organizations + SaaS plans/entitlements administration | IN VALIDATION |
-| UI-03 | Communities list/create | IN VALIDATION |
-| UI-04 | Properties / aliquot validation / 300-unit pilot tool | IN VALIDATION |
-| UI-05 | People / owners / residents operational UI | IN VALIDATION |
-| UI-06 | Billing / monthly periods / statements | IN VALIDATION |
-| UI-07 | Collections / aging / payment registration | IN VALIDATION |
-| UI-08 | Banking / Tax-SRI / Accounting / Treasury | IN VALIDATION |
-| UI-09 | Budgeting / Procurement / Maintenance | IN VALIDATION |
-| UI-10 | Reservations / Security Operations / Governance | IN VALIDATION |
-| UI-11 | Resident portal | NEXT |
-| UI-12 | Supplier portal | PLANNED |
-| UI-13 | Guard portal | PLANNED |
-| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | PLANNED |
+| UI-01 | Admin shell, responsive navigation, live dashboard/session state | VALIDATED - PR #28 |
+| UI-02 | Organizations + SaaS plans/entitlements administration | VALIDATED - PR #28 |
+| UI-03 | Communities list/create | VALIDATED - PR #28 |
+| UI-04 | Properties / aliquot validation / 300-unit pilot tool | VALIDATED - PR #28 |
+| UI-05 | People / owners / residents operational UI | VALIDATED - PR #28 |
+| UI-06 | Billing / monthly periods / statements | VALIDATED - PR #28 |
+| UI-07 | Collections / aging / payment registration | VALIDATED - PR #28 |
+| UI-08 | Banking / Tax-SRI / Accounting / Treasury | VALIDATED - PR #28 |
+| UI-09 | Budgeting / Procurement / Maintenance | VALIDATED - PR #28 |
+| UI-10 | Reservations / Security Operations / Governance | VALIDATED - PR #28 |
+| UI-11 | Resident portal | VALIDATED - PR #29 |
+| UI-12 | Supplier portal | VALIDATED - PR #30 |
+| UI-13 | Guard portal | VALIDATED - PR #31 |
+| UI-PWA | Installable PWA shell / static offline safety | IN VALIDATION - PR #32 |
+| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | IN PROGRESS |
 
 Current branch: `feature/ui-completion-admin-core`. Admin Core now exposes a navigable Angular 21 console across all principal bounded contexts and consumes real secured backend endpoints. The only new backend read surface added for UI completion is `GET /api/communities/`, protected by the existing `appcondominio.communities.read` permission. Screens preserve explicit 401/403 behavior and do not create a local authentication/token engine.
 

@@ -24,8 +24,14 @@ public static class ResidentPortalEndpoints
         group.MapGet("/me", async (ICurrentIdentity identity, ResidentPortalService service, CancellationToken ct) =>
             Results.Ok(await service.GetContextAsync(RequireUser(identity), ct)));
 
+        group.MapGet("/home", async (ICurrentIdentity identity, ResidentPortalService service, CancellationToken ct) =>
+            Results.Ok(await service.GetHomeAsync(RequireUser(identity), ct)));
+
         group.MapGet("/units/{unitId:guid}/statement", async (Guid unitId, ICurrentIdentity identity, ResidentPortalService service, CancellationToken ct) =>
             Results.Ok(await service.GetStatementAsync(RequireUser(identity), unitId, ct)));
+
+        group.MapGet("/units/{unitId:guid}/areas", async (Guid unitId, ICurrentIdentity identity, ResidentPortalService service, CancellationToken ct) =>
+            Results.Ok(await service.GetReservableAreasAsync(RequireUser(identity), unitId, ct)));
 
         group.MapPost("/units/{unitId:guid}/reservations", async (Guid unitId, ReservationRequest r, ICurrentIdentity identity, ResidentPortalService service, CancellationToken ct) =>
             Results.Created("/api/resident/reservations", new { id = await service.RequestReservationAsync(RequireUser(identity), unitId, r.AreaId, r.StartsAt, r.EndsAt, r.Guests, ct) }));

@@ -1,65 +1,103 @@
 # AppCondominio - Codex Task Index
 
+## Delivery status
+
+| Sprint | Scope | Status | Evidence |
+|---:|---|---|---|
+| 01 | Foundation / architecture | VALIDATED | CI `34161344428`, PR #1 |
+| 02 | PortalCorporativo integration | PARTIAL / BLOCKED EXTERNAL | S02-01/03/04/10 validated; S02-02/05/06/07/08/09 blocked by Portal contracts |
+| 03 | SaaS core | VALIDATED | CI `34176135388`, PR #12 |
+| 04 | Communities | VALIDATED | CI `34231318775`, PR #13 |
+| 05 | Properties / allocation coefficients | VALIDATED | CI `34232684016`, PR #14 |
+| 06 | People / ownership / residents | VALIDATED | CI `34236175554`, PR #15 |
+| 07 | Billing charge engine | VALIDATED | CI `34237553385`, PR #16 |
+| 08 | Monthly billing generation | VALIDATED | CI `34242504016`, PR #17 |
+| 09 | Collections / receivables / payments | VALIDATED | CI `34243645443`, PR #18 |
+| 10 | Banking / reconciliation / Tax-SRI adapter | VALIDATED | CI `34247469067`, PR #19 |
+| 11 | Accounting | VALIDATED | CI `34248668439`, PR #20 |
+| 12 | Treasury / Accounts Payable | VALIDATED | CI `34250192582`, PR #21 |
+| 13 | Budgeting / reporting | VALIDATED | CI `34251525621`, PR #22 |
+| 14 | Procurement | VALIDATED | CI `34252671286`, PR #23 |
+| 15 | Maintenance / assets | VALIDATED | CI `34255713507`, PR #24 |
+| 16 | Reservations / security operations | VALIDATED | CI `34257015439`, PR #25 |
+| 17 | Governance / coexistence | VALIDATED | CI `34261485542`, PR #26 |
+| 18 | Production readiness | IN VALIDATION | Branch `feature/s18-production-readiness` |
+
 ## Sprint 01 - Architecture and foundation
-
-| Order | Task | Story | Classification | Status |
-|---:|---|---|---|---|
-| 1 | Repository standards and .NET 10 solution skeleton | S01-01 | CREATE | VALIDATED |
-| 2 | Backend host and modular bootstrapper | S01-02 | CREATE | VALIDATED |
-| 3 | Organizations reference module | S01-03 | CREATE | VALIDATED |
-| 4 | SQL Server + EF Core 10 persistence and migrations | S01-04 | CREATE | VALIDATED |
-| 5 | Angular 21 LTS shell | S01-05 | REUSE/EXTEND | VALIDATED |
-| 6 | Docker Compose topology | S01-06 | CREATE/REUSE | VALIDATED |
-| 7 | Redis, RabbitMQ and Worker | S01-07 | EXTEND/CREATE | VALIDATED |
-| 8 | Error handling, logging and observability | S01-08 | EXTEND/ADAPT | VALIDATED |
-| 9 | Automated test foundation | S01-09 | CREATE | VALIDATED |
-| 10 | GitHub Actions and security gates | S01-10 | CREATE | VALIDATED |
-
-Sprint 01 final validated CI run: `34161344428`.
+All S01-01 through S01-10 are VALIDATED: .NET 10 solution, modular bootstrapper, Organizations reference module, SQL Server/EF Core 10, Angular 21 LTS shell, Docker Compose, Redis/RabbitMQ/Worker, observability, automated tests and CI/security gates.
 
 ## Sprint 02 - PortalCorporativo integration
 
-| Order | Task | Story | Classification | Status |
-|---:|---|---|---|---|
-| 1 | Portal-compatible JWT validation and identity | S02-01 | REUSE/ADAPT | VALIDATED |
-| 2 | User/Tenant/Community context | S02-02 | ADAPT/CREATE | BLOCKED |
-| 3 | Permission authorization | S02-03 | REUSE/EXTEND | VALIDATED |
-| 4 | Menu registration | S02-04 | EXTEND | VALIDATED |
-| 5 | Audit integration | S02-05 | ADAPT | BLOCKED |
-| 6 | Notification integration | S02-06 | ADAPT | BLOCKED |
-| 7 | Content/File integration | S02-07 | ADAPT | BLOCKED |
-| 8 | Catalog integration | S02-08 | EXTEND/ADAPT | BLOCKED |
-| 9 | Configuration integration | S02-09 | EXTEND/ADAPT | BLOCKED |
-| 10 | Distributed health and resilience | S02-10 | ADAPT | NEXT |
+| Story | Capability | Status | Reason / evidence |
+|---|---|---|---|
+| S02-01 | Portal-compatible JWT validation and identity | VALIDATED | PR #2, CI `34161895440` |
+| S02-02 | User/Tenant/Community context | BLOCKED | ADR-002; Portal lacks safe non-admin trusted tenant/community context |
+| S02-03 | Permission authorization | VALIDATED | PR #4, CI `34162705886` |
+| S02-04 | Menu registration | VALIDATED | PR #5, CI `34163039648` |
+| S02-05 | Audit integration | BLOCKED | ADR-003; trusted service identity/actor enforcement required |
+| S02-06 | Notification integration | BLOCKED | ADR-004; tenant-aware service identity required |
+| S02-07 | Content/File integration | BLOCKED | ADR-005; Portal Content contract/API incomplete |
+| S02-08 | Catalog integration | BLOCKED | ADR-006; Portal Catalog contract/API incomplete |
+| S02-09 | Configuration integration | BLOCKED | ADR-007; Portal currently hard-codes tenant `default` |
+| S02-10 | Distributed health/resilience | VALIDATED | PR #11, CI `34164462180` |
 
-## S02-01 validation
-Branch `feature/s02-s02-01-portal-jwt-validation`; PR `#2`; CI `34161895440`. JWT validation matches Portal issuer/audience/signature/lifetime behavior and exposes signed `permission` claims. Portal production token issuance/OAuth/OIDC remains unavailable.
+Blocked Portal capabilities must not be replaced with insecure local duplicates. See `docs/DEPENDENCY_MATRIX.md`.
 
-## S02-02 blocker
-PR `#3`; ADR `docs/adr/ADR-002-tenant-community-context-resolution.md`. Portal `UserResponse` contains TenantId, but the available user endpoint requires administrative `portal.security.manage`. Safe tenant resolution requires a Portal self/service contract; CommunityId requires AppCondominio membership data.
+## Sprint 03 - SaaS
+Validated commercial tenant/organization profile, white-label configuration, plans, subscriptions, module entitlements, usage thresholds, suspension/reactivation and Shared/Dedicated database strategy using secret references rather than persisted raw credentials.
 
-## S02-03 validation
-Branch `feature/s02-s02-03-portal-permission-authorization`; PR `#4`; CI `34162705886`. Shared Organizations read/manage permission contracts, Portal Security registration/provisioning and authorization tests are validated.
+## Sprint 04 - Communities
+Validated community master data, legal/tax/address configuration, independent `communities` schema and persistence boundaries.
 
-## S02-04 validation
-Branch `feature/s02-s02-04-portal-menu-registration`; PR `#5`; CI `34163039648`. Portal module/menu registration and provisioning assets are validated.
+## Sprint 05 - Properties
+Validated property types, units, linked parking/storage, areas, allocation coefficient calculation/versioning/approval and demo generation of 300 units with total coefficients exactly 100%.
 
-## S02-05 blocker
-Branch `feature/s02-s02-05-portal-audit-integration`; PR `#6`; ADR `docs/adr/ADR-003-audit-ingestion-service-identity.md`. Trusted service identity/actor validation is required before Portal Audit ingestion.
+## Sprint 06 - People / Ownership / Residents
+Validated natural/legal persons, ownership percentages/history, leases/residents, financial responsibility, hashed activation codes, activation requests/grants and access expiration semantics.
 
-## S02-06 blocker
-Branch `feature/s02-s02-06-portal-notification-integration`; PR `#7`; ADR `docs/adr/ADR-004-notification-service-identity-and-tenant.md`. Trusted service identity and tenant-aware Notification semantics are required.
+## Sprint 07 - Billing engine
+Validated charge concepts, versioned formulas, fixed/area/coefficient/consumption/percentage/proration/manual calculation modes, discounts, interest, boundaries, accounting references and simulation without receivable creation.
 
-## S02-07 blocker
-Branch `feature/s02-s02-07-portal-content-integration`; PR `#8`; ADR `docs/adr/ADR-005-content-file-api-contract-required.md`. Portal Content currently has only placeholder contracts and a bootstrap endpoint.
+## Sprint 08 - Monthly billing
+Validated billing periods, draft generation, inconsistency detection, approval, issuance, obligations, reversal rules, statements, integration event and Worker-controlled scheduled issuance of approved periods.
 
-## S02-08 blocker
-Branch `feature/s02-s02-08-portal-catalog-integration`; PR `#9`; ADR `docs/adr/ADR-006-catalog-api-contract-required.md`. Portal Catalog currently has only placeholder contracts and a bootstrap endpoint.
+## Sprint 09 - Collections
+Validated receivables, idempotent payments, partial/full application, unapplied balances, payment reversal and aging.
 
-## S02-09 blocker
-Branch `feature/s02-s02-09-portal-configuration-integration`; ADR `docs/adr/ADR-007-configuration-tenant-resolution-required.md`.
+## Sprint 10 - Banking / Reconciliation / Tax
+Validated bank accounts, idempotent movement import, reconciliation suggestions/confirmation and Tax electronic-document lifecycle. SRI transport remains an external production configuration; without it the adapter returns `PendingConfiguration` and never fakes authorization.
 
-Portal Configuration has functional Global/Tenant/Module/User contracts, but its current service hard-codes tenant `default` on create, resolve and scope lookup. Because Conjunto al Día is multi-tenant/white-label, AppCondominio will not treat `default` as a production substitute, invent a tenant header/query convention or duplicate the configuration engine. S02-09 remains BLOCKED until Portal derives TenantId from a trusted authenticated context while preserving its existing scope precedence model.
+## Sprint 11 - Accounting
+Validated chart of accounts, periods, balanced/idempotent postings, ledger, trial balance, close and reversal through compensating entries while preserving original history.
 
-## Execution rule
-Do not start a task whose required dependency is not merged or explicitly accepted as a stable base. Each completed task must record branch, base commit, final commit, validations and next step.
+## Sprint 12 - Treasury / AP
+Validated supplier payables, payment requests, approvals/rejections, partial disbursements, reversal, outstanding balances and cash forecast.
+
+## Sprint 13 - Budgeting / Reporting
+Validated annual/monthly budgets, approval immutability, idempotent actuals, budget-vs-actual variance and executive/YTD summary.
+
+## Sprint 14 - Procurement
+Validated community suppliers, requisitions, quotation rounds, bids, scoring/ranking, award and purchase order references without direct Treasury table writes.
+
+## Sprint 15 - Maintenance
+Validated asset registry, preventive plans, incidents, work orders, assignment/start/complete lifecycle, plan rescheduling, costs, Procurement references and maintenance KPI.
+
+## Sprint 16 - Reservations / Security Operations
+Validated reservable areas, capacity/fees, booking lifecycle and overlap prevention; visitor authorizations, gate check-in/out, security incidents, escalation/resolution and KPI in independent schemas.
+
+## Sprint 17 - Governance
+Validated assemblies/quorum, motions/voting, coexistence cases, penalties by Billing reference only, governance KPI and independent `governance` schema.
+
+## Sprint 18 - Production readiness
+Production-readiness scope includes:
+- hardened Nginx proxy/security headers;
+- release prerequisite validation script;
+- deployment smoke-test script;
+- production deployment/migration/rollback runbook;
+- external dependency readiness matrix;
+- end-to-end product test plan;
+- CI production-readiness gate;
+- final full-stack CI/security/Docker validation.
+
+## Release rule
+A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.

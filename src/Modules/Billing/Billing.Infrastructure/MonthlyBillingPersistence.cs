@@ -8,16 +8,17 @@ namespace AppCondominio.Modules.Billing.Infrastructure;
 
 internal sealed class EfMonthlyBillingRepository(BillingDbContext db):IMonthlyBillingRepository
 {
-    public Task<BillingPeriod?> GetPeriodAsync(Guid id,CancellationToken ct)=>db.Set<BillingPeriod>().FirstOrDefaultAsync(x=>x.Id==id,ct);
-    public Task<bool> PeriodExistsAsync(Guid communityId,int year,int month,CancellationToken ct)=>db.Set<BillingPeriod>().AnyAsync(x=>x.CommunityId==communityId&&x.Year==year&&x.Month==month,ct);
+    public Task<BillingPeriod?> GetPeriodAsync(Guid id,CancellationToken ct)=>db.BillingPeriods.FirstOrDefaultAsync(x=>x.Id==id,ct);
+    public Task<bool> PeriodExistsAsync(Guid communityId,int year,int month,CancellationToken ct)=>db.BillingPeriods.AnyAsync(x=>x.CommunityId==communityId&&x.Year==year&&x.Month==month,ct);
+    public async Task<IReadOnlyList<BillingPeriod>> ListApprovedDueForIssueAsync(DateOnly on,CancellationToken ct)=>await db.BillingPeriods.Where(x=>x.Status==BillingPeriodStatus.Approved&&x.IssueDate<=on).OrderBy(x=>x.IssueDate).ToArrayAsync(ct);
     public Task<ChargeConceptVersion?> GetVersionAsync(Guid id,CancellationToken ct)=>db.Versions.FirstOrDefaultAsync(x=>x.Id==id,ct);
     public Task<DiscountRule?> GetDiscountAsync(Guid communityId,Guid conceptId,DateOnly on,CancellationToken ct)=>db.DiscountRules.Where(x=>x.CommunityId==communityId&&x.ConceptId==conceptId&&x.ValidFrom<=on&&(x.ValidTo==null||x.ValidTo>=on)).OrderByDescending(x=>x.ValidFrom).FirstOrDefaultAsync(ct);
     public Task<InterestRule?> GetInterestAsync(Guid communityId,Guid conceptId,CancellationToken ct)=>db.InterestRules.Where(x=>x.CommunityId==communityId&&x.ConceptId==conceptId).OrderByDescending(x=>x.Id).FirstOrDefaultAsync(ct);
-    public async Task<IReadOnlyList<DraftCharge>> GetDraftsAsync(Guid periodId,CancellationToken ct)=>await db.Set<DraftCharge>().Where(x=>x.PeriodId==periodId).OrderBy(x=>x.UnitId).ToArrayAsync(ct);
-    public async Task<IReadOnlyList<BillingGenerationIssue>> GetIssuesAsync(Guid periodId,CancellationToken ct)=>await db.Set<BillingGenerationIssue>().Where(x=>x.PeriodId==periodId).ToArrayAsync(ct);
-    public async Task<IReadOnlyList<ChargeObligation>> GetObligationsAsync(Guid periodId,CancellationToken ct)=>await db.Set<ChargeObligation>().Where(x=>x.PeriodId==periodId).ToArrayAsync(ct);
-    public async Task<IReadOnlyList<ChargeObligation>> GetUnitObligationsAsync(Guid communityId,Guid unitId,CancellationToken ct)=>await db.Set<ChargeObligation>().Where(x=>x.CommunityId==communityId&&x.UnitId==unitId).ToArrayAsync(ct);
-    public async Task DeleteDraftsAndIssuesAsync(Guid periodId,CancellationToken ct){await db.Set<DraftCharge>().Where(x=>x.PeriodId==periodId).ExecuteDeleteAsync(ct);await db.Set<BillingGenerationIssue>().Where(x=>x.PeriodId==periodId).ExecuteDeleteAsync(ct);}
+    public async Task<IReadOnlyList<DraftCharge>> GetDraftsAsync(Guid periodId,CancellationToken ct)=>await db.DraftCharges.Where(x=>x.PeriodId==periodId).OrderBy(x=>x.UnitId).ToArrayAsync(ct);
+    public async Task<IReadOnlyList<BillingGenerationIssue>> GetIssuesAsync(Guid periodId,CancellationToken ct)=>await db.GenerationIssues.Where(x=>x.PeriodId==periodId).ToArrayAsync(ct);
+    public async Task<IReadOnlyList<ChargeObligation>> GetObligationsAsync(Guid periodId,CancellationToken ct)=>await db.ChargeObligations.Where(x=>x.PeriodId==periodId).ToArrayAsync(ct);
+    public async Task<IReadOnlyList<ChargeObligation>> GetUnitObligationsAsync(Guid communityId,Guid unitId,CancellationToken ct)=>await db.ChargeObligations.Where(x=>x.CommunityId==communityId&&x.UnitId==unitId).ToArrayAsync(ct);
+    public async Task DeleteDraftsAndIssuesAsync(Guid periodId,CancellationToken ct){await db.DraftCharges.Where(x=>x.PeriodId==periodId).ExecuteDeleteAsync(ct);await db.GenerationIssues.Where(x=>x.PeriodId==periodId).ExecuteDeleteAsync(ct);}
     public async Task AddAsync<T>(T entity,CancellationToken ct) where T:class=>await db.Set<T>().AddAsync(entity,ct);
     public Task SaveChangesAsync(CancellationToken ct)=>db.SaveChangesAsync(ct);
 }

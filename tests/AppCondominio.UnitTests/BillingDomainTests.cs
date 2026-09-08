@@ -12,7 +12,7 @@ public sealed class BillingDomainTests
         version.Approve("admin",DateTimeOffset.UtcNow);
         var discount=DiscountRule.Create(communityId,conceptId,new DateOnly(2026,1,1),null,10m,0m,5);
         var interest=InterestRule.Create(communityId,conceptId,2m,0m,0,30,0m);
-        var result=ChargeCalculator.Simulate(version,new(0,0,0,0,0,0),discount,interest,new DateOnly(2026,1,1),new DateOnly(2026,1,10),31);
+        var result=ChargeCalculator.Simulate(version,new(0,0,0,0,0,0),discount,interest,new DateOnly(2026,1,1),new DateOnly(2026,1,10),30);
         Assert.Equal(100m,result.BaseAmount);Assert.Equal(10m,result.Discount);Assert.Equal(1.80m,result.Interest);Assert.Equal(91.80m,result.Total);
     }
 

@@ -9,6 +9,7 @@ public interface IMonthlyBillingRepository
 {
     Task<BillingPeriod?> GetPeriodAsync(Guid id,CancellationToken ct);
     Task<bool> PeriodExistsAsync(Guid communityId,int year,int month,CancellationToken ct);
+    Task<IReadOnlyList<BillingPeriod>> ListApprovedDueForIssueAsync(DateOnly on,CancellationToken ct);
     Task<ChargeConceptVersion?> GetVersionAsync(Guid id,CancellationToken ct);
     Task<DiscountRule?> GetDiscountAsync(Guid communityId,Guid conceptId,DateOnly on,CancellationToken ct);
     Task<InterestRule?> GetInterestAsync(Guid communityId,Guid conceptId,CancellationToken ct);
@@ -66,6 +67,16 @@ public sealed class MonthlyBillingService(IMonthlyBillingRepository repository,I
         var existing=await repository.GetObligationsAsync(periodId,ct);if(existing.Count>0)throw new InvalidOperationException("Period already has issued obligations.");
         var drafts=await repository.GetDraftsAsync(periodId,ct);if(drafts.Count==0)throw new InvalidOperationException("No draft charges exist.");
         foreach(var draft in drafts)await repository.AddAsync(ChargeObligation.Issue(period,draft),ct);period.Issue(DateTimeOffset.UtcNow);await repository.SaveChangesAsync(ct);return drafts.Count;
+    }
+
+    public async Task<int> IssueApprovedDuePeriodsAsync(DateOnly on,CancellationToken ct)
+    {
+        int issued=0;
+        foreach(var period in await repository.ListApprovedDueForIssueAsync(on,ct))
+        {
+            try{issued+=await IssueAsync(period.Id,ct);}catch(InvalidOperationException){/* another worker/request may have issued it */}
+        }
+        return issued;
     }
 
     public async Task ReverseAsync(Guid periodId,string reason,CancellationToken ct)

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
+import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
 
 @Component({
   selector: 'app-people',
@@ -19,7 +20,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Nueva persona natural</h3>
       <form class="form-grid" (ngSubmit)="createNaturalPerson()">
-        <label>Community Id<input name="communityId" [(ngModel)]="person.communityId" required placeholder="GUID"></label>
+        <label>Comunidad<select name="communityId" [(ngModel)]="person.communityId" required><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Identificación<input name="identification" [(ngModel)]="person.identification" required></label>
         <label>Nombres<input name="names" [(ngModel)]="person.names" required></label>
         <label>Email<input name="email" [(ngModel)]="person.email" type="email"></label>
@@ -33,7 +34,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Ficha de ocupación por unidad</h3>
       <div class="form-grid compact">
-        <label>Community Id<input [(ngModel)]="lookup.communityId" name="lookupCommunity"></label>
+        <label>Comunidad<select [(ngModel)]="lookup.communityId" name="lookupCommunity"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Unit Id<input [(ngModel)]="lookup.unitId" name="lookupUnit"></label>
         <div class="form-actions"><button class="button secondary" type="button" (click)="loadUnit()" [disabled]="busy || !lookup.communityId || !lookup.unitId">Consultar</button></div>
       </div>
@@ -41,14 +42,23 @@ import { API_BASE_URL } from '../../core/config/api.config';
     </section>
   `
 })
-export class PeopleComponent {
+export class PeopleComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly communityOptions = inject(CommunityOptionsService);
+  communities: CommunityOption[] = [];
   busy = false;
   error = '';
   message = '';
   unitRecord: unknown;
   person = { communityId: '', identification: '', names: '', email: '', phone: '', birthDate: '', address: '' };
   lookup = { communityId: '', unitId: '' };
+
+  ngOnInit(): void {
+    this.communityOptions.load().subscribe({
+      next: items => this.communities = items,
+      error: () => this.error = 'No se pudieron cargar las comunidades disponibles.'
+    });
+  }
 
   createNaturalPerson(): void {
     if (!this.person.communityId || !this.person.identification.trim() || !this.person.names.trim()) return;

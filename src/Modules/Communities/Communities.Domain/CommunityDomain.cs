@@ -80,7 +80,7 @@ public sealed class CommunityAuthority : AggregateRoot
 
 public sealed class CommunityDocument : AggregateRoot
 {
-    private CommunityDocument(Guid id,Guid communityId,string type,string name,string externalReference):base(id){CommunityId=communityId;DocumentType=type;Name=name;ExternalReference=externalReference;}
+    private CommunityDocument(Guid id,Guid communityId,string documentType,string name,string externalReference):base(id){CommunityId=communityId;DocumentType=documentType;Name=name;ExternalReference=externalReference;}
     public Guid CommunityId{get;private set;} public string DocumentType{get;private set;} public string Name{get;private set;} public string ExternalReference{get;private set;} public DateTimeOffset RegisteredAtUtc{get;private set;}=DateTimeOffset.UtcNow;
     public static CommunityDocument Register(Guid communityId,string type,string name,string externalReference){if(string.IsNullOrWhiteSpace(externalReference))throw new ArgumentException("Content reference is required; binary storage is owned by Portal Content.");return new(Guid.NewGuid(),communityId,type.Trim(),name.Trim(),externalReference.Trim());}
 }

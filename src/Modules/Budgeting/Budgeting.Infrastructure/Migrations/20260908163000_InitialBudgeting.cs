@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace AppCondominio.Modules.Budgeting.Infrastructure.Migrations;
 
+[DbContext(typeof(BudgetingDbContext))]
+[Migration("20260908163000_InitialBudgeting")]
 public partial class InitialBudgeting:Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)

@@ -20,6 +20,7 @@ export class AppComponent {
  private readonly router=inject(Router);
  get isResidentPortal():boolean{return this.router.url.startsWith('/resident');}
  get isSupplierPortal():boolean{return this.router.url.startsWith('/supplier');}
- get isSelfServicePortal():boolean{return this.isResidentPortal||this.isSupplierPortal;}
- get portalTitle():string{return this.isSupplierPortal?'Portal Proveedor':'Portal Residente';}
+ get isGuardPortal():boolean{return this.router.url.startsWith('/guard');}
+ get isSelfServicePortal():boolean{return this.isResidentPortal||this.isSupplierPortal||this.isGuardPortal;}
+ get portalTitle():string{return this.isGuardPortal?'Portería y Seguridad':this.isSupplierPortal?'Portal Proveedor':'Portal Residente';}
 }

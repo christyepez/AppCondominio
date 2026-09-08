@@ -38,7 +38,7 @@ partial class OrganizationsDbContextModelSnapshot : ModelSnapshot
         modelBuilder.Entity<CommercialPlan>(b =>
         {
             b.Property<Guid>("Id").ValueGeneratedNever().HasColumnType("uniqueidentifier");
-            b.Property<int>("BillingPeriod").HasColumnType("int");
+            b.Property<BillingPeriod>("BillingPeriod").HasColumnType("int");
             b.Property<string>("Code").IsRequired().HasMaxLength(80).HasColumnType("nvarchar(80)");
             b.Property<string>("Currency").IsRequired().HasMaxLength(3).HasColumnType("nvarchar(3)");
             b.Property<bool>("IsActive").HasColumnType("bit");
@@ -60,7 +60,7 @@ partial class OrganizationsDbContextModelSnapshot : ModelSnapshot
             b.Property<Guid>("PlanId").HasColumnType("uniqueidentifier");
             b.Property<DateTimeOffset>("RenewsAtUtc").HasColumnType("datetimeoffset");
             b.Property<DateTimeOffset>("StartsAtUtc").HasColumnType("datetimeoffset");
-            b.Property<int>("Status").HasColumnType("int");
+            b.Property<SubscriptionStatus>("Status").HasColumnType("int");
             b.HasKey("Id"); b.HasIndex("OrganizationId").IsUnique(); b.HasIndex("PlanId"); b.ToTable("Subscriptions", "organizations");
         });
 
@@ -84,7 +84,7 @@ partial class OrganizationsDbContextModelSnapshot : ModelSnapshot
             b.Property<string>("ConnectionSecretReference").HasMaxLength(500).HasColumnType("nvarchar(500)");
             b.Property<string>("MigrationStatus").IsRequired().HasMaxLength(80).HasColumnType("nvarchar(80)");
             b.Property<Guid>("OrganizationId").HasColumnType("uniqueidentifier");
-            b.Property<int>("Strategy").HasColumnType("int");
+            b.Property<TenantDatabaseStrategy>("Strategy").HasColumnType("int");
             b.HasKey("Id"); b.HasIndex("OrganizationId").IsUnique(); b.ToTable("TenantDatabaseProfiles", "organizations");
         });
 #pragma warning restore 612, 618

@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="..\Treasury.Domain\Treasury.Domain.csproj" /></ItemGroup></Project>

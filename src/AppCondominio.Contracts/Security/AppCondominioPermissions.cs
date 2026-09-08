@@ -12,5 +12,6 @@ public static class AppCondominioPermissions
     public static class Collections{public const string Resource="appcondominio.collections";public const string Read="appcondominio.collections.read";public const string Manage="appcondominio.collections.manage";}
     public static class Banking{public const string Resource="appcondominio.banking";public const string Read="appcondominio.banking.read";public const string Manage="appcondominio.banking.manage";}
     public static class Tax{public const string Resource="appcondominio.tax";public const string Read="appcondominio.tax.read";public const string Manage="appcondominio.tax.manage";}
-    public static readonly string[] All=[Organizations.Read,Organizations.Manage,Saas.Read,Saas.Manage,Communities.Read,Communities.Manage,Properties.Read,Properties.Manage,People.Read,People.Manage,Billing.Read,Billing.Manage,Collections.Read,Collections.Manage,Banking.Read,Banking.Manage,Tax.Read,Tax.Manage];
+    public static class Accounting{public const string Resource="appcondominio.accounting";public const string Read="appcondominio.accounting.read";public const string Manage="appcondominio.accounting.manage";}
+    public static readonly string[] All=[Organizations.Read,Organizations.Manage,Saas.Read,Saas.Manage,Communities.Read,Communities.Manage,Properties.Read,Properties.Manage,People.Read,People.Manage,Billing.Read,Billing.Manage,Collections.Read,Collections.Manage,Banking.Read,Banking.Manage,Tax.Read,Tax.Manage,Accounting.Read,Accounting.Manage];
 }

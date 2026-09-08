@@ -1,18 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup><AssemblyName>AppCondominio.Api</AssemblyName><RootNamespace>AppCondominio.Api</RootNamespace></PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Serilog.AspNetCore" />
-    <ProjectReference Include="..\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj" />
-    <ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
-    <ProjectReference Include="..\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj" />
-    <ProjectReference Include="..\Modules\Organizations\Organizations.Api\Organizations.Api.csproj" />
-    <ProjectReference Include="..\Modules\Communities\Communities.Api\Communities.Api.csproj" />
-    <ProjectReference Include="..\Modules\Properties\Properties.Api\Properties.Api.csproj" />
-    <ProjectReference Include="..\Modules\People\People.Api\People.Api.csproj" />
-    <ProjectReference Include="..\Modules\Billing\Billing.Api\Billing.Api.csproj" />
-    <ProjectReference Include="..\Modules\Collections\Collections.Api\Collections.Api.csproj" />
-    <ProjectReference Include="..\Modules\Banking\Banking.Api\Banking.Api.csproj" />
-    <ProjectReference Include="..\Modules\Tax\Tax.Api\Tax.Api.csproj" />
-  </ItemGroup>
-</Project>
+<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup><AssemblyName>AppCondominio.Api</AssemblyName><RootNamespace>AppCondominio.Api</RootNamespace></PropertyGroup><ItemGroup><PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" /><PackageReference Include="Serilog.AspNetCore" /><ProjectReference Include="..\AppCondominio.Bootstrapper\AppCondominio.Bootstrapper.csproj" /><ProjectReference Include="..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" /><ProjectReference Include="..\AppCondominio.Infrastructure\AppCondominio.Infrastructure.csproj" /><ProjectReference Include="..\Modules\Organizations\Organizations.Api\Organizations.Api.csproj" /><ProjectReference Include="..\Modules\Communities\Communities.Api\Communities.Api.csproj" /><ProjectReference Include="..\Modules\Properties\Properties.Api\Properties.Api.csproj" /><ProjectReference Include="..\Modules\People\People.Api\People.Api.csproj" /><ProjectReference Include="..\Modules\Billing\Billing.Api\Billing.Api.csproj" /><ProjectReference Include="..\Modules\Collections\Collections.Api\Collections.Api.csproj" /><ProjectReference Include="..\Modules\Banking\Banking.Api\Banking.Api.csproj" /><ProjectReference Include="..\Modules\Tax\Tax.Api\Tax.Api.csproj" /><ProjectReference Include="..\Modules\Accounting\Accounting.Api\Accounting.Api.csproj" /></ItemGroup></Project>

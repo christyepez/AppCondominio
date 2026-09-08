@@ -5,6 +5,7 @@ using AppCondominio.Modules.Communities.Infrastructure;
 using AppCondominio.Modules.Organizations.Infrastructure;
 using AppCondominio.Modules.People.Infrastructure;
 using AppCondominio.Modules.Properties.Infrastructure;
+using AppCondominio.Modules.Tax.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,7 @@ public static class DependencyInjection
         services.AddBillingModule(configuration);
         services.AddCollectionsModule(configuration);
         services.AddBankingModule(configuration);
+        services.AddTaxModule(configuration);
         return services;
     }
 }

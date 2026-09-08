@@ -21,7 +21,7 @@
 | 15 | Maintenance / assets | VALIDATED | CI `34255713507`, PR #24 |
 | 16 | Reservations / security operations | VALIDATED | CI `34257015439`, PR #25 |
 | 17 | Governance / coexistence | VALIDATED | CI `34261485542`, PR #26 |
-| 18 | Production readiness | IN VALIDATION | Branch `feature/s18-production-readiness` |
+| 18 | Production readiness | VALIDATED | CI `34262508910`; PR pending creation |
 
 ## Sprint 01 - Architecture and foundation
 All S01-01 through S01-10 are VALIDATED: .NET 10 solution, modular bootstrapper, Organizations reference module, SQL Server/EF Core 10, Angular 21 LTS shell, Docker Compose, Redis/RabbitMQ/Worker, observability, automated tests and CI/security gates.
@@ -89,7 +89,7 @@ Validated reservable areas, capacity/fees, booking lifecycle and overlap prevent
 Validated assemblies/quorum, motions/voting, coexistence cases, penalties by Billing reference only, governance KPI and independent `governance` schema.
 
 ## Sprint 18 - Production readiness
-Production-readiness scope includes:
+Validated in CI `34262508910`:
 - hardened Nginx proxy/security headers;
 - release prerequisite validation script;
 - deployment smoke-test script;
@@ -97,7 +97,10 @@ Production-readiness scope includes:
 - external dependency readiness matrix;
 - end-to-end product test plan;
 - CI production-readiness gate;
-- final full-stack CI/security/Docker validation.
+- final full-stack build, tests, security scans and Docker image build.
+
+## Product-completeness note
+The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The Angular application remains a platform shell/reference UI rather than complete operational screens for every business bounded context. UI completion is tracked as a follow-on delivery phase and must be completed before calling all end-user channels (Admin, Resident, Supplier and Guard) product-complete.
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.

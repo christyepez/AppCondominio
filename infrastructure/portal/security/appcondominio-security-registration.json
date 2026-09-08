@@ -1,8 +1,14 @@
 {
-  "resource": {
-    "key": "appcondominio.organizations",
-    "name": "AppCondominio Organizations"
-  },
+  "resources": [
+    {
+      "key": "appcondominio.organizations",
+      "name": "AppCondominio Organizations"
+    },
+    {
+      "key": "appcondominio.saas",
+      "name": "AppCondominio SaaS Administration"
+    }
+  ],
   "permissions": [
     {
       "code": "appcondominio.organizations.read",
@@ -12,6 +18,16 @@
     {
       "code": "appcondominio.organizations.manage",
       "resourceKey": "appcondominio.organizations",
+      "action": "manage"
+    },
+    {
+      "code": "appcondominio.saas.read",
+      "resourceKey": "appcondominio.saas",
+      "action": "read"
+    },
+    {
+      "code": "appcondominio.saas.manage",
+      "resourceKey": "appcondominio.saas",
       "action": "manage"
     }
   ]

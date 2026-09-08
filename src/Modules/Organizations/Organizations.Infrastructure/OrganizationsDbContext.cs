@@ -7,6 +7,10 @@ public sealed class OrganizationsDbContext(DbContextOptions<OrganizationsDbConte
     : DbContext(options)
 {
     public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<CommercialPlan> CommercialPlans => Set<CommercialPlan>();
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
+    public DbSet<BrandSettings> BrandSettings => Set<BrandSettings>();
+    public DbSet<TenantDatabaseProfile> TenantDatabaseProfiles => Set<TenantDatabaseProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

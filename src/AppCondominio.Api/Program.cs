@@ -72,6 +72,7 @@ app.MapGet("/api/session", (ICurrentIdentity identity) => Results.Ok(new
     Permissions = identity.Permissions.OrderBy(x => x)
 })).RequireAuthorization();
 app.MapOrganizationsEndpoints();
+app.MapSaasEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

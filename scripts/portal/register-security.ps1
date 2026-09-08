@@ -42,7 +42,14 @@ function Invoke-PortalRegistration {
     throw "Portal Security registration failed for $Path with HTTP $($response.StatusCode): $($response.Content)"
 }
 
-Invoke-PortalRegistration -Path "/api/security/resources" -Payload $manifest.resource
+$resources = @()
+if ($null -ne $manifest.resources) { $resources += $manifest.resources }
+elseif ($null -ne $manifest.resource) { $resources += $manifest.resource }
+else { throw "Security manifest must define resource or resources." }
+
+foreach ($resource in $resources) {
+    Invoke-PortalRegistration -Path "/api/security/resources" -Payload $resource
+}
 
 foreach ($permission in $manifest.permissions) {
     Invoke-PortalRegistration -Path "/api/security/permissions" -Payload $permission

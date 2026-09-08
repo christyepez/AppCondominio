@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
   { path: 'collections', loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent) },
   { path: 'banking', loadComponent: () => import('./features/banking/banking.component').then(m => m.BankingComponent) },
+  { path: 'tax', loadComponent: () => import('./features/tax/tax.component').then(m => m.TaxComponent) },
   { path: 'accounting', loadComponent: () => import('./features/accounting/accounting.component').then(m => m.AccountingComponent) },
   { path: 'treasury', loadComponent: () => import('./features/treasury/treasury.component').then(m => m.TreasuryComponent) },
   { path: 'budgeting', loadComponent: () => import('./features/budgeting/budgeting.component').then(m => m.BudgetingComponent) },

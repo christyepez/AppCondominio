@@ -24,7 +24,7 @@ internal sealed class EfAccountingRepository(AccountingDbContext db):IAccounting
     public async Task<IReadOnlyList<JournalLine>> GetJournalLinesAsync(Guid journalId,CancellationToken ct)=>await db.Lines.Where(x=>x.JournalEntryId==journalId).ToArrayAsync(ct);
     public async Task<IReadOnlyList<(JournalEntry Journal,JournalLine Line,LedgerAccount Account)>> GetPostedLinesAsync(Guid communityId,CancellationToken ct)
     {
-        var query=from line in db.Lines join journal in db.Journals on line.JournalEntryId equals journal.Id join account in db.Accounts on line.AccountId equals account.Id where journal.CommunityId==communityId&&journal.Status==JournalStatus.Posted select new{journal,line,account};
+        var query=from line in db.Lines join journal in db.Journals on line.JournalEntryId equals journal.Id join account in db.Accounts on line.AccountId equals account.Id where journal.CommunityId==communityId&&journal.Status!=JournalStatus.Draft select new{journal,line,account};
         var rows=await query.AsNoTracking().ToArrayAsync(ct);return rows.Select(x=>(x.journal,x.line,x.account)).ToArray();
     }
     public Task SaveChangesAsync(CancellationToken ct)=>db.SaveChangesAsync(ct);

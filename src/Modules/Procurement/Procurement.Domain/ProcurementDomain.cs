@@ -5,6 +5,7 @@ namespace AppCondominio.Modules.Procurement.Domain;
 public enum RequisitionStatus{Draft=0,Approved=1,Sourcing=2,Awarded=3,Cancelled=4}
 public enum SourcingRoundStatus{Open=0,Closed=1,Awarded=2,Cancelled=3}
 public enum PurchaseOrderStatus{Issued=0,Acknowledged=1,Completed=2,Cancelled=3}
+public enum SupplierAccessStatus{Active=1,Revoked=2,Expired=3}
 
 public sealed class SupplierProfile:AggregateRoot
 {
@@ -12,6 +13,16 @@ public sealed class SupplierProfile:AggregateRoot
     public Guid CommunityId{get;private set;} public Guid? PersonId{get;private set;} public string TaxId{get;private set;} public string LegalName{get;private set;} public string Email{get;private set;} public bool IsActive{get;private set;}
     public static SupplierProfile Create(Guid communityId,Guid? personId,string taxId,string legalName,string email){if(communityId==Guid.Empty)throw new ArgumentException("Community required.");return new(Guid.NewGuid(),communityId,personId,Req(taxId),Req(legalName),Req(email));}
     public void Deactivate()=>IsActive=false;private static string Req(string x)=>string.IsNullOrWhiteSpace(x)?throw new ArgumentException("Required value missing."):x.Trim();
+}
+
+public sealed class SupplierAccessGrant:AggregateRoot
+{
+    private SupplierAccessGrant(Guid id,Guid communityId,Guid supplierId,string externalUserId,DateTimeOffset startsAtUtc,DateTimeOffset? expiresAtUtc):base(id){CommunityId=communityId;SupplierId=supplierId;ExternalUserId=externalUserId;StartsAtUtc=startsAtUtc;ExpiresAtUtc=expiresAtUtc;}
+    public Guid CommunityId{get;private set;} public Guid SupplierId{get;private set;} public string ExternalUserId{get;private set;} public DateTimeOffset StartsAtUtc{get;private set;} public DateTimeOffset? ExpiresAtUtc{get;private set;} public SupplierAccessStatus Status{get;private set;}=SupplierAccessStatus.Active; public string? RevocationReason{get;private set;}
+    public static SupplierAccessGrant Create(Guid communityId,Guid supplierId,string externalUserId,DateTimeOffset startsAtUtc,DateTimeOffset? expiresAtUtc){if(communityId==Guid.Empty||supplierId==Guid.Empty)throw new ArgumentException("Community and supplier are required.");if(string.IsNullOrWhiteSpace(externalUserId))throw new ArgumentException("External user is required.");if(expiresAtUtc is not null&&expiresAtUtc<=startsAtUtc)throw new ArgumentException("Expiry must be after access start.");return new(Guid.NewGuid(),communityId,supplierId,externalUserId.Trim(),startsAtUtc,expiresAtUtc);}
+    public bool IsUsable(DateTimeOffset now)=>Status==SupplierAccessStatus.Active&&StartsAtUtc<=now&&(ExpiresAtUtc is null||ExpiresAtUtc>now);
+    public bool ExpireIfDue(DateTimeOffset now){if(Status==SupplierAccessStatus.Active&&ExpiresAtUtc is not null&&now>=ExpiresAtUtc){Status=SupplierAccessStatus.Expired;return true;}return false;}
+    public void Revoke(string reason){if(Status!=SupplierAccessStatus.Active)return;Status=SupplierAccessStatus.Revoked;RevocationReason=string.IsNullOrWhiteSpace(reason)?"Revoked":reason.Trim();}
 }
 
 public sealed class PurchaseRequisition:AggregateRoot

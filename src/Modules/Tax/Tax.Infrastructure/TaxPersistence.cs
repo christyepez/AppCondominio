@@ -34,8 +34,8 @@ internal sealed class ElectronicDocumentConfig:IEntityTypeConfiguration<Electron
 
 public sealed class PendingConfigurationElectronicInvoicingService:IElectronicInvoicingService
 {
-    public Task<ElectronicInvoicingResult> SubmitAsync(ElectronicInvoicingRequest request,CancellationToken cancellationToken=default)=>Task.FromResult(new ElectronicInvoicingResult("pendingconfiguration",null,null,"SRI provider is not configured for this environment."));
-    public Task<ElectronicInvoicingResult> GetStatusAsync(Guid communityId,string accessKey,CancellationToken cancellationToken=default)=>Task.FromResult(new ElectronicInvoicingResult("pendingconfiguration",null,null,"SRI provider is not configured for this environment."));
+    public Task<ElectronicDocumentResult> SubmitAsync(ElectronicDocumentRequest request,CancellationToken cancellationToken=default)=>Task.FromResult(new ElectronicDocumentResult("pendingconfiguration",null,null,"SRI provider is not configured for this environment."));
+    public Task<ElectronicDocumentResult> GetStatusAsync(Guid communityId,string accessKey,CancellationToken cancellationToken=default)=>Task.FromResult(new ElectronicDocumentResult("pendingconfiguration",null,null,"SRI provider is not configured for this environment."));
 }
 
 public static class DependencyInjection

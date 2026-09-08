@@ -12,6 +12,7 @@ builder.Services.AddAppCondominioCache(builder.Configuration);
 builder.Services.AddAppCondominioMessaging(builder.Configuration, x => x.AddConsumer<FoundationPingConsumer>());
 builder.Services.AddAppCondominioObservability(builder.Configuration, "AppCondominio.Worker", includeAspNetCoreInstrumentation: false);
 builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<MonthlyBillingSchedulerWorker>();
 
 var host = builder.Build();
 await host.RunAsync();

@@ -14,6 +14,10 @@ public sealed class BillingDbContext(DbContextOptions<BillingDbContext> options)
     public DbSet<AccountingMapping> AccountingMappings=>Set<AccountingMapping>();
     public DbSet<InterestRule> InterestRules=>Set<InterestRule>();
     public DbSet<DiscountRule> DiscountRules=>Set<DiscountRule>();
+    public DbSet<BillingPeriod> BillingPeriods=>Set<BillingPeriod>();
+    public DbSet<DraftCharge> DraftCharges=>Set<DraftCharge>();
+    public DbSet<BillingGenerationIssue> GenerationIssues=>Set<BillingGenerationIssue>();
+    public DbSet<ChargeObligation> ChargeObligations=>Set<ChargeObligation>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)=>modelBuilder.ApplyConfigurationsFromAssembly(typeof(BillingDbContext).Assembly);
 }
 
@@ -44,6 +48,6 @@ public static class DependencyInjection
     {
         string cs=configuration.GetConnectionString("Billing")??configuration.GetConnectionString("People")??configuration.GetConnectionString("Properties")??configuration.GetConnectionString("Organizations")??throw new InvalidOperationException("Billing connection string is required.");
         services.AddDbContext<BillingDbContext>(o=>o.UseSqlServer(cs,sql=>sql.MigrationsHistoryTable("__EFMigrationsHistory","billing")));
-        services.AddScoped<IBillingRepository,EfBillingRepository>();services.AddScoped<BillingService>();return services;
+        services.AddScoped<IBillingRepository,EfBillingRepository>();services.AddScoped<BillingService>();services.AddMonthlyBilling();return services;
     }
 }

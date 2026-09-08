@@ -16,6 +16,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
           <a routerLink="/properties" routerLinkActive="active">Propiedades</a>
           <a routerLink="/people" routerLinkActive="active">Personas</a>
           <a routerLink="/billing" routerLinkActive="active">Facturación</a>
+          <a routerLink="/collections" routerLinkActive="active">Cobranza</a>
           <a routerLink="/governance" routerLinkActive="active">Gobernanza</a>
         </nav>
         <div class="sidebar-note">Seguridad y permisos administrados por PortalCorporativo.</div>

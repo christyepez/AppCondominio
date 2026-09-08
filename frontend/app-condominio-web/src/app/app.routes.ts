@@ -20,5 +20,6 @@ export const routes: Routes = [
   { path: 'reservations', loadComponent: () => import('./features/reservations/reservations.component').then(m => m.ReservationsComponent) },
   { path: 'security', loadComponent: () => import('./features/security-operations/security-operations.component').then(m => m.SecurityOperationsComponent) },
   { path: 'governance', loadComponent: () => import('./features/governance/governance.component').then(m => m.GovernanceComponent) },
+  { path: 'resident', loadComponent: () => import('./features/resident-portal/resident-portal.component').then(m => m.ResidentPortalComponent) },
   { path: '**', redirectTo: 'dashboard' }
 ];

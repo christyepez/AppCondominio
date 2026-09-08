@@ -8,6 +8,7 @@ export const routes: Routes = [
   { path: 'properties', loadComponent: () => import('./features/properties/properties.component').then(m => m.PropertiesComponent) },
   { path: 'people', loadComponent: () => import('./features/people/people.component').then(m => m.PeopleComponent) },
   { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
+  { path: 'collections', loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent) },
   { path: 'governance', loadComponent: () => import('./features/governance/governance.component').then(m => m.GovernanceComponent) },
   { path: '**', redirectTo: 'dashboard' }
 ];

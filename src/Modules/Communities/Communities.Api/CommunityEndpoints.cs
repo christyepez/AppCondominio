@@ -12,6 +12,7 @@ public static class CommunityEndpoints
     public static IEndpointRouteBuilder MapCommunityEndpoints(this IEndpointRouteBuilder endpoints)
     {
         var g=endpoints.MapGroup("/api/communities").WithTags("Communities").RequireAuthorization();
+        g.MapGet("/",async(CommunityService s,CancellationToken ct)=>Results.Ok(await s.ListAsync(ct))).RequireAuthorization(AppCondominioPermissions.Communities.Read);
         g.MapPost("/",async(CreateCommunityRequest r,CommunityService s,CancellationToken ct)=>Results.Created("/api/communities",await s.CreateAsync(new(r.OrganizationId,r.Code,r.Name,r.TaxId,r.Address),ct))).RequireAuthorization(AppCondominioPermissions.Communities.Manage);
         g.MapGet("/{id:guid}",async(Guid id,CommunityService s,CancellationToken ct)=>Results.Ok(await s.GetAsync(id,ct))).RequireAuthorization(AppCondominioPermissions.Communities.Read);
         g.MapPut("/{id:guid}",async(Guid id,UpdateCommunityRequest r,CommunityService s,CancellationToken ct)=>{await s.UpdateAsync(id,r.Name,r.TaxId,r.Address,r.Type,r.Administrator,r.President,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Communities.Manage);

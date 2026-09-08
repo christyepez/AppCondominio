@@ -3,7 +3,8 @@
     { "key": "appcondominio.organizations", "name": "AppCondominio Organizations" },
     { "key": "appcondominio.saas", "name": "AppCondominio SaaS Administration" },
     { "key": "appcondominio.communities", "name": "AppCondominio Communities" },
-    { "key": "appcondominio.properties", "name": "AppCondominio Properties" }
+    { "key": "appcondominio.properties", "name": "AppCondominio Properties" },
+    { "key": "appcondominio.people", "name": "AppCondominio People and Ownership" }
   ],
   "permissions": [
     { "code": "appcondominio.organizations.read", "resourceKey": "appcondominio.organizations", "action": "read" },
@@ -13,6 +14,8 @@
     { "code": "appcondominio.communities.read", "resourceKey": "appcondominio.communities", "action": "read" },
     { "code": "appcondominio.communities.manage", "resourceKey": "appcondominio.communities", "action": "manage" },
     { "code": "appcondominio.properties.read", "resourceKey": "appcondominio.properties", "action": "read" },
-    { "code": "appcondominio.properties.manage", "resourceKey": "appcondominio.properties", "action": "manage" }
+    { "code": "appcondominio.properties.manage", "resourceKey": "appcondominio.properties", "action": "manage" },
+    { "code": "appcondominio.people.read", "resourceKey": "appcondominio.people", "action": "read" },
+    { "code": "appcondominio.people.manage", "resourceKey": "appcondominio.people", "action": "manage" }
   ]
 }

@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" /><ProjectReference Include="..\Budgeting.Application\Budgeting.Application.csproj" /><ProjectReference Include="..\Budgeting.Domain\Budgeting.Domain.csproj" /></ItemGroup></Project>

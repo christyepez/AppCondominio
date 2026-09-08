@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
+import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
 
 @Component({
   selector: 'app-collections',
@@ -19,7 +20,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Consulta de cartera</h3>
       <div class="form-grid">
-        <label>Community Id<input [(ngModel)]="query.communityId" name="queryCommunity"></label>
+        <label>Comunidad<select [(ngModel)]="query.communityId" name="queryCommunity" ><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Unit Id opcional<input [(ngModel)]="query.unitId" name="queryUnit"></label>
         <label>Fecha de corte<input [(ngModel)]="query.on" name="queryOn" type="date"></label>
         <div class="form-actions">
@@ -33,7 +34,7 @@ import { API_BASE_URL } from '../../core/config/api.config';
     <section class="panel">
       <h3>Registrar pago</h3>
       <form class="form-grid" (ngSubmit)="registerPayment()">
-        <label>Community Id<input [(ngModel)]="payment.communityId" name="paymentCommunity" required></label>
+        <label>Comunidad<select [(ngModel)]="payment.communityId" name="paymentCommunity" required><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
         <label>Referencia<input [(ngModel)]="payment.reference" name="reference" required></label>
         <label>Método
           <select [(ngModel)]="payment.method" name="method">
@@ -48,14 +49,17 @@ import { API_BASE_URL } from '../../core/config/api.config';
     </section>
   `
 })
-export class CollectionsComponent {
+export class CollectionsComponent implements OnInit {
   private readonly http = inject(HttpClient);
+  private readonly communityOptions = inject(CommunityOptionsService);
+  communities: CommunityOption[] = [];
   busy = false;
   error = '';
   message = '';
   result: unknown;
   query = { communityId: '', unitId: '', on: '' };
   payment = { communityId: '', reference: '', method: 2, receivedOn: '', amount: 0, externalTransactionId: '' };
+ngOnInit():void{this.communityOptions.load().subscribe({next:items=>this.communities=items,error:()=>this.error='No se pudieron cargar las comunidades disponibles.'});}
 
   loadReceivables(): void {
     const params = new URLSearchParams();

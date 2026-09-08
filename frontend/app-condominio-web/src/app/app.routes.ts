@@ -9,6 +9,8 @@ export const routes: Routes = [
   { path: 'people', loadComponent: () => import('./features/people/people.component').then(m => m.PeopleComponent) },
   { path: 'billing', loadComponent: () => import('./features/billing/billing.component').then(m => m.BillingComponent) },
   { path: 'collections', loadComponent: () => import('./features/collections/collections.component').then(m => m.CollectionsComponent) },
+  { path: 'banking', loadComponent: () => import('./features/banking/banking.component').then(m => m.BankingComponent) },
+  { path: 'accounting', loadComponent: () => import('./features/accounting/accounting.component').then(m => m.AccountingComponent) },
   { path: 'governance', loadComponent: () => import('./features/governance/governance.component').then(m => m.GovernanceComponent) },
   { path: '**', redirectTo: 'dashboard' }
 ];

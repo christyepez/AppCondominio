@@ -8,5 +8,6 @@
     <ProjectReference Include="..\..\src\Modules\Organizations\Organizations.Domain\Organizations.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\Communities\Communities.Domain\Communities.Domain.csproj" />
     <ProjectReference Include="..\..\src\Modules\Properties\Properties.Domain\Properties.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\People\People.Domain\People.Domain.csproj" />
   </ItemGroup>
 </Project>

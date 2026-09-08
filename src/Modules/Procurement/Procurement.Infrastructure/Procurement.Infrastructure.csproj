@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" /><ProjectReference Include="..\Procurement.Application\Procurement.Application.csproj" /><ProjectReference Include="..\Procurement.Domain\Procurement.Domain.csproj" /></ItemGroup></Project>

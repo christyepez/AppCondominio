@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config/api.config';
 
 @Component({
@@ -58,7 +59,7 @@ export class PropertiesComponent {
     });
   }
 
-  private run(request: () => ReturnType<HttpClient['get']>, onSuccess: (value: unknown) => void): void {
+  private run(request: () => Observable<unknown>, onSuccess: (value: unknown) => void): void {
     this.busy = true; this.error = ''; this.message = '';
     request().subscribe({
       next: value => { this.busy = false; onSuccess(value); },

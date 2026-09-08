@@ -14,6 +14,17 @@
       "resourceKey": "appcondominio.organizations",
       "permissionCode": "appcondominio.organizations.read",
       "metadataJson": "{\"surface\":\"admin\"}"
+    },
+    {
+      "parentId": null,
+      "code": "appcondominio.resident",
+      "label": "Mi comunidad",
+      "route": "/resident",
+      "icon": "home",
+      "order": 20,
+      "resourceKey": "appcondominio.resident",
+      "permissionCode": "appcondominio.resident.access",
+      "metadataJson": "{\"surface\":\"resident\"}"
     }
   ]
 }

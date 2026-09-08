@@ -12,6 +12,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
         <nav>
           <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
           <a routerLink="/organizations" routerLinkActive="active">Organizaciones</a>
+          <a routerLink="/saas" routerLinkActive="active">Planes SaaS</a>
           <a routerLink="/communities" routerLinkActive="active">Comunidades</a>
           <a routerLink="/properties" routerLinkActive="active">Propiedades</a>
           <a routerLink="/people" routerLinkActive="active">Personas</a>

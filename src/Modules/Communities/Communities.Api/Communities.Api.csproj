@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>Communities.Api</AssemblyName><RootNamespace>AppCondominio.Modules.Communities.Api</RootNamespace></PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Communities.Application\Communities.Application.csproj" />
+    <ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+  </ItemGroup>
+</Project>

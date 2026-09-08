@@ -24,7 +24,7 @@ if (Test-Path $EnvironmentFile) {
     $envText = Get-Content $EnvironmentFile -Raw
     $forbidden = @('ChangeMeOutsideGit', 'JWT_SECRET=$', 'JWT_SECRET=\s*$')
     foreach ($pattern in $forbidden) {
-        if ($envText -match $pattern) { throw "Unsafe placeholder detected in $EnvironmentFile: $pattern" }
+        if ($envText -match $pattern) { throw "Unsafe placeholder detected in ${EnvironmentFile}: $pattern" }
     }
 }
 

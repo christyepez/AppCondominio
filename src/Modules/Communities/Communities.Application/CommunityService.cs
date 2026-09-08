@@ -19,6 +19,7 @@ public sealed class CommunityService(ICommunityRepository repository)
 {
     public async Task<CommunityResult> CreateAsync(CreateCommunityCommand c,CancellationToken ct)
     {var x=Community.Create(c.OrganizationId,c.Code,c.Name,c.TaxId,c.Address);await repository.AddAsync(x,ct);await repository.SaveChangesAsync(ct);return Map(x);}
+    public async Task<IReadOnlyCollection<CommunityResult>> ListAsync(CancellationToken ct)=>(await repository.ListAsync(ct)).Select(Map).OrderBy(x=>x.Name,StringComparer.OrdinalIgnoreCase).ToArray();
     public async Task<CommunityResult> GetAsync(Guid id,CancellationToken ct)=>Map(await Require(id,ct));
     public async Task UpdateAsync(Guid id,string name,string? taxId,string address,string? type,string? administrator,string? president,CancellationToken ct)
     {var x=await Require(id,ct);x.Update(name,taxId,address,type,administrator,president);await repository.SaveChangesAsync(ct);}

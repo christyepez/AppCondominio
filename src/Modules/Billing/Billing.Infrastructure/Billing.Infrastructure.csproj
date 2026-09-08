@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" /><ProjectReference Include="..\Billing.Application\Billing.Application.csproj" /><ProjectReference Include="..\Billing.Domain\Billing.Domain.csproj" /></ItemGroup></Project>

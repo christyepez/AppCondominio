@@ -8,6 +8,7 @@ using AppCondominio.Contracts.Security;
 using AppCondominio.Infrastructure;
 using AppCondominio.Infrastructure.Observability;
 using AppCondominio.Modules.Billing.Api;
+using AppCondominio.Modules.Collections.Api;
 using AppCondominio.Modules.Communities.Api;
 using AppCondominio.Modules.Organizations.Api;
 using AppCondominio.Modules.People.Api;
@@ -32,6 +33,7 @@ builder.Services.AddHealthChecks()
     .AddCheck<PropertiesDatabaseHealthCheck>("properties-sql",tags:["ready"])
     .AddCheck<PeopleDatabaseHealthCheck>("people-sql",tags:["ready"])
     .AddCheck<BillingDatabaseHealthCheck>("billing-sql",tags:["ready"])
+    .AddCheck<CollectionsDatabaseHealthCheck>("collections-sql",tags:["ready"])
     .AddCheck<RedisHealthCheck>("redis",tags:["ready"])
     .AddCheck<RabbitMqHealthCheck>("rabbitmq",tags:["ready"])
     .AddCheck<PortalDependencyHealthCheck>("portal-gateway",tags:["ready","portal"]);
@@ -41,7 +43,7 @@ app.MapGet("/",()=>Results.Ok(new ServiceInfo("AppCondominio.Api",typeof(Program
 app.MapHealthChecks("/health/live",new HealthCheckOptions{Predicate=_=>false});
 app.MapHealthChecks("/health/ready",new HealthCheckOptions{Predicate=r=>r.Tags.Contains("ready")});
 app.MapGet("/api/session",(ICurrentIdentity identity)=>Results.Ok(new{identity.IsAuthenticated,identity.UserId,Permissions=identity.Permissions.OrderBy(x=>x)})).RequireAuthorization();
-app.MapOrganizationsEndpoints();app.MapSaasEndpoints();app.MapCommunityEndpoints();app.MapPropertyEndpoints();app.MapPeopleEndpoints();app.MapBillingEndpoints();app.MapMonthlyBillingEndpoints();
+app.MapOrganizationsEndpoints();app.MapSaasEndpoints();app.MapCommunityEndpoints();app.MapPropertyEndpoints();app.MapPeopleEndpoints();app.MapBillingEndpoints();app.MapMonthlyBillingEndpoints();app.MapCollectionsEndpoints();
 if(app.Environment.IsDevelopment())app.MapPost("/diagnostics/messaging/ping",async(IIntegrationEventPublisher publisher,CancellationToken ct)=>{var message=new FoundationPing(Guid.NewGuid(),DateTimeOffset.UtcNow,"AppCondominio.Api");await publisher.PublishAsync(message,ct);return Results.Accepted(value:message);}).RequireAuthorization();
 app.Run();
 public partial class Program;

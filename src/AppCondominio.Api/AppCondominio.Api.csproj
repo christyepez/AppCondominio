@@ -9,5 +9,6 @@
     <ProjectReference Include="..\Modules\Organizations\Organizations.Api\Organizations.Api.csproj" />
     <ProjectReference Include="..\Modules\Communities\Communities.Api\Communities.Api.csproj" />
     <ProjectReference Include="..\Modules\Properties\Properties.Api\Properties.Api.csproj" />
+    <ProjectReference Include="..\Modules\People\People.Api\People.Api.csproj" />
   </ItemGroup>
 </Project>

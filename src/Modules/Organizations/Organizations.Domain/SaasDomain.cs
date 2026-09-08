@@ -43,7 +43,7 @@ public sealed class CommercialPlan : AggregateRoot
     public void Activate() => IsActive = true;
 
     private static string NormalizeCurrency(string value) => string.IsNullOrWhiteSpace(value) ? "USD" : value.Trim().ToUpperInvariant();
-    private static string[] NormalizeModules(IEnumerable<string> modules) => modules
+    internal static string[] NormalizeModules(IEnumerable<string> modules) => modules
         .Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().ToLowerInvariant()).Distinct(StringComparer.Ordinal).OrderBy(x => x).ToArray();
     private static IReadOnlyCollection<string> ParseModules(string csv) => string.IsNullOrWhiteSpace(csv)
         ? Array.Empty<string>() : csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -76,6 +76,16 @@ public sealed class Subscription : AggregateRoot
         var subscription = new Subscription(Guid.NewGuid(), organizationId, plan.Id, startsAtUtc, renewsAt, plan.ModulesCsv)
         { CommercialNotes = NormalizeOptional(commercialNotes) };
         return subscription;
+    }
+
+    public void UpdateModules(CommercialPlan plan, IEnumerable<string> modules)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        if (plan.Id != PlanId) throw new InvalidOperationException("Subscription plan does not match.");
+        var requested = CommercialPlan.NormalizeModules(modules);
+        var invalid = requested.Where(x => !plan.AllowsModule(x)).ToArray();
+        if (invalid.Length > 0) throw new InvalidOperationException($"Modules not allowed by plan: {string.Join(',', invalid)}.");
+        ModulesCsv = string.Join(',', requested);
     }
 
     public void Suspend() { if (Status == SubscriptionStatus.Cancelled) throw new InvalidOperationException("Cancelled subscription cannot be suspended."); Status = SubscriptionStatus.Suspended; }

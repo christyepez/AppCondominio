@@ -33,7 +33,7 @@ public sealed class ChargeConceptVersion:AggregateRoot
 
 public sealed class AccountingMapping:AggregateRoot
 {
-    private AccountingMapping(Guid id,Guid communityId,Guid conceptId,string revenue,string receivable):base(id){CommunityId=communityId;ConceptId=conceptId;RevenueAccount=revenue;ReceivableAccount=receivable;}
+    private AccountingMapping(Guid id,Guid communityId,Guid conceptId,string revenueAccount,string receivableAccount):base(id){CommunityId=communityId;ConceptId=conceptId;RevenueAccount=revenueAccount;ReceivableAccount=receivableAccount;}
     public Guid CommunityId{get;private set;} public Guid ConceptId{get;private set;} public string RevenueAccount{get;private set;} public string ReceivableAccount{get;private set;} public string? TaxAccount{get;private set;} public string? CostCenter{get;private set;}
     public static AccountingMapping Create(Guid communityId,Guid conceptId,string revenue,string receivable,string? tax,string? costCenter){var x=new AccountingMapping(Guid.NewGuid(),communityId,conceptId,Req(revenue),Req(receivable));x.TaxAccount=Opt(tax);x.CostCenter=Opt(costCenter);return x;}
     private static string Req(string v)=>string.IsNullOrWhiteSpace(v)?throw new ArgumentException("Required value missing."):v.Trim(); private static string? Opt(string? v)=>string.IsNullOrWhiteSpace(v)?null:v.Trim();

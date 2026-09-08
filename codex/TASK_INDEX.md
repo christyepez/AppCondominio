@@ -21,7 +21,7 @@
 | 15 | Maintenance / assets | VALIDATED | CI `34255713507`, PR #24 |
 | 16 | Reservations / security operations | VALIDATED | CI `34257015439`, PR #25 |
 | 17 | Governance / coexistence | VALIDATED | CI `34261485542`, PR #26 |
-| 18 | Production readiness | VALIDATED | CI `34262508910`; PR pending creation |
+| 18 | Production readiness | VALIDATED | CI `34263049464`, PR #27 |
 
 ## Sprint 01 - Architecture and foundation
 All S01-01 through S01-10 are VALIDATED: .NET 10 solution, modular bootstrapper, Organizations reference module, SQL Server/EF Core 10, Angular 21 LTS shell, Docker Compose, Redis/RabbitMQ/Worker, observability, automated tests and CI/security gates.
@@ -89,7 +89,7 @@ Validated reservable areas, capacity/fees, booking lifecycle and overlap prevent
 Validated assemblies/quorum, motions/voting, coexistence cases, penalties by Billing reference only, governance KPI and independent `governance` schema.
 
 ## Sprint 18 - Production readiness
-Validated in CI `34262508910`:
+Validated in final CI `34263049464`:
 - hardened Nginx proxy/security headers;
 - release prerequisite validation script;
 - deployment smoke-test script;
@@ -99,8 +99,28 @@ Validated in CI `34262508910`:
 - CI production-readiness gate;
 - final full-stack build, tests, security scans and Docker image build.
 
+## Follow-on phase - UI Completion
+
+| Order | Capability | Status |
+|---:|---|---|
+| UI-01 | Admin shell, responsive navigation and live dashboard | IN VALIDATION |
+| UI-02 | Communities operational list/create | IN VALIDATION |
+| UI-03 | Properties / aliquot validation and 300-unit pilot tool | IN VALIDATION |
+| UI-04 | Governance KPI | IN VALIDATION |
+| UI-05 | People / ownership / residents UI | NEXT |
+| UI-06 | Billing / monthly generation / collections UI | PLANNED |
+| UI-07 | Banking / Tax / Accounting / Treasury UI | PLANNED |
+| UI-08 | Budgeting / Procurement / Maintenance UI | PLANNED |
+| UI-09 | Reservations / Security Operations UI | PLANNED |
+| UI-10 | Resident portal | PLANNED |
+| UI-11 | Supplier portal | PLANNED |
+| UI-12 | Guard portal | PLANNED |
+| UI-13 | Cross-channel E2E and UX hardening | PLANNED |
+
+Current branch: `feature/ui-completion-admin-core`. The first UI increment exposes a real Communities list use case under `appcondominio.communities.read` and consumes only existing secured backend contracts. Authentication/token issuance remains Portal-owned; the UI shows explicit 401/403 states rather than inventing a local login engine.
+
 ## Product-completeness note
-The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The Angular application remains a platform shell/reference UI rather than complete operational screens for every business bounded context. UI completion is tracked as a follow-on delivery phase and must be completed before calling all end-user channels (Admin, Resident, Supplier and Guard) product-complete.
+The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. UI completion is a follow-on delivery phase and must be completed before calling all end-user channels (Admin, Resident, Supplier and Guard) product-complete.
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.

@@ -1,10 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { AsyncPipe, JsonPipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
 
-@Component({selector:'app-organizations',standalone:true,imports:[AsyncPipe,JsonPipe],template:`<h2>Organizaciones</h2><p>Vertical slice de referencia.</p><pre>{{ health$ | async | json }}</pre>`})
-export class OrganizationsComponent {
-  private readonly http = inject(HttpClient);
-  readonly health$ = this.http.get(`${API_BASE_URL}/health/ready`);
-}
+@Component({selector:'app-organizations',standalone:true,imports:[CommonModule,FormsModule],template:`
+<section class="page-heading"><div><span class="eyebrow">SaaS</span><h2>Organizaciones</h2><p>Alta y consulta de organizaciones comerciales.</p></div></section>
+<div class="notice error" *ngIf="error">{{error}}</div><div class="notice success" *ngIf="message">{{message}}</div>
+<section class="panel"><h3>Nueva organización</h3><form class="form-grid" (ngSubmit)="create()"><label>Nombre<input [(ngModel)]="draft.name" name="name" required></label><label>RUC / Tax Id<input [(ngModel)]="draft.taxId" name="taxId"></label><div class="form-actions"><button class="button primary" type="submit" [disabled]="busy">Crear organización</button></div></form></section>
+<section class="panel"><h3>Consultar organización</h3><div class="form-grid compact"><label class="wide">Organization Id<input [(ngModel)]="organizationId" name="organizationId"></label><div class="form-actions"><button class="button secondary" type="button" (click)="load()" [disabled]="busy||!organizationId">Consultar</button></div></div><pre class="result-box" *ngIf="result">{{result|json}}</pre></section>`})
+export class OrganizationsComponent{private readonly http=inject(HttpClient);busy=false;error='';message='';organizationId='';result:unknown;draft={name:'',taxId:''};
+create():void{this.busy=true;this.error='';this.message='';this.http.post<{id:string}>(`${API_BASE_URL}/organizations/`,{name:this.draft.name,taxId:this.draft.taxId||null}).subscribe({next:v=>{this.busy=false;this.organizationId=v.id;this.message=`Organización creada: ${v.id}`;},error:e=>{this.busy=false;this.error=this.describe(e,'No se pudo crear la organización.');}})}
+load():void{this.busy=true;this.error='';this.message='';this.result=undefined;this.http.get(`${API_BASE_URL}/organizations/${this.organizationId}`).subscribe({next:v=>{this.busy=false;this.result=v;},error:e=>{this.busy=false;this.error=this.describe(e,'No se pudo consultar la organización.');}})}
+private describe(e:{status?:number},fallback:string){return e?.status===401?'Sesión requerida desde PortalCorporativo.':e?.status===403?'No tiene permisos de Organizations.':fallback;}}

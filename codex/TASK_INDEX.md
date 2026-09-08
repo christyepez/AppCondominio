@@ -21,12 +21,9 @@
 | 15 | Maintenance / assets | VALIDATED | CI `34255713507`, PR #24 |
 | 16 | Reservations / security operations | VALIDATED | CI `34257015439`, PR #25 |
 | 17 | Governance / coexistence | VALIDATED | CI `34261485542`, PR #26 |
-| 18 | Production readiness | VALIDATED | CI `34262508910`; PR pending creation |
+| 18 | Production readiness | VALIDATED | CI `34263049464`, PR #27 |
 
-## Sprint 01 - Architecture and foundation
-All S01-01 through S01-10 are VALIDATED: .NET 10 solution, modular bootstrapper, Organizations reference module, SQL Server/EF Core 10, Angular 21 LTS shell, Docker Compose, Redis/RabbitMQ/Worker, observability, automated tests and CI/security gates.
-
-## Sprint 02 - PortalCorporativo integration
+## Sprint 02 external blockers
 
 | Story | Capability | Status | Reason / evidence |
 |---|---|---|---|
@@ -43,64 +40,34 @@ All S01-01 through S01-10 are VALIDATED: .NET 10 solution, modular bootstrapper,
 
 Blocked Portal capabilities must not be replaced with insecure local duplicates. See `docs/DEPENDENCY_MATRIX.md`.
 
-## Sprint 03 - SaaS
-Validated commercial tenant/organization profile, white-label configuration, plans, subscriptions, module entitlements, usage thresholds, suspension/reactivation and Shared/Dedicated database strategy using secret references rather than persisted raw credentials.
+## Backend/platform completion
+Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, properties, people/ownership, billing, collections, banking/Tax, accounting, treasury, budgeting/reporting, procurement, maintenance, reservations/security, governance and production-readiness controls. Financial/legal corrections preserve history; bounded contexts do not directly mutate one another's tables. SRI remains fail-closed as `PendingConfiguration` until an approved provider/certificate is configured.
 
-## Sprint 04 - Communities
-Validated community master data, legal/tax/address configuration, independent `communities` schema and persistence boundaries.
+## Follow-on phase - UI Completion
 
-## Sprint 05 - Properties
-Validated property types, units, linked parking/storage, areas, allocation coefficient calculation/versioning/approval and demo generation of 300 units with total coefficients exactly 100%.
+| Order | Capability | Status |
+|---:|---|---|
+| UI-01 | Admin shell, responsive navigation, live dashboard/session state | IN VALIDATION |
+| UI-02 | Organizations + SaaS plans/entitlements administration | IN VALIDATION |
+| UI-03 | Communities list/create | IN VALIDATION |
+| UI-04 | Properties / aliquot validation / 300-unit pilot tool | IN VALIDATION |
+| UI-05 | People / owners / residents operational UI | IN VALIDATION |
+| UI-06 | Billing / monthly periods / statements | IN VALIDATION |
+| UI-07 | Collections / aging / payment registration | IN VALIDATION |
+| UI-08 | Banking / Tax-SRI / Accounting / Treasury | IN VALIDATION |
+| UI-09 | Budgeting / Procurement / Maintenance | IN VALIDATION |
+| UI-10 | Reservations / Security Operations / Governance | IN VALIDATION |
+| UI-11 | Resident portal | NEXT |
+| UI-12 | Supplier portal | PLANNED |
+| UI-13 | Guard portal | PLANNED |
+| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | PLANNED |
 
-## Sprint 06 - People / Ownership / Residents
-Validated natural/legal persons, ownership percentages/history, leases/residents, financial responsibility, hashed activation codes, activation requests/grants and access expiration semantics.
+Current branch: `feature/ui-completion-admin-core`. Admin Core now exposes a navigable Angular 21 console across all principal bounded contexts and consumes real secured backend endpoints. The only new backend read surface added for UI completion is `GET /api/communities/`, protected by the existing `appcondominio.communities.read` permission. Screens preserve explicit 401/403 behavior and do not create a local authentication/token engine.
 
-## Sprint 07 - Billing engine
-Validated charge concepts, versioned formulas, fixed/area/coefficient/consumption/percentage/proration/manual calculation modes, discounts, interest, boundaries, accounting references and simulation without receivable creation.
-
-## Sprint 08 - Monthly billing
-Validated billing periods, draft generation, inconsistency detection, approval, issuance, obligations, reversal rules, statements, integration event and Worker-controlled scheduled issuance of approved periods.
-
-## Sprint 09 - Collections
-Validated receivables, idempotent payments, partial/full application, unapplied balances, payment reversal and aging.
-
-## Sprint 10 - Banking / Reconciliation / Tax
-Validated bank accounts, idempotent movement import, reconciliation suggestions/confirmation and Tax electronic-document lifecycle. SRI transport remains an external production configuration; without it the adapter returns `PendingConfiguration` and never fakes authorization.
-
-## Sprint 11 - Accounting
-Validated chart of accounts, periods, balanced/idempotent postings, ledger, trial balance, close and reversal through compensating entries while preserving original history.
-
-## Sprint 12 - Treasury / AP
-Validated supplier payables, payment requests, approvals/rejections, partial disbursements, reversal, outstanding balances and cash forecast.
-
-## Sprint 13 - Budgeting / Reporting
-Validated annual/monthly budgets, approval immutability, idempotent actuals, budget-vs-actual variance and executive/YTD summary.
-
-## Sprint 14 - Procurement
-Validated community suppliers, requisitions, quotation rounds, bids, scoring/ranking, award and purchase order references without direct Treasury table writes.
-
-## Sprint 15 - Maintenance
-Validated asset registry, preventive plans, incidents, work orders, assignment/start/complete lifecycle, plan rescheduling, costs, Procurement references and maintenance KPI.
-
-## Sprint 16 - Reservations / Security Operations
-Validated reservable areas, capacity/fees, booking lifecycle and overlap prevention; visitor authorizations, gate check-in/out, security incidents, escalation/resolution and KPI in independent schemas.
-
-## Sprint 17 - Governance
-Validated assemblies/quorum, motions/voting, coexistence cases, penalties by Billing reference only, governance KPI and independent `governance` schema.
-
-## Sprint 18 - Production readiness
-Validated in CI `34262508910`:
-- hardened Nginx proxy/security headers;
-- release prerequisite validation script;
-- deployment smoke-test script;
-- production deployment/migration/rollback runbook;
-- external dependency readiness matrix;
-- end-to-end product test plan;
-- CI production-readiness gate;
-- final full-stack build, tests, security scans and Docker image build.
+First-pass Admin screens intentionally allow explicit GUID entry where the backend does not yet expose safe list/search contracts. Subsequent UX hardening will replace those fields with selectors only where real authorized lookup endpoints are available; it must not invent cross-tenant lookup behavior.
 
 ## Product-completeness note
-The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The Angular application remains a platform shell/reference UI rather than complete operational screens for every business bounded context. UI completion is tracked as a follow-on delivery phase and must be completed before calling all end-user channels (Admin, Resident, Supplier and Guard) product-complete.
+The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. Admin Core is currently in final validation. Resident, Supplier and Guard channels still require their dedicated UI delivery before all end-user channels can be called product-complete.
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.

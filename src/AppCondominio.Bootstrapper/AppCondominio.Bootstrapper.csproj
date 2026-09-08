@@ -9,5 +9,7 @@
     <ProjectReference Include="..\Modules\People\People.Infrastructure\People.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Billing\Billing.Infrastructure\Billing.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Collections\Collections.Infrastructure\Collections.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Banking\Banking.Infrastructure\Banking.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Tax\Tax.Infrastructure\Tax.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

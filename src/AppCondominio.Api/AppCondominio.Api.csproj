@@ -12,5 +12,7 @@
     <ProjectReference Include="..\Modules\People\People.Api\People.Api.csproj" />
     <ProjectReference Include="..\Modules\Billing\Billing.Api\Billing.Api.csproj" />
     <ProjectReference Include="..\Modules\Collections\Collections.Api\Collections.Api.csproj" />
+    <ProjectReference Include="..\Modules\Banking\Banking.Api\Banking.Api.csproj" />
+    <ProjectReference Include="..\Modules\Tax\Tax.Api\Tax.Api.csproj" />
   </ItemGroup>
 </Project>

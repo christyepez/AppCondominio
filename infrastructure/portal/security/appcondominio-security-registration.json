@@ -6,7 +6,9 @@
     { "key": "appcondominio.properties", "name": "AppCondominio Properties" },
     { "key": "appcondominio.people", "name": "AppCondominio People and Ownership" },
     { "key": "appcondominio.billing", "name": "AppCondominio Billing" },
-    { "key": "appcondominio.collections", "name": "AppCondominio Collections" }
+    { "key": "appcondominio.collections", "name": "AppCondominio Collections" },
+    { "key": "appcondominio.banking", "name": "AppCondominio Banking and Reconciliation" },
+    { "key": "appcondominio.tax", "name": "AppCondominio Tax and Electronic Documents" }
   ],
   "permissions": [
     { "code": "appcondominio.organizations.read", "resourceKey": "appcondominio.organizations", "action": "read" },
@@ -22,6 +24,10 @@
     { "code": "appcondominio.billing.read", "resourceKey": "appcondominio.billing", "action": "read" },
     { "code": "appcondominio.billing.manage", "resourceKey": "appcondominio.billing", "action": "manage" },
     { "code": "appcondominio.collections.read", "resourceKey": "appcondominio.collections", "action": "read" },
-    { "code": "appcondominio.collections.manage", "resourceKey": "appcondominio.collections", "action": "manage" }
+    { "code": "appcondominio.collections.manage", "resourceKey": "appcondominio.collections", "action": "manage" },
+    { "code": "appcondominio.banking.read", "resourceKey": "appcondominio.banking", "action": "read" },
+    { "code": "appcondominio.banking.manage", "resourceKey": "appcondominio.banking", "action": "manage" },
+    { "code": "appcondominio.tax.read", "resourceKey": "appcondominio.tax", "action": "read" },
+    { "code": "appcondominio.tax.manage", "resourceKey": "appcondominio.tax", "action": "manage" }
   ]
 }

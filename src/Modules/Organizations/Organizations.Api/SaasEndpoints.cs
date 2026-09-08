@@ -44,6 +44,10 @@ public static class SaasEndpoints
                 new(organizationId, r.Strategy, r.ConnectionSecretReference, r.MigrationStatus), ct)))
             .RequireAuthorization(AppCondominioPermissions.Saas.Manage);
 
+        group.MapPut("/organizations/{organizationId:guid}/modules", async (Guid organizationId, ModulesRequest r,
+            SaasAdministrationService s, CancellationToken ct) => Results.Ok(await s.UpdateModulesAsync(organizationId, r.Modules ?? [], ct)))
+            .RequireAuthorization(AppCondominioPermissions.Saas.Manage);
+
         group.MapPost("/organizations/{organizationId:guid}/suspend", async (Guid organizationId, SuspendRequest r,
             SaasService s, CancellationToken ct) => { await s.SuspendAsync(organizationId, r.Reason, ct); return Results.NoContent(); })
             .RequireAuthorization(AppCondominioPermissions.Saas.Manage);
@@ -54,6 +58,14 @@ public static class SaasEndpoints
 
         group.MapGet("/organizations/{organizationId:guid}/entitlements", async (Guid organizationId,
             SaasService s, CancellationToken ct) => Results.Ok(await s.GetEntitlementsAsync(organizationId, ct)))
+            .RequireAuthorization(AppCondominioPermissions.Saas.Read);
+
+        group.MapPost("/organizations/{organizationId:guid}/usage-assessment", async (Guid organizationId, UsageRequest r,
+            SaasAdministrationService s, CancellationToken ct) => Results.Ok(await s.AssessUsageAsync(organizationId,
+                r.Units, r.Users, r.StorageMb, r.RequestedModule, ct)))
+            .RequireAuthorization(AppCondominioPermissions.Saas.Read);
+
+        group.MapGet("/dashboard", async (SaasAdministrationService s, CancellationToken ct) => Results.Ok(await s.GetDashboardAsync(ct)))
             .RequireAuthorization(AppCondominioPermissions.Saas.Read);
 
         return endpoints;
@@ -67,5 +79,7 @@ public static class SaasEndpoints
     private sealed record BrandingRequest(string ProductName, string? LogoUrl, string? FaviconUrl, string PrimaryColor,
         string SecondaryColor, string? ContactEmail, string? ContactPhone);
     private sealed record DatabaseProfileRequest(TenantDatabaseStrategy Strategy, string? ConnectionSecretReference, string MigrationStatus);
+    private sealed record ModulesRequest(string[]? Modules);
+    private sealed record UsageRequest(int Units, int Users, long StorageMb, string? RequestedModule);
     private sealed record SuspendRequest(string Reason);
 }

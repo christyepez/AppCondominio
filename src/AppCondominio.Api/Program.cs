@@ -1,4 +1,5 @@
 using AppCondominio.Api;
+using AppCondominio.Api.Health;
 using AppCondominio.Api.Security;
 using AppCondominio.Bootstrapper;
 using AppCondominio.Contracts;
@@ -7,6 +8,7 @@ using AppCondominio.Contracts.Security;
 using AppCondominio.Infrastructure;
 using AppCondominio.Infrastructure.Observability;
 using AppCondominio.Modules.Organizations.Api;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +22,26 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentIdentity, HttpCurrentIdentity>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-builder.Services.AddHealthChecks();
+
+var portalGatewayBaseUrl = builder.Configuration["Portal:GatewayBaseUrl"];
+if (string.IsNullOrWhiteSpace(portalGatewayBaseUrl))
+{
+    throw new InvalidOperationException("Portal:GatewayBaseUrl is required.");
+}
+
+builder.Services
+    .AddHttpClient("PortalGatewayHealth", client =>
+    {
+        client.BaseAddress = new Uri(portalGatewayBaseUrl, UriKind.Absolute);
+        client.Timeout = TimeSpan.FromSeconds(3);
+    });
+
+builder.Services
+    .AddHealthChecks()
+    .AddCheck<OrganizationsDatabaseHealthCheck>("organizations-sql", tags: ["ready"])
+    .AddCheck<RedisHealthCheck>("redis", tags: ["ready"])
+    .AddCheck<RabbitMqHealthCheck>("rabbitmq", tags: ["ready"])
+    .AddCheck<PortalDependencyHealthCheck>("portal-gateway", tags: ["ready", "portal"]);
 
 var app = builder.Build();
 
@@ -35,8 +56,15 @@ app.MapGet("/", () => Results.Ok(new ServiceInfo(
     Version: typeof(Program).Assembly.GetName().Version?.ToString() ?? "0.0.0",
     Status: "ok")));
 
-app.MapHealthChecks("/health/live");
-app.MapHealthChecks("/health/ready");
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = registration => registration.Tags.Contains("ready")
+});
+
 app.MapGet("/api/session", (ICurrentIdentity identity) => Results.Ok(new
 {
     identity.IsAuthenticated,

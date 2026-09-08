@@ -6,5 +6,6 @@
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
     <PackageReference Include="coverlet.collector" PrivateAssets="all" />
     <ProjectReference Include="..\..\src\Modules\Organizations\Organizations.Domain\Organizations.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Communities\Communities.Domain\Communities.Domain.csproj" />
   </ItemGroup>
 </Project>

@@ -1,3 +1,4 @@
+using AppCondominio.Modules.Banking.Infrastructure;
 using AppCondominio.Modules.Billing.Infrastructure;
 using AppCondominio.Modules.Collections.Infrastructure;
 using AppCondominio.Modules.Communities.Infrastructure;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddPeopleModule(configuration);
         services.AddBillingModule(configuration);
         services.AddCollectionsModule(configuration);
+        services.AddBankingModule(configuration);
         return services;
     }
 }

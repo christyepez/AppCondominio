@@ -4,6 +4,7 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
   { path: 'organizations', loadComponent: () => import('./features/organizations/organizations.component').then(m => m.OrganizationsComponent) },
+  { path: 'saas', loadComponent: () => import('./features/saas/saas.component').then(m => m.SaasComponent) },
   { path: 'communities', loadComponent: () => import('./features/communities/communities.component').then(m => m.CommunitiesComponent) },
   { path: 'properties', loadComponent: () => import('./features/properties/properties.component').then(m => m.PropertiesComponent) },
   { path: 'people', loadComponent: () => import('./features/people/people.component').then(m => m.PeopleComponent) },

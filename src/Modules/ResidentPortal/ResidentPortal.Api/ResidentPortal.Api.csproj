@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="..\ResidentPortal.Application\ResidentPortal.Application.csproj" /><ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" /></ItemGroup></Project>

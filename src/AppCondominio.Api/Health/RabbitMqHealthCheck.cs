@@ -1,22 +1,34 @@
-using MassTransit;
+using System.Net.Sockets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AppCondominio.Api.Health;
 
 public sealed class RabbitMqHealthCheck(
-    IBusHealth busHealth) : IHealthCheck
+    IConfiguration configuration) : IHealthCheck
 {
-    public Task<HealthCheckResult> CheckHealthAsync(
+    public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default)
     {
-        var status = busHealth.CheckHealth();
+        var host = configuration["RabbitMq:Host"] ?? "rabbitmq";
+        var port = configuration.GetValue<int?>("RabbitMq:Port") ?? 5672;
 
-        return Task.FromResult(status.Status switch
+        try
         {
-            BusHealthStatus.Healthy => HealthCheckResult.Healthy("RabbitMQ bus is healthy."),
-            BusHealthStatus.Degraded => HealthCheckResult.Degraded("RabbitMQ bus is degraded."),
-            _ => HealthCheckResult.Unhealthy("RabbitMQ bus is not healthy.")
-        });
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromSeconds(3));
+
+            using var client = new TcpClient();
+            await client.ConnectAsync(host, port, timeout.Token);
+
+            return client.Connected
+                ? HealthCheckResult.Healthy("RabbitMQ endpoint is reachable.")
+                : HealthCheckResult.Unhealthy("RabbitMQ endpoint is not reachable.");
+        }
+        catch (Exception exception) when (exception is SocketException or OperationCanceledException)
+        {
+            return HealthCheckResult.Unhealthy("RabbitMQ readiness check failed.", exception);
+        }
     }
 }

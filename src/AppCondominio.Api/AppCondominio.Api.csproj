@@ -11,5 +11,6 @@
     <ProjectReference Include="..\Modules\Properties\Properties.Api\Properties.Api.csproj" />
     <ProjectReference Include="..\Modules\People\People.Api\People.Api.csproj" />
     <ProjectReference Include="..\Modules\Billing\Billing.Api\Billing.Api.csproj" />
+    <ProjectReference Include="..\Modules\Collections\Collections.Api\Collections.Api.csproj" />
   </ItemGroup>
 </Project>

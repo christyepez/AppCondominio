@@ -25,6 +25,17 @@
       "resourceKey": "appcondominio.resident",
       "permissionCode": "appcondominio.resident.access",
       "metadataJson": "{\"surface\":\"resident\"}"
+    },
+    {
+      "parentId": null,
+      "code": "appcondominio.supplier",
+      "label": "Portal proveedor",
+      "route": "/supplier",
+      "icon": "local_shipping",
+      "order": 30,
+      "resourceKey": "appcondominio.supplier",
+      "permissionCode": "appcondominio.supplier.access",
+      "metadataJson": "{\"surface\":\"supplier\"}"
     }
   ]
 }

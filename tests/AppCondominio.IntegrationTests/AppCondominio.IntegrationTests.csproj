@@ -8,5 +8,6 @@
     <ProjectReference Include="..\..\src\AppCondominio.Api\AppCondominio.Api.csproj" />
     <ProjectReference Include="..\..\src\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Modules\Organizations\Organizations.Infrastructure\Organizations.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Communities\Communities.Infrastructure\Communities.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

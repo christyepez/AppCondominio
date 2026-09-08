@@ -25,9 +25,11 @@ public static class DependencyInjection
 
         services.AddScoped<IOrganizationRepository, EfOrganizationRepository>();
         services.AddScoped<ISaasRepository, EfSaasRepository>();
+        services.AddScoped<ISaasMetricsRepository, EfSaasMetricsRepository>();
         services.AddScoped<CreateOrganizationHandler>();
         services.AddScoped<GetOrganizationByIdHandler>();
         services.AddScoped<SaasService>();
+        services.AddScoped<SaasAdministrationService>();
 
         return services;
     }

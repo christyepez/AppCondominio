@@ -7,6 +7,10 @@
     {
       "key": "appcondominio.saas",
       "name": "AppCondominio SaaS Administration"
+    },
+    {
+      "key": "appcondominio.communities",
+      "name": "AppCondominio Communities"
     }
   ],
   "permissions": [
@@ -28,6 +32,16 @@
     {
       "code": "appcondominio.saas.manage",
       "resourceKey": "appcondominio.saas",
+      "action": "manage"
+    },
+    {
+      "code": "appcondominio.communities.read",
+      "resourceKey": "appcondominio.communities",
+      "action": "read"
+    },
+    {
+      "code": "appcondominio.communities.manage",
+      "resourceKey": "appcondominio.communities",
       "action": "manage"
     }
   ]

@@ -19,7 +19,7 @@ public partial class AddSupplierPortalAccess:Migration
    Status=t.Column<int>(type:"int",nullable:false),
    RevocationReason=t.Column<string>(type:"nvarchar(500)",maxLength:500,nullable:true)
   },constraints:c=>c.PrimaryKey("PK_SupplierAccessGrants",x=>x.Id));
-  m.CreateIndex(name:"IX_SupplierAccessGrants_ExternalUserId_Status",schema:"procurement",table:"SupplierAccessGrants",columns:new[]{"ExternalUserId","Status"});
+  m.CreateIndex(name:"IX_SupplierAccessGrants_ExternalUserId_Status",schema:"procurement",table:"SupplierAccessGrants",columns:new[]{"ExternalUserId","Status"},unique:true,filter:"[Status] = 1");
   m.CreateIndex(name:"IX_SupplierAccessGrants_SupplierId_ExternalUserId_Status",schema:"procurement",table:"SupplierAccessGrants",columns:new[]{"SupplierId","ExternalUserId","Status"});
  }
  protected override void Down(MigrationBuilder m)=>m.DropTable(name:"SupplierAccessGrants",schema:"procurement");

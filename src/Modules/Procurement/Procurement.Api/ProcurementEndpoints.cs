@@ -7,6 +7,8 @@ public static class ProcurementEndpoints
  public static IEndpointRouteBuilder MapProcurementEndpoints(this IEndpointRouteBuilder app)
  {
   var g=app.MapGroup("/api/procurement").RequireAuthorization();
+  g.MapGet("/communities/{communityId:guid}/suppliers",async(Guid communityId,ProcurementService s,CancellationToken ct)=>Results.Ok(await s.ListActiveSuppliersAsync(communityId,ct))).RequireAuthorization(AppCondominioPermissions.Procurement.Read);
+  g.MapGet("/communities/{communityId:guid}/rounds",async(Guid communityId,ProcurementService s,CancellationToken ct)=>Results.Ok(await s.ListOpenRoundsAsync(communityId,ct))).RequireAuthorization(AppCondominioPermissions.Procurement.Read);
   g.MapPost("/suppliers",async(CreateSupplierRequest r,ProcurementService s,CancellationToken ct)=>Results.Ok(new{Id=await s.CreateSupplierAsync(r.CommunityId,r.PersonId,r.TaxId,r.LegalName,r.Email,ct)})).RequireAuthorization(AppCondominioPermissions.Procurement.Manage);
   g.MapPost("/suppliers/{supplierId:guid}/portal-access",async(Guid supplierId,GrantSupplierAccessRequest r,ProcurementService s,CancellationToken ct)=>Results.Ok(new{Id=await s.GrantSupplierPortalAccessAsync(supplierId,r.ExternalUserId,r.ExpiresAtUtc,ct)})).RequireAuthorization(AppCondominioPermissions.Procurement.Manage);
   g.MapPost("/supplier-access/{accessId:guid}/revoke",async(Guid accessId,RevokeSupplierAccessRequest r,ProcurementService s,CancellationToken ct)=>{await s.RevokeSupplierPortalAccessAsync(accessId,r.Reason,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Procurement.Manage);

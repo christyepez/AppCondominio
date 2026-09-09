@@ -18,6 +18,7 @@ Assert-Condition (Test-Path 'scripts/database/migration-precheck.ps1') 'Migratio
 Assert-Condition (Test-Path 'scripts/database/apply-migrations.ps1') 'Migration apply script is missing.'
 Assert-Condition (Test-Path 'infrastructure/portal/security/appcondominio-security-registration.json') 'Portal security manifest is missing.'
 Assert-Condition (Test-Path 'infrastructure/portal/menu/appcondominio-menu-registration.json') 'Portal menu manifest is missing.'
+Assert-Condition (Test-Path 'scripts/database/backup-restore-smoke.ps1') 'Backup/restore rehearsal script is missing.'
 
 $securityManifest = Get-Content 'infrastructure/portal/security/appcondominio-security-registration.json' -Raw | ConvertFrom-Json
 Assert-Condition ($securityManifest.resources.Count -ge 1) 'Portal security manifest has no resources.'

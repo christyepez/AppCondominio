@@ -8,6 +8,7 @@ This runbook defines the minimum controlled process to promote AppCondominio fro
 - CI for the release candidate is green.
 - Production infrastructure, DNS/TLS, secrets, PortalCorporativo endpoints and SQL Server are defined outside the repository.
 - Database backup/restore has been tested in the target environment.
+- CI/non-production rehearsal via `scripts/database/backup-restore-smoke.ps1` proves SQL Server backup/restore mechanics, but does not replace target-environment backup evidence.
 - Portal Security permissions/menu provisioning has been executed by an authorized operator.
 - SRI provider/certificate configuration is available before enabling real electronic-document sending.
 
@@ -41,6 +42,7 @@ Never commit these values:
 - `apply-migrations.ps1` is fail-closed: it requires `-Apply`, existing backup evidence and an explicit connection string for every selected context; it never uses cross-module connection-string fallbacks.
 - Database migration is an explicit deployment activity.
 - Take a restorable backup before migration.
+- Rehearse backup/drop/restore verification in non-production using `backup-restore-smoke.ps1`; retain its JSON evidence alongside the release SHA.
 - Validate schema changes in TEST/UAT before production.
 - Financial/legal data is corrected through reversals/versioning, not destructive deletion.
 

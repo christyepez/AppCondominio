@@ -208,6 +208,7 @@
 - Run `scripts/production/validate-release.ps1` before deployment.
 - Run `scripts/database/migration-precheck.ps1`; migration inventory precheck must enumerate all 16 approved DbContexts and at least one committed migration per context without connecting to SQL.
 - Take/verify restorable DB backup.
+- Run `scripts/database/backup-restore-smoke.ps1` in CI/non-production and retain PASS evidence proving backup, drop, restore and marker verification; this does not substitute target-environment backup evidence.
 - Verify migration apply refuses execution without `-Apply`, without existing backup evidence, or without explicit `ConnectionStrings__<Module>` values for selected contexts.
 - Apply migrations in TEST/UAT from same release SHA.
 - Deploy immutable images.

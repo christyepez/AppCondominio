@@ -85,6 +85,7 @@ jobs:
             'docs/TEST_PLAN.md',
             'scripts/production/validate-release.ps1',
             'scripts/production/smoke-test.ps1',
+            'scripts/production/rollback-rehearsal.ps1',
             'scripts/database/migration-contexts.ps1',
             'scripts/database/migration-precheck.ps1',
             'scripts/database/apply-migrations.ps1',
@@ -120,6 +121,8 @@ jobs:
     needs: [backend, frontend, production-readiness]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Prepare CI environment
         run: |
           cp .env.example .env
@@ -140,6 +143,9 @@ jobs:
       - name: Run fail-closed runtime smoke
         shell: pwsh
         run: ./scripts/production/smoke-test.ps1 -ReadyExpectedStatus 503
+      - name: Run runtime rollback rehearsal
+        shell: pwsh
+        run: ./scripts/production/rollback-rehearsal.ps1
       - name: Upload release evidence
         uses: actions/upload-artifact@v4
         with:

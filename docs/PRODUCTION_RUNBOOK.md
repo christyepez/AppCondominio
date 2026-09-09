@@ -50,7 +50,7 @@ Never commit these values:
 Application rollback:
 1. Stop new traffic or put gateway in maintenance mode.
 2. Redeploy the previous immutable image set.
-3. Re-run liveness/readiness checks.
+3. Re-run liveness/readiness checks. In non-production, rehearse this path with `scripts/production/rollback-rehearsal.ps1` and retain its JSON evidence.
 
 Database rollback:
 - Prefer forward-fix migrations.

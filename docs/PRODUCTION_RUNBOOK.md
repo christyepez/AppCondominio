@@ -23,10 +23,10 @@ Never commit these values:
 
 ## Release sequence
 1. Freeze the release candidate commit and record its SHA.
-2. Run `scripts/production/validate-release.ps1`.
+2. Run `scripts/production/validate-release.ps1` and `scripts/database/migration-precheck.ps1`; retain the generated migration inventory evidence.
 3. Build immutable API, Worker and Web images from the release SHA.
 4. Back up all target SQL databases.
-5. Apply EF Core migrations in a controlled maintenance window, one bounded context at a time.
+5. Apply EF Core migrations in a controlled maintenance window using `scripts/database/apply-migrations.ps1 -Apply -BackupEvidencePath <evidence>`; each selected bounded context requires its explicit `ConnectionStrings__<Module>` environment variable.
 6. Provision/update Portal Security resources and menu definitions.
 7. Deploy API and Worker.
 8. Verify `/health/live`; then verify `/health/ready` after dependencies are reachable.
@@ -37,6 +37,8 @@ Never commit these values:
 
 ## Migration policy
 - Never auto-run destructive migrations during application startup.
+- `migration-precheck.ps1` enumerates every approved DbContext without connecting to SQL and produces release evidence.
+- `apply-migrations.ps1` is fail-closed: it requires `-Apply`, existing backup evidence and an explicit connection string for every selected context; it never uses cross-module connection-string fallbacks.
 - Database migration is an explicit deployment activity.
 - Take a restorable backup before migration.
 - Validate schema changes in TEST/UAT before production.

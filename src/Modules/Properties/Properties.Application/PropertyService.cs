@@ -81,6 +81,12 @@ public sealed class PropertyService(IPropertyRepository repository)
         return aliquot.Id;
     }
 
+    public async Task<IReadOnlyCollection<PropertyUnitSummary>> ListUnitsAsync(Guid communityId, CancellationToken cancellationToken) =>
+        (await repository.ListUnitsAsync(communityId, cancellationToken))
+            .OrderBy(x => x.Code)
+            .Select(x => new PropertyUnitSummary(x.Id, x.Code, x.Location, x.MainAreaM2, x.Status))
+            .ToArray();
+
     public async Task<PropertyRecordResult?> GetRecordAsync(Guid communityId, Guid unitId, CancellationToken cancellationToken)
     {
         PropertyUnit? unit = await repository.GetUnitAsync(unitId, cancellationToken);

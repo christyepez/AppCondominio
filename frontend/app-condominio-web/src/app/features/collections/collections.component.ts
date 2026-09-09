@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
+import { DomainOptionsService, ReservableAreaOption, UnitOption } from '../../core/data/domain-options.service';
 
 @Component({
   selector: 'app-collections',
@@ -20,8 +21,8 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
     <section class="panel">
       <h3>Consulta de cartera</h3>
       <div class="form-grid">
-        <label>Comunidad<select [(ngModel)]="query.communityId" name="queryCommunity" ><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
-        <label>Unit Id opcional<input [(ngModel)]="query.unitId" name="queryUnit"></label>
+        <label>Comunidad<select [(ngModel)]="query.communityId" name="queryCommunity" (ngModelChange)="loadUnits($event)"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
+        <label>Unidad opcional<select [(ngModel)]="query.unitId" name="queryUnit"><option value="">Todas las unidades</option><option *ngFor="let unit of units" [value]="unit.id">{{ unit.code }} · {{ unit.location }}</option></select></label>
         <label>Fecha de corte<input [(ngModel)]="query.on" name="queryOn" type="date"></label>
         <div class="form-actions">
           <button class="button secondary" type="button" (click)="loadReceivables()" [disabled]="busy || !query.communityId">Ver cuentas por cobrar</button>
@@ -52,7 +53,9 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
 export class CollectionsComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly communityOptions = inject(CommunityOptionsService);
+  private readonly domainOptions = inject(DomainOptionsService);
   communities: CommunityOption[] = [];
+  units: UnitOption[] = [];
   busy = false;
   error = '';
   message = '';
@@ -60,6 +63,12 @@ export class CollectionsComponent implements OnInit {
   query = { communityId: '', unitId: '', on: '' };
   payment = { communityId: '', reference: '', method: 2, receivedOn: '', amount: 0, externalTransactionId: '' };
 ngOnInit():void{this.communityOptions.load().subscribe({next:items=>this.communities=items,error:()=>this.error='No se pudieron cargar las comunidades disponibles.'});}
+
+  loadUnits(communityId: string): void {
+    this.units = []; this.query.unitId = "";
+    if (!communityId) return;
+    this.domainOptions.units(communityId).subscribe({ next: items => this.units = items, error: () => this.error = "No se pudieron cargar las unidades." });
+  }
 
   loadReceivables(): void {
     const params = new URLSearchParams();

@@ -33,6 +33,10 @@ public static class PropertyEndpoints
             Results.Created("/api/properties/aliquots", new { id = await service.CreateAliquotAsync(new(request.CommunityId, request.UnitId, request.Method, request.UnitComputableArea, request.TotalComputableArea, request.Coefficient, request.FixedPercentage, request.ManualValue, request.ValidFrom, request.Reason, request.SupportDocumentReference, request.ApprovedBy), ct) }))
             .RequireAuthorization(AppCondominioPermissions.Properties.Manage);
 
+        group.MapGet("/communities/{communityId:guid}/units", async (Guid communityId, PropertyService service, CancellationToken ct) =>
+            Results.Ok(await service.ListUnitsAsync(communityId, ct)))
+            .RequireAuthorization(AppCondominioPermissions.Properties.Read);
+
         group.MapGet("/communities/{communityId:guid}/units/{unitId:guid}", async (Guid communityId, Guid unitId, PropertyService service, CancellationToken ct) =>
         {
             PropertyRecordResult? result = await service.GetRecordAsync(communityId, unitId, ct);

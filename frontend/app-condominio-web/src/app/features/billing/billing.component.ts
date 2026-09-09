@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
+import { DomainOptionsService, ReservableAreaOption, UnitOption } from '../../core/data/domain-options.service';
 
 @Component({
   selector: 'app-billing',
@@ -32,8 +33,8 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
     <section class="panel">
       <h3>Estado de cuenta por unidad</h3>
       <div class="form-grid compact">
-        <label>Comunidad<select [(ngModel)]="statement.communityId" name="statementCommunity" ><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
-        <label>Unit Id<input [(ngModel)]="statement.unitId" name="statementUnit"></label>
+        <label>Comunidad<select [(ngModel)]="statement.communityId" name="statementCommunity" (ngModelChange)="loadUnits($event)"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
+        <label>Unidad<select [(ngModel)]="statement.unitId" name="statementUnit"><option value="">Seleccione una unidad</option><option *ngFor="let unit of units" [value]="unit.id">{{ unit.code }} · {{ unit.location }}</option></select></label>
         <div class="form-actions"><button class="button secondary" type="button" (click)="loadStatement()" [disabled]="busy || !statement.communityId || !statement.unitId">Consultar</button></div>
       </div>
       <pre class="result-box" *ngIf="statementResult">{{ statementResult | json }}</pre>
@@ -43,7 +44,9 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
 export class BillingComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly communityOptions = inject(CommunityOptionsService);
+  private readonly domainOptions = inject(DomainOptionsService);
   communities: CommunityOption[] = [];
+  units: UnitOption[] = [];
   busy = false;
   error = '';
   message = '';
@@ -51,6 +54,12 @@ export class BillingComponent implements OnInit {
   period = { communityId: '', year: new Date().getFullYear(), month: new Date().getMonth() + 1, issueDate: '', dueDate: '' };
   statement = { communityId: '', unitId: '' };
 ngOnInit():void{this.communityOptions.load().subscribe({next:items=>this.communities=items,error:()=>this.error='No se pudieron cargar las comunidades disponibles.'});}
+
+  loadUnits(communityId: string): void {
+    this.units = []; this.statement.unitId = "";
+    if (!communityId) return;
+    this.domainOptions.units(communityId).subscribe({ next: items => this.units = items, error: () => this.error = "No se pudieron cargar las unidades." });
+  }
 
   openPeriod(): void {
     this.busy = true; this.error = ''; this.message = '';

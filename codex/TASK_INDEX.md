@@ -80,3 +80,5 @@ A release is not production-ready merely because code CI is green. Production re
 - UI-14D - Authorized procurement supplier/round selectors: IN VALIDATION - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI. Treasury SupplierId remains BLOCKED pending an explicit cross-context read/integration contract.
 
 - UI-14E Budgeting/Tax selectors: IN VALIDATION. Budget plans and tax documents now use community-scoped authorized lookups; no raw PlanId/DocumentId entry remains in these admin flows.
+
+- UI-14F People selectors: IN VALIDATION. Security host and Reservations requester now consume an explicit People.Read API contract; no direct cross-context table access.

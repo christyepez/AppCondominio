@@ -10,13 +10,18 @@ public interface IBudgetingRepository
     Task<bool> PlanVersionExistsAsync(Guid communityId,int year,int version,CancellationToken ct);
     Task<bool> LineExistsAsync(Guid budgetPlanId,string accountCode,int month,CancellationToken ct);
     Task<bool> ActualSourceExistsAsync(Guid communityId,string sourceType,string sourceReference,CancellationToken ct);
+    Task<IReadOnlyList<BudgetPlan>> GetPlansAsync(Guid communityId,CancellationToken ct);
     Task<IReadOnlyList<BudgetLine>> GetLinesAsync(Guid budgetPlanId,CancellationToken ct);
     Task<IReadOnlyList<BudgetActual>> GetActualsAsync(Guid communityId,int year,CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
 }
 
+public sealed record BudgetPlanOption(Guid Id,int Year,int Version,string Name,BudgetStatus Status);
+
 public sealed class BudgetingService(IBudgetingRepository repository)
 {
+    public async Task<IReadOnlyList<BudgetPlanOption>> ListPlansAsync(Guid communityId,CancellationToken ct)=>(await repository.GetPlansAsync(communityId,ct)).OrderByDescending(x=>x.Year).ThenByDescending(x=>x.Version).Select(x=>new BudgetPlanOption(x.Id,x.Year,x.Version,x.Name,x.Status)).ToArray();
+
     public async Task<Guid> CreatePlanAsync(Guid communityId,int year,int version,string name,CancellationToken ct)
     {
         if(await repository.PlanVersionExistsAsync(communityId,year,version,ct))throw new InvalidOperationException("Budget version already exists.");

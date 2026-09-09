@@ -119,7 +119,17 @@ jobs:
           echo 'JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes' >> .env
       - name: Build images
         run: docker compose build
-
+      - name: Start runtime stack
+        run: docker compose up -d
+      - name: Run fail-closed runtime smoke
+        shell: pwsh
+        run: ./scripts/production/smoke-test.ps1 -ReadyExpectedStatus 503
+      - name: Dump runtime logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=250
+      - name: Stop runtime stack
+        if: always()
+        run: docker compose down -v --remove-orphans
   secrets:
     runs-on: ubuntu-latest
     steps:

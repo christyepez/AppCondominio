@@ -1,4 +1,4 @@
-# Conjunto al DÃ­a - Product Test Plan
+# Conjunto al DÃƒÂ­a - Product Test Plan
 
 ## 1. Test prerequisites
 - Start SQL Server, Redis, RabbitMQ, Seq, API, Worker and Web.
@@ -136,6 +136,7 @@
 - Run cash forecast grouped by due date.
 - Reverse disbursement and verify payable balance restoration.
 - Verify no direct cross-write from Procurement into Treasury tables.
+- Verify Treasury lists only active suppliers for the selected community and rejects payable creation when SupplierId belongs to another community.
 
 ## 15. Budgeting and reporting
 - Create annual budget and monthly allocations.

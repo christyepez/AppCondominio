@@ -7,18 +7,21 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
 Push-Location $repoRoot
 try {
     $services = @('appcondominio-api', 'appcondominio-worker', 'appcondominio-web')
+    $configuredImages = @(& docker compose config --images)
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to resolve Compose image names.' }
+
     $images = foreach ($service in $services) {
-        $imageId = (& docker compose images -q $service).Trim()
-        if ([string]::IsNullOrWhiteSpace($imageId)) {
-            throw "Built image not found for service '$service'."
+        $imageName = @($configuredImages | Where-Object { $_ -eq $service -or $_.EndsWith("-$service") })
+        if ($imageName.Count -ne 1) {
+            throw "Expected exactly one built image for service '$service', found $($imageName.Count)."
         }
 
-        $contentDigest = (& docker image inspect $imageId --format '{{.Id}}').Trim()
+        $contentDigest = (& docker image inspect $imageName[0] --format '{{.Id}}').Trim()
         if ($LASTEXITCODE -ne 0 -or $contentDigest -notmatch '^sha256:[a-f0-9]{64}$') {
             throw "Invalid immutable image digest for service '$service'."
         }
 
-        $repoDigestsRaw = (& docker image inspect $imageId --format '{{json .RepoDigests}}').Trim()
+        $repoDigestsRaw = (& docker image inspect $imageName[0] --format '{{json .RepoDigests}}').Trim()
         $repoDigests = if ($repoDigestsRaw -and $repoDigestsRaw -ne 'null') {
             @($repoDigestsRaw | ConvertFrom-Json)
         } else { @() }

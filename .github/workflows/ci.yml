@@ -89,7 +89,8 @@ jobs:
             'scripts/database/migration-contexts.ps1',
             'scripts/database/migration-precheck.ps1',
             'scripts/database/apply-migrations.ps1',
-            'scripts/database/backup-restore-smoke.ps1'
+            'scripts/database/backup-restore-smoke.ps1',
+            'scripts/database/migration-recovery-rehearsal.ps1'
           )
           foreach ($path in $required) {
             if (-not (Test-Path $path)) { throw "Required production-readiness artifact missing: $path" }
@@ -143,6 +144,9 @@ jobs:
       - name: Run fail-closed runtime smoke
         shell: pwsh
         run: ./scripts/production/smoke-test.ps1 -ReadyExpectedStatus 503
+      - name: Run migration failure recovery rehearsal
+        shell: pwsh
+        run: ./scripts/database/migration-recovery-rehearsal.ps1
       - name: Run runtime rollback rehearsal
         shell: pwsh
         run: ./scripts/production/rollback-rehearsal.ps1

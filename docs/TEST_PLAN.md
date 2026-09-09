@@ -206,7 +206,9 @@
 
 ## 22. Release smoke and rollback
 - Run `scripts/production/validate-release.ps1` before deployment.
+- Run `scripts/database/migration-precheck.ps1`; migration inventory precheck must enumerate all 16 approved DbContexts and at least one committed migration per context without connecting to SQL.
 - Take/verify restorable DB backup.
+- Verify migration apply refuses execution without `-Apply`, without existing backup evidence, or without explicit `ConnectionStrings__<Module>` values for selected contexts.
 - Apply migrations in TEST/UAT from same release SHA.
 - Deploy immutable images.
 - Run `scripts/production/smoke-test.ps1`. In an integrated environment readiness must return 200. In isolated CI, use `-ReadyExpectedStatus 503` to prove the application remains live while readiness fails closed when Portal is intentionally absent.

@@ -30,6 +30,9 @@ jobs:
           fi
       - name: Build application
         run: dotnet build AppCondominio.sln -c Release --no-restore
+      - name: Migration inventory precheck
+        shell: pwsh
+        run: ./scripts/database/migration-precheck.ps1 -SkipBuild
       - name: Unit tests
         run: dotnet test tests/AppCondominio.UnitTests/AppCondominio.UnitTests.csproj -c Release --logger trx
       - name: Architecture tests
@@ -81,12 +84,16 @@ jobs:
             'docs/DEPENDENCY_MATRIX.md',
             'docs/TEST_PLAN.md',
             'scripts/production/validate-release.ps1',
-            'scripts/production/smoke-test.ps1'
+            'scripts/production/smoke-test.ps1',
+            'scripts/database/migration-contexts.ps1',
+            'scripts/database/migration-precheck.ps1',
+            'scripts/database/apply-migrations.ps1'
           )
           foreach ($path in $required) {
             if (-not (Test-Path $path)) { throw "Required production-readiness artifact missing: $path" }
           }
-          foreach ($script in Get-ChildItem 'scripts/production/*.ps1') {
+          $scriptPaths = @(Get-ChildItem 'scripts/production/*.ps1') + @(Get-ChildItem 'scripts/database/*.ps1')
+          foreach ($script in $scriptPaths) {
             $tokens = $null
             $parseErrors = $null
             [System.Management.Automation.Language.Parser]::ParseFile($script.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null

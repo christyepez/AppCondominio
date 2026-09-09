@@ -6,6 +6,7 @@ public interface IPeopleRepository
 {
     Task AddAsync<T>(T entity, CancellationToken cancellationToken) where T : class;
     Task<Person?> GetPersonAsync(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<Person>> ListPeopleAsync(Guid communityId, CancellationToken cancellationToken);
     Task<ActivationRequest?> GetActivationAsync(Guid id, CancellationToken cancellationToken);
     Task<UnitAccessCode?> FindUsableAccessCodeAsync(Guid communityId, Guid unitId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<Ownership>> ListOwnershipsAsync(Guid communityId, Guid unitId, CancellationToken cancellationToken);
@@ -17,11 +18,13 @@ public interface IPeopleRepository
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }
 
+public sealed record PersonOption(Guid Id,string Identification,string DisplayName);
 public sealed record UnitPeopleRecord(Guid UnitId, IReadOnlyCollection<Ownership> Ownerships, IReadOnlyCollection<Resident> Residents, IReadOnlyCollection<FinancialResponsibility> FinancialResponsibilities);
 public sealed record AccessExpiryResult(int LeasesExpired, int GrantsExpired, IReadOnlyCollection<string> ExternalUsersPendingPortalRevocation);
 
 public sealed class PeopleService(IPeopleRepository repository)
 {
+    public async Task<IReadOnlyCollection<PersonOption>> ListPeopleAsync(Guid communityId,CancellationToken ct)=>(await repository.ListPeopleAsync(communityId,ct)).OrderBy(x=>x.DisplayName).Select(x=>new PersonOption(x.Id,x.Identification,x.DisplayName)).ToArray();
     public async Task<Guid> CreateNaturalPersonAsync(Guid communityId, string identification, string names, string? email, string? phone, DateOnly? birthDate, string? address, CancellationToken ct)
     {
         await EnsureUniqueIdentification(communityId, identification, ct);

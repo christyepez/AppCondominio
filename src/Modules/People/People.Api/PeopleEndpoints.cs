@@ -13,6 +13,7 @@ public static class PeopleEndpoints
     {
         var group=endpoints.MapGroup("/api/people").WithTags("People").RequireAuthorization();
 
+        group.MapGet("/communities/{communityId:guid}",async(Guid communityId,PeopleService s,CancellationToken ct)=>Results.Ok(await s.ListPeopleAsync(communityId,ct))).RequireAuthorization(AppCondominioPermissions.People.Read);
         group.MapPost("/natural",async(NaturalPersonRequest r,PeopleService s,CancellationToken ct)=>Results.Created("/api/people/natural",new{id=await s.CreateNaturalPersonAsync(r.CommunityId,r.Identification,r.Names,r.Email,r.Phone,r.BirthDate,r.Address,ct)})).RequireAuthorization(AppCondominioPermissions.People.Manage);
         group.MapPost("/legal",async(LegalPersonRequest r,PeopleService s,CancellationToken ct)=>Results.Created("/api/people/legal",new{id=await s.CreateLegalPersonAsync(r.CommunityId,r.TaxId,r.LegalName,r.Representative,r.Email,r.Phone,r.Address,ct)})).RequireAuthorization(AppCondominioPermissions.People.Manage);
         group.MapPost("/ownerships",async(OwnershipRequest r,PeopleService s,CancellationToken ct)=>Results.Created("/api/people/ownerships",new{id=await s.AddOwnershipAsync(r.CommunityId,r.UnitId,r.PersonId,r.Percentage,r.StartsOn,r.AcquisitionType,r.SupportDocumentReference,ct)})).RequireAuthorization(AppCondominioPermissions.People.Manage);

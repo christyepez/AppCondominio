@@ -24,6 +24,7 @@ internal sealed class EfPeopleRepository(PeopleDbContext db) : IPeopleRepository
 {
     public async Task AddAsync<T>(T entity, CancellationToken cancellationToken) where T : class => await db.Set<T>().AddAsync(entity, cancellationToken);
     public Task<Person?> GetPersonAsync(Guid id, CancellationToken cancellationToken) => db.People.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    public async Task<IReadOnlyCollection<Person>> ListPeopleAsync(Guid communityId, CancellationToken cancellationToken) => await db.People.AsNoTracking().Where(x => x.CommunityId == communityId).OrderBy(x => x.DisplayName).ToArrayAsync(cancellationToken);
     public Task<ActivationRequest?> GetActivationAsync(Guid id, CancellationToken cancellationToken) => db.Activations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     public Task<UnitAccessCode?> FindUsableAccessCodeAsync(Guid communityId, Guid unitId, CancellationToken cancellationToken) => db.AccessCodes.Where(x => x.CommunityId == communityId && x.UnitId == unitId && x.ConsumedAtUtc == null && x.ExpiresAtUtc >= DateTimeOffset.UtcNow).OrderByDescending(x => x.ExpiresAtUtc).FirstOrDefaultAsync(cancellationToken);
     public async Task<IReadOnlyCollection<Ownership>> ListOwnershipsAsync(Guid communityId, Guid unitId, CancellationToken cancellationToken) => await db.Ownerships.Where(x => x.CommunityId == communityId && x.UnitId == unitId).OrderByDescending(x => x.StartsOn).ToArrayAsync(cancellationToken);

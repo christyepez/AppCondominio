@@ -77,10 +77,12 @@ A release is not production-ready merely because code CI is green. Production re
 
 - UI-14C - Authorized organization selectors: IN VALIDATION - organization list query/endpoint plus selectors in Organizations, Communities and SaaS; no Portal ownership duplicated.
 
-- UI-14D - Authorized procurement supplier/round selectors: IN VALIDATION - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI. Treasury SupplierId remains BLOCKED pending an explicit cross-context read/integration contract.
+- UI-14D - Authorized procurement supplier/round selectors: IN VALIDATION - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI.
 
 - UI-14E Budgeting/Tax selectors: IN VALIDATION. Budget plans and tax documents now use community-scoped authorized lookups; no raw PlanId/DocumentId entry remains in these admin flows.
 
 - UI-14F People selectors: IN VALIDATION. Security host and Reservations requester now consume an explicit People.Read API contract; no direct cross-context table access.
 
-- UI-14G Cross-channel defense-in-depth: IN VALIDATION. Added IPeopleDirectory integration contract and automated negative tests proving Reservations/Security reject cross-community person IDs even when UI selectors are bypassed. Portal User directory and Treasury Supplier lookup remain explicit external/cross-context follow-ups.
+- UI-14G Cross-channel defense-in-depth: IN VALIDATION. Added IPeopleDirectory integration contract and automated negative tests proving Reservations/Security reject cross-community person IDs even when UI selectors are bypassed. Portal User directory remains an explicit Portal-owned follow-up.
+
+- UI-14H Treasury/Procurement supplier integration: IN VALIDATION. Treasury resolves eligible suppliers through `IProcurementSupplierDirectory`, exposes a Treasury.Read-scoped selector endpoint and rejects cross-community supplier payloads without direct Procurement table access.

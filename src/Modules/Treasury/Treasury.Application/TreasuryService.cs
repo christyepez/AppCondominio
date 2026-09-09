@@ -1,3 +1,4 @@
+using AppCondominio.Contracts.Procurement;
 using AppCondominio.Modules.Treasury.Domain;
 
 namespace AppCondominio.Modules.Treasury.Application;
@@ -14,9 +15,11 @@ public interface ITreasuryRepository
     Task SaveChangesAsync(CancellationToken ct);
 }
 
-public sealed class TreasuryService(ITreasuryRepository repository)
+public sealed record TreasurySupplierOption(Guid Id,string TaxId,string LegalName);
+public sealed class TreasuryService(ITreasuryRepository repository,IProcurementSupplierDirectory supplierDirectory)
 {
-    public async Task<Guid> CreatePayableAsync(Guid communityId,Guid supplierId,string documentNumber,DateOnly documentDate,DateOnly dueDate,decimal amount,string expenseAccount,string payableAccount,CancellationToken ct){if(await repository.DocumentExistsAsync(communityId,supplierId,documentNumber,ct))throw new InvalidOperationException("Supplier document already exists.");var x=SupplierPayable.Create(communityId,supplierId,documentNumber,documentDate,dueDate,amount,expenseAccount,payableAccount);await repository.AddAsync(x,ct);await repository.SaveChangesAsync(ct);return x.Id;}
+    public async Task<IReadOnlyList<TreasurySupplierOption>> ListEligibleSuppliersAsync(Guid communityId,CancellationToken ct)=>(await supplierDirectory.ListActiveAsync(communityId,ct)).Where(x=>x.IsActive&&x.CommunityId==communityId).Select(x=>new TreasurySupplierOption(x.SupplierId,x.TaxId,x.LegalName)).OrderBy(x=>x.LegalName).ToArray();
+    public async Task<Guid> CreatePayableAsync(Guid communityId,Guid supplierId,string documentNumber,DateOnly documentDate,DateOnly dueDate,decimal amount,string expenseAccount,string payableAccount,CancellationToken ct){var supplier=await supplierDirectory.FindAsync(supplierId,ct)??throw new KeyNotFoundException("Supplier not found.");if(!supplier.IsActive||supplier.CommunityId!=communityId)throw new InvalidOperationException("Supplier is not eligible for this community.");if(await repository.DocumentExistsAsync(communityId,supplierId,documentNumber,ct))throw new InvalidOperationException("Supplier document already exists.");var x=SupplierPayable.Create(communityId,supplierId,documentNumber,documentDate,dueDate,amount,expenseAccount,payableAccount);await repository.AddAsync(x,ct);await repository.SaveChangesAsync(ct);return x.Id;}
     public async Task<Guid> RequestPaymentAsync(Guid payableId,decimal amount,string requestedBy,CancellationToken ct){var p=await repository.GetPayableAsync(payableId,ct)??throw new KeyNotFoundException("Payable not found.");if(amount>p.OutstandingAmount)throw new InvalidOperationException("Requested amount exceeds payable outstanding balance.");var r=PaymentRequest.Create(p.CommunityId,p.Id,amount,requestedBy);await repository.AddAsync(r,ct);await repository.SaveChangesAsync(ct);return r.Id;}
     public async Task ApproveAsync(Guid requestId,string by,CancellationToken ct){var r=await repository.GetRequestAsync(requestId,ct)??throw new KeyNotFoundException("Payment request not found.");var p=await repository.GetPayableAsync(r.PayableId,ct)??throw new KeyNotFoundException("Payable not found.");if(r.Amount>p.OutstandingAmount)throw new InvalidOperationException("Approved request exceeds current outstanding balance.");r.Approve(by);await repository.SaveChangesAsync(ct);}
     public async Task RejectAsync(Guid requestId,string by,string reason,CancellationToken ct){var r=await repository.GetRequestAsync(requestId,ct)??throw new KeyNotFoundException("Payment request not found.");r.Reject(by,reason);await repository.SaveChangesAsync(ct);}

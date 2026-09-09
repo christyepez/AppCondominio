@@ -76,3 +76,5 @@ A release is not production-ready merely because code CI is green. Production re
 - UI-14B - Authorized unit/area selectors: IN VALIDATION - administrative Properties unit lookup and Reservations area lookup exposed with existing read permissions; Billing, Collections, People and Reservations consume selector options.
 
 - UI-14C - Authorized organization selectors: IN VALIDATION - organization list query/endpoint plus selectors in Organizations, Communities and SaaS; no Portal ownership duplicated.
+
+- UI-14D - Authorized procurement supplier/round selectors: IN VALIDATION - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI. Treasury SupplierId remains BLOCKED pending an explicit cross-context read/integration contract.

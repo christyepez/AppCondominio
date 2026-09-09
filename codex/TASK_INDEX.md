@@ -61,7 +61,7 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-12 | Supplier portal | VALIDATED - PR #30 |
 | UI-13 | Guard portal | VALIDATED - PR #31 |
 | UI-PWA | Installable PWA shell / static offline safety | IN VALIDATION - PR #32 |
-| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | IN PROGRESS |
+| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | IN VALIDATION |
 
 Current branch: `feature/ui-completion-admin-core`. Admin Core now exposes a navigable Angular 21 console across all principal bounded contexts and consumes real secured backend endpoints. The only new backend read surface added for UI completion is `GET /api/communities/`, protected by the existing `appcondominio.communities.read` permission. Screens preserve explicit 401/403 behavior and do not create a local authentication/token engine.
 
@@ -82,3 +82,5 @@ A release is not production-ready merely because code CI is green. Production re
 - UI-14E Budgeting/Tax selectors: IN VALIDATION. Budget plans and tax documents now use community-scoped authorized lookups; no raw PlanId/DocumentId entry remains in these admin flows.
 
 - UI-14F People selectors: IN VALIDATION. Security host and Reservations requester now consume an explicit People.Read API contract; no direct cross-context table access.
+
+- UI-14G Cross-channel defense-in-depth: IN VALIDATION. Added IPeopleDirectory integration contract and automated negative tests proving Reservations/Security reject cross-community person IDs even when UI selectors are bypassed. Portal User directory and Treasury Supplier lookup remain explicit external/cross-context follow-ups.

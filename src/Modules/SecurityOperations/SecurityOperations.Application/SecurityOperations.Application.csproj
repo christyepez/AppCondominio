@@ -1,1 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="..\SecurityOperations.Domain\SecurityOperations.Domain.csproj" /></ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="..\SecurityOperations.Domain\SecurityOperations.Domain.csproj" /><ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" /></ItemGroup></Project>

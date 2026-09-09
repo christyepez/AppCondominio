@@ -1,4 +1,4 @@
-# Conjunto al Día - Product Test Plan
+# Conjunto al DÃ­a - Product Test Plan
 
 ## 1. Test prerequisites
 - Start SQL Server, Redis, RabbitMQ, Seq, API, Worker and Web.
@@ -199,6 +199,9 @@
 - Attempt duplicate external/import/payment/source references and verify idempotent rejection/no duplicate.
 - Send malformed GUIDs, negative amounts, invalid percentages, invalid date ranges and oversized text; expect 4xx/ProblemDetails, not unhandled 500.
 - Verify errors/logs never echo passwords, JWT secrets, connection strings or SRI certificate passwords.
+- Cross-channel People isolation: a Reservations request for community A must reject a requester belonging to community B, even when a client submits the GUID directly.
+- Cross-channel Security isolation: a visit in community A must reject a host person belonging to community B, even when a client bypasses the UI selector.
+- Verify Admin-created access grants remain scoped when later consumed by Resident, Supplier and Guard channels; Portal identity remains the authenticated authority.
 
 ## 22. Release smoke and rollback
 - Run `scripts/production/validate-release.ps1` before deployment.

@@ -94,4 +94,5 @@ A release is not production-ready merely because code CI is green. Production re
 |---:|---|---|
 | RC-01 | Docker runtime smoke / fail-closed readiness verification | VALIDATED - PR #42 / CI `34388329936` |
 | RC-02 | Database migration inventory / backup-gated apply evidence | VALIDATED - PR #43 / CI `34403370897` |
-| RC-03 | SQL backup/restore rehearsal evidence in release stack | IN VALIDATION |
+| RC-03 | SQL backup/restore rehearsal evidence in release stack | VALIDATED - PR #44 / CI `34406992413` |
+| RC-04 | Immutable image/release evidence manifest | IN VALIDATION |

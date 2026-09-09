@@ -24,8 +24,8 @@ function Invoke-SqlInContainer([string]$Sql, [switch]$Capture) {
 $cleanupSql = @"
 USE [master];
 IF DB_ID(N'$DatabaseName') IS NOT NULL BEGIN
-    ALTER DATABASE [$DatabaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP DATABASE [$DatabaseName];
+    EXEC(N'ALTER DATABASE [$DatabaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE');
+    EXEC(N'DROP DATABASE [$DatabaseName]');
 END;
 "@
 try {

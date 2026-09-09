@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
 import { CommunityOption, CommunityOptionsService } from '../../core/data/community-options.service';
+import { DomainOptionsService, ReservableAreaOption, UnitOption } from '../../core/data/domain-options.service';
 
 @Component({
   selector: 'app-people',
@@ -34,8 +35,8 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
     <section class="panel">
       <h3>Ficha de ocupación por unidad</h3>
       <div class="form-grid compact">
-        <label>Comunidad<select [(ngModel)]="lookup.communityId" name="lookupCommunity"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
-        <label>Unit Id<input [(ngModel)]="lookup.unitId" name="lookupUnit"></label>
+        <label>Comunidad<select [(ngModel)]="lookup.communityId" name="lookupCommunity" (ngModelChange)="loadUnits($event)"><option value="">Seleccione una comunidad</option><option *ngFor="let community of communities" [value]="community.id">{{ community.name }} ({{ community.code }})</option></select></label>
+        <label>Unidad<select [(ngModel)]="lookup.unitId" name="lookupUnit"><option value="">Seleccione una unidad</option><option *ngFor="let unit of units" [value]="unit.id">{{ unit.code }} · {{ unit.location }}</option></select></label>
         <div class="form-actions"><button class="button secondary" type="button" (click)="loadUnit()" [disabled]="busy || !lookup.communityId || !lookup.unitId">Consultar</button></div>
       </div>
       <pre class="result-box" *ngIf="unitRecord">{{ unitRecord | json }}</pre>
@@ -45,7 +46,9 @@ import { CommunityOption, CommunityOptionsService } from '../../core/data/commun
 export class PeopleComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly communityOptions = inject(CommunityOptionsService);
+  private readonly domainOptions = inject(DomainOptionsService);
   communities: CommunityOption[] = [];
+  units: UnitOption[] = [];
   busy = false;
   error = '';
   message = '';
@@ -58,6 +61,12 @@ export class PeopleComponent implements OnInit {
       next: items => this.communities = items,
       error: () => this.error = 'No se pudieron cargar las comunidades disponibles.'
     });
+  }
+
+  loadUnits(communityId: string): void {
+    this.units = []; this.lookup.unitId = "";
+    if (!communityId) return;
+    this.domainOptions.units(communityId).subscribe({ next: items => this.units = items, error: () => this.error = "No se pudieron cargar las unidades." });
   }
 
   createNaturalPerson(): void {

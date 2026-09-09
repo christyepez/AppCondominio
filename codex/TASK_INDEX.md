@@ -72,3 +72,5 @@ The 18-sprint backend/platform roadmap is complete and validated except for expl
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.
+
+- UI-14B - Authorized unit/area selectors: IN VALIDATION - administrative Properties unit lookup and Reservations area lookup exposed with existing read permissions; Billing, Collections, People and Reservations consume selector options.

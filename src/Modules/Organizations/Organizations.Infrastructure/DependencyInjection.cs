@@ -1,6 +1,7 @@
 using AppCondominio.Modules.Organizations.Application.Abstractions;
 using AppCondominio.Modules.Organizations.Application.CreateOrganization;
 using AppCondominio.Modules.Organizations.Application.GetOrganizationById;
+using AppCondominio.Modules.Organizations.Application.ListOrganizations;
 using AppCondominio.Modules.Organizations.Application.Saas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<ISaasMetricsRepository, EfSaasMetricsRepository>();
         services.AddScoped<CreateOrganizationHandler>();
         services.AddScoped<GetOrganizationByIdHandler>();
+        services.AddScoped<ListOrganizationsHandler>();
         services.AddScoped<SaasService>();
         services.AddScoped<SaasAdministrationService>();
 

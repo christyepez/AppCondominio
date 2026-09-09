@@ -10,13 +10,13 @@ internal sealed class EfOrganizationRepository(OrganizationsDbContext dbContext)
     public async Task AddAsync(Organization organization, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(organization);
-
         await dbContext.Organizations.AddAsync(organization, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public Task<Organization?> GetByIdAsync(Guid id, CancellationToken cancellationToken) =>
-        dbContext.Organizations
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+        dbContext.Organizations.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+    public async Task<IReadOnlyCollection<Organization>> ListAsync(CancellationToken cancellationToken) =>
+        await dbContext.Organizations.AsNoTracking().OrderBy(x => x.Name).ToArrayAsync(cancellationToken);
 }

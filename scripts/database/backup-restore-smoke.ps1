@@ -36,19 +36,32 @@ try {
 
     Invoke-SqlInContainer $cleanupSql
 
-    $backupRestoreSql = @"
+    Invoke-SqlInContainer @"
 USE [master];
 CREATE DATABASE [$DatabaseName];
+"@
+
+    Invoke-SqlInContainer @"
 USE [$DatabaseName];
 CREATE TABLE dbo.RestoreProbe(Id int NOT NULL PRIMARY KEY, Marker nvarchar(100) NOT NULL);
 INSERT INTO dbo.RestoreProbe(Id, Marker) VALUES (1, N'AppCondominio-RC03');
+"@
+
+    Invoke-SqlInContainer @"
+USE [master];
 BACKUP DATABASE [$DatabaseName] TO DISK = N'$BackupFile' WITH INIT, COPY_ONLY, CHECKSUM;
+"@
+
+    Invoke-SqlInContainer @"
 USE [master];
 ALTER DATABASE [$DatabaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 DROP DATABASE [$DatabaseName];
+"@
+
+    Invoke-SqlInContainer @"
+USE [master];
 RESTORE DATABASE [$DatabaseName] FROM DISK = N'$BackupFile' WITH CHECKSUM;
 "@
-    Invoke-SqlInContainer $backupRestoreSql
 
     $verifySql = @"
 SET NOCOUNT ON;

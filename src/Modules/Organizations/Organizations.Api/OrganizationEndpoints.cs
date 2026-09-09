@@ -1,6 +1,7 @@
 using AppCondominio.Contracts.Security;
 using AppCondominio.Modules.Organizations.Application.CreateOrganization;
 using AppCondominio.Modules.Organizations.Application.GetOrganizationById;
+using AppCondominio.Modules.Organizations.Application.ListOrganizations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -18,6 +19,9 @@ public static class OrganizationEndpoints
         group.MapPost("/", CreateAsync)
             .RequireAuthorization(AppCondominioPermissions.Organizations.Manage);
 
+        group.MapGet("/", ListAsync)
+            .RequireAuthorization(AppCondominioPermissions.Organizations.Read);
+
         group.MapGet("/{id:guid}", GetByIdAsync)
             .RequireAuthorization(AppCondominioPermissions.Organizations.Read);
 
@@ -34,6 +38,11 @@ public static class OrganizationEndpoints
             cancellationToken);
 
         return Results.Created($"/api/organizations/{result.Id}", result);
+    }
+
+    private static async Task<IResult> ListAsync(ListOrganizationsHandler handler, CancellationToken cancellationToken)
+    {
+        return Results.Ok(await handler.HandleAsync(new ListOrganizationsQuery(), cancellationToken));
     }
 
     private static async Task<IResult> GetByIdAsync(

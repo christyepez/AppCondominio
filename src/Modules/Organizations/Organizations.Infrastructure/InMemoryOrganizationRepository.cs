@@ -11,12 +11,8 @@ internal sealed class InMemoryOrganizationRepository : IOrganizationRepository
     public Task AddAsync(Organization organization, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-
         if (!_organizations.TryAdd(organization.Id, organization))
-        {
             throw new InvalidOperationException($"Organization '{organization.Id}' already exists.");
-        }
-
         return Task.CompletedTask;
     }
 
@@ -25,5 +21,11 @@ internal sealed class InMemoryOrganizationRepository : IOrganizationRepository
         cancellationToken.ThrowIfCancellationRequested();
         _organizations.TryGetValue(id, out Organization? organization);
         return Task.FromResult(organization);
+    }
+    public Task<IReadOnlyCollection<Organization>> ListAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyCollection<Organization> organizations = _organizations.Values.OrderBy(x => x.Name).ToArray();
+        return Task.FromResult(organizations);
     }
 }

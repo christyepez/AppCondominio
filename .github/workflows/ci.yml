@@ -101,7 +101,8 @@ jobs:
           cp .env.example .env
           sed -i 's/ChangeMeOutsideGit_123!/CiOnly_StrongPassword_123!/' .env
           sed -i 's/ChangeMeOutsideGit/CiOnlyRabbitPassword/' .env
-          echo 'JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes' >> .env
+          sed -i 's|^JWT_SECRET=$|JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes|' .env
+          sed -i 's|^SEQ_ADMIN_PASSWORD=$|SEQ_ADMIN_PASSWORD=CI-only-seq-admin-Strong_123!|' .env
       - name: Validate release prerequisites and compose model
         shell: pwsh
         run: ./scripts/production/validate-release.ps1
@@ -116,10 +117,21 @@ jobs:
           cp .env.example .env
           sed -i 's/ChangeMeOutsideGit_123!/CiOnly_StrongPassword_123!/' .env
           sed -i 's/ChangeMeOutsideGit/CiOnlyRabbitPassword/' .env
-          echo 'JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes' >> .env
+          sed -i 's|^JWT_SECRET=$|JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes|' .env
+          sed -i 's|^SEQ_ADMIN_PASSWORD=$|SEQ_ADMIN_PASSWORD=CI-only-seq-admin-Strong_123!|' .env
       - name: Build images
         run: docker compose build
-
+      - name: Start runtime stack
+        run: docker compose up -d
+      - name: Run fail-closed runtime smoke
+        shell: pwsh
+        run: ./scripts/production/smoke-test.ps1 -ReadyExpectedStatus 503
+      - name: Dump runtime logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=250
+      - name: Stop runtime stack
+        if: always()
+        run: docker compose down -v --remove-orphans
   secrets:
     runs-on: ubuntu-latest
     steps:

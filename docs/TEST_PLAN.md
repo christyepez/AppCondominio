@@ -209,7 +209,8 @@
 - Take/verify restorable DB backup.
 - Apply migrations in TEST/UAT from same release SHA.
 - Deploy immutable images.
-- Run `scripts/production/smoke-test.ps1`.
+- Run `scripts/production/smoke-test.ps1`. In an integrated environment readiness must return 200. In isolated CI, use `-ReadyExpectedStatus 503` to prove the application remains live while readiness fails closed when Portal is intentionally absent.
+- CI runtime smoke must start the Docker Compose stack, verify API root/live health, verify unauthenticated session returns 401, verify Web responds, and always tear the stack down after the check.
 - Record image digests and commit SHA.
 - Test rollback to previous image set in non-production.
 - Verify forward-fix/restore procedure for migration failure.

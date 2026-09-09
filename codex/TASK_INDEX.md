@@ -60,29 +60,36 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-11 | Resident portal | VALIDATED - PR #29 |
 | UI-12 | Supplier portal | VALIDATED - PR #30 |
 | UI-13 | Guard portal | VALIDATED - PR #31 |
-| UI-PWA | Installable PWA shell / static offline safety | IN VALIDATION - PR #32 |
-| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | IN VALIDATION |
+| UI-PWA | Installable PWA shell / static offline safety | VALIDATED in stacked UI chain through PR #41 / CI `34379512223` |
+| UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | VALIDATED - PR #41 / CI `34379512223` |
 
-Current branch: `feature/ui-completion-admin-core`. Admin Core now exposes a navigable Angular 21 console across all principal bounded contexts and consumes real secured backend endpoints. The only new backend read surface added for UI completion is `GET /api/communities/`, protected by the existing `appcondominio.communities.read` permission. Screens preserve explicit 401/403 behavior and do not create a local authentication/token engine.
+Current delivery head: `feature/ui14-treasury-supplier-selector` / PR #41. The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
 
 First-pass Admin screens intentionally allow explicit GUID entry where the backend does not yet expose safe list/search contracts. Subsequent UX hardening will replace those fields with selectors only where real authorized lookup endpoints are available; it must not invent cross-tenant lookup behavior.
 
 ## Product-completeness note
-The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. Admin Core is currently in final validation. Resident, Supplier and Guard channels still require their dedicated UI delivery before all end-user channels can be called product-complete.
+The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The application-owned backend/platform and all four end-user UI channels are validated in the stacked delivery chain. Product release remains conditional on the explicitly blocked Portal-owned capabilities required by the intended deployment scope and on release-candidate operational evidence.
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.
 
-- UI-14B - Authorized unit/area selectors: IN VALIDATION - administrative Properties unit lookup and Reservations area lookup exposed with existing read permissions; Billing, Collections, People and Reservations consume selector options.
+- UI-14B - Authorized unit/area selectors: VALIDATED via stacked PR #41 / CI `34379512223` - administrative Properties unit lookup and Reservations area lookup exposed with existing read permissions; Billing, Collections, People and Reservations consume selector options.
 
-- UI-14C - Authorized organization selectors: IN VALIDATION - organization list query/endpoint plus selectors in Organizations, Communities and SaaS; no Portal ownership duplicated.
+- UI-14C - Authorized organization selectors: VALIDATED via stacked PR #41 / CI `34379512223` - organization list query/endpoint plus selectors in Organizations, Communities and SaaS; no Portal ownership duplicated.
 
-- UI-14D - Authorized procurement supplier/round selectors: IN VALIDATION - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI.
+- UI-14D - Authorized procurement supplier/round selectors: VALIDATED via stacked PR #41 / CI `34379512223` - community-scoped active suppliers and open rounds exposed with Procurement.Read and consumed by admin procurement UI.
 
-- UI-14E Budgeting/Tax selectors: IN VALIDATION. Budget plans and tax documents now use community-scoped authorized lookups; no raw PlanId/DocumentId entry remains in these admin flows.
+- UI-14E Budgeting/Tax selectors: VALIDATED via stacked PR #41 / CI `34379512223`. Budget plans and tax documents now use community-scoped authorized lookups; no raw PlanId/DocumentId entry remains in these admin flows.
 
-- UI-14F People selectors: IN VALIDATION. Security host and Reservations requester now consume an explicit People.Read API contract; no direct cross-context table access.
+- UI-14F People selectors: VALIDATED via stacked PR #41 / CI `34379512223`. Security host and Reservations requester now consume an explicit People.Read API contract; no direct cross-context table access.
 
-- UI-14G Cross-channel defense-in-depth: IN VALIDATION. Added IPeopleDirectory integration contract and automated negative tests proving Reservations/Security reject cross-community person IDs even when UI selectors are bypassed. Portal User directory remains an explicit Portal-owned follow-up.
+- UI-14G Cross-channel defense-in-depth: VALIDATED via stacked PR #41 / CI `34379512223`. Added IPeopleDirectory integration contract and automated negative tests proving Reservations/Security reject cross-community person IDs even when UI selectors are bypassed. Portal User directory remains an explicit Portal-owned follow-up.
 
-- UI-14H Treasury/Procurement supplier integration: IN VALIDATION. Treasury resolves eligible suppliers through `IProcurementSupplierDirectory`, exposes a Treasury.Read-scoped selector endpoint and rejects cross-community supplier payloads without direct Procurement table access.
+- UI-14H Treasury/Procurement supplier integration: VALIDATED via PR #41 / CI `34379512223`. Treasury resolves eligible suppliers through `IProcurementSupplierDirectory`, exposes a Treasury.Read-scoped selector endpoint and rejects cross-community supplier payloads without direct Procurement table access.
+
+
+## Follow-on phase - Release Candidate hardening
+
+| Order | Capability | Status |
+|---:|---|---|
+| RC-01 | Docker runtime smoke / fail-closed readiness verification | IN VALIDATION |

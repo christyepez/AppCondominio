@@ -11,6 +11,7 @@ public static class BudgetingEndpoints
     public static IEndpointRouteBuilder MapBudgetingEndpoints(this IEndpointRouteBuilder app)
     {
         var group=app.MapGroup("/api/budgeting").RequireAuthorization();
+        group.MapGet("/communities/{communityId:guid}/plans",async(Guid communityId,BudgetingService s,CancellationToken ct)=>Results.Ok(await s.ListPlansAsync(communityId,ct))).RequireAuthorization(AppCondominioPermissions.Budgeting.Read);
         group.MapPost("/plans",async(CreateBudgetPlanRequest r,BudgetingService s,CancellationToken ct)=>Results.Ok(new{Id=await s.CreatePlanAsync(r.CommunityId,r.Year,r.Version,r.Name,ct)})).RequireAuthorization(AppCondominioPermissions.Budgeting.Manage);
         group.MapPost("/plans/{planId:guid}/lines",async(Guid planId,CreateBudgetLineRequest r,BudgetingService s,CancellationToken ct)=>Results.Ok(new{Id=await s.AddLineAsync(planId,r.AccountCode,r.Category,r.Month,r.PlannedAmount,ct)})).RequireAuthorization(AppCondominioPermissions.Budgeting.Manage);
         group.MapPut("/lines/{lineId:guid}/amount",async(Guid lineId,ChangeBudgetLineAmountRequest r,BudgetingService s,CancellationToken ct)=>{await s.ChangeLineAmountAsync(lineId,r.Amount,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.Budgeting.Manage);

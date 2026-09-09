@@ -21,6 +21,7 @@ internal sealed class EfBudgetingRepository(BudgetingDbContext db):IBudgetingRep
     public Task<bool> PlanVersionExistsAsync(Guid communityId,int year,int version,CancellationToken ct)=>db.Plans.AnyAsync(x=>x.CommunityId==communityId&&x.Year==year&&x.Version==version,ct);
     public Task<bool> LineExistsAsync(Guid budgetPlanId,string accountCode,int month,CancellationToken ct)=>db.Lines.AnyAsync(x=>x.BudgetPlanId==budgetPlanId&&x.AccountCode==accountCode&&x.Month==month,ct);
     public Task<bool> ActualSourceExistsAsync(Guid communityId,string sourceType,string sourceReference,CancellationToken ct)=>db.Actuals.AnyAsync(x=>x.CommunityId==communityId&&x.SourceType==sourceType&&x.SourceReference==sourceReference,ct);
+    public async Task<IReadOnlyList<BudgetPlan>> GetPlansAsync(Guid communityId,CancellationToken ct)=>await db.Plans.Where(x=>x.CommunityId==communityId).AsNoTracking().OrderByDescending(x=>x.Year).ThenByDescending(x=>x.Version).ToArrayAsync(ct);
     public async Task<IReadOnlyList<BudgetLine>> GetLinesAsync(Guid budgetPlanId,CancellationToken ct)=>await db.Lines.Where(x=>x.BudgetPlanId==budgetPlanId).AsNoTracking().ToArrayAsync(ct);
     public async Task<IReadOnlyList<BudgetActual>> GetActualsAsync(Guid communityId,int year,CancellationToken ct)=>await db.Actuals.Where(x=>x.CommunityId==communityId&&x.Year==year).AsNoTracking().ToArrayAsync(ct);
     public Task SaveChangesAsync(CancellationToken ct)=>db.SaveChangesAsync(ct);

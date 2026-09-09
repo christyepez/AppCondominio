@@ -7,6 +7,7 @@ public interface ITaxRepository
 {
     Task<bool> SourceExistsAsync(Guid communityId,Guid sourceDocumentId,CancellationToken ct);
     Task<ElectronicDocument?> GetAsync(Guid id,CancellationToken ct);
+    Task<IReadOnlyList<ElectronicDocument>> ListAsync(Guid communityId,CancellationToken ct);
     Task AddAsync(ElectronicDocument document,CancellationToken ct);
     Task SaveChangesAsync(CancellationToken ct);
 }
@@ -33,6 +34,7 @@ public sealed class TaxService(ITaxRepository repository,IElectronicInvoicingSer
         var document=await repository.GetAsync(id,ct)??throw new KeyNotFoundException("Electronic document was not found.");var result=await invoicing.GetStatusAsync(document.CommunityId,document.AccessKey,ct);document.ApplyResult(result.Status,result.AuthorizationNumber,result.AuthorizedAtUtc,result.Message);await repository.SaveChangesAsync(ct);return ToView(document);
     }
 
+    public async Task<IReadOnlyList<ElectronicDocumentView>> ListAsync(Guid communityId,CancellationToken ct)=>(await repository.ListAsync(communityId,ct)).Select(ToView).ToArray();
     public async Task<ElectronicDocumentView> GetAsync(Guid id,CancellationToken ct)=>ToView(await repository.GetAsync(id,ct)??throw new KeyNotFoundException("Electronic document was not found."));
     private static ElectronicDocumentView ToView(ElectronicDocument x)=>new(x.Id,x.CommunityId,x.SourceDocumentId,x.DocumentType,x.AccessKey,x.Status,x.AuthorizationNumber,x.AuthorizedAtUtc,x.LastMessage);
 }

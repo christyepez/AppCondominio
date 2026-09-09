@@ -18,6 +18,7 @@ internal sealed class EfTaxRepository(TaxDbContext db):ITaxRepository
 {
     public Task<bool> SourceExistsAsync(Guid communityId,Guid sourceDocumentId,CancellationToken ct)=>db.Documents.AnyAsync(x=>x.CommunityId==communityId&&x.SourceDocumentId==sourceDocumentId,ct);
     public Task<ElectronicDocument?> GetAsync(Guid id,CancellationToken ct)=>db.Documents.FirstOrDefaultAsync(x=>x.Id==id,ct);
+    public async Task<IReadOnlyList<ElectronicDocument>> ListAsync(Guid communityId,CancellationToken ct)=>await db.Documents.AsNoTracking().Where(x=>x.CommunityId==communityId).OrderByDescending(x=>x.Id).ToArrayAsync(ct);
     public async Task AddAsync(ElectronicDocument document,CancellationToken ct)=>await db.Documents.AddAsync(document,ct);
     public Task SaveChangesAsync(CancellationToken ct)=>db.SaveChangesAsync(ct);
 }

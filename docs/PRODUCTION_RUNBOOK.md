@@ -25,7 +25,7 @@ Never commit these values:
 ## Release sequence
 1. Freeze the release candidate commit and record its SHA.
 2. Run `scripts/production/validate-release.ps1` and `scripts/database/migration-precheck.ps1`; retain the generated migration inventory evidence.
-3. Build immutable API, Worker and Web images from the release SHA.
+3. Build immutable API, Worker and Web images from the release SHA; run `scripts/production/capture-image-evidence.ps1` and retain the generated content digests with the release evidence.
 4. Back up all target SQL databases.
 5. Apply EF Core migrations in a controlled maintenance window using `scripts/database/apply-migrations.ps1 -Apply -BackupEvidencePath <evidence>`; each selected bounded context requires its explicit `ConnectionStrings__<Module>` environment variable.
 6. Provision/update Portal Security resources and menu definitions.

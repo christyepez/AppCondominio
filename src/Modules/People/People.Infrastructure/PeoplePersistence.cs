@@ -1,3 +1,4 @@
+using AppCondominio.Contracts.People;
 using AppCondominio.Modules.People.Application;
 using AppCondominio.Modules.People.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,6 @@ public static class DependencyInjection
     {
         string connectionString = configuration.GetConnectionString("People") ?? configuration.GetConnectionString("Properties") ?? configuration.GetConnectionString("Organizations") ?? throw new InvalidOperationException("People connection string is required.");
         services.AddDbContext<PeopleDbContext>(o=>o.UseSqlServer(connectionString,sql=>sql.MigrationsHistoryTable("__EFMigrationsHistory","people")));
-        services.AddScoped<IPeopleRepository,EfPeopleRepository>(); services.AddScoped<PeopleService>(); return services;
+        services.AddScoped<IPeopleRepository,EfPeopleRepository>(); services.AddScoped<IPeopleDirectory,PeopleDirectory>(); services.AddScoped<PeopleService>(); return services;
     }
 }

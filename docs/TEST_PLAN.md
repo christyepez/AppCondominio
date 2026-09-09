@@ -216,7 +216,7 @@
 - CI runtime smoke must start the Docker Compose stack, verify API root/live health, verify unauthenticated session returns 401, verify Web responds, and always tear the stack down after the check.
 - Record image digests and commit SHA via `scripts/production/capture-image-evidence.ps1`; CI must publish `artifacts/release` as a workflow artifact after backup/restore and runtime smoke pass.
 - Run `scripts/production/rollback-rehearsal.ps1` in CI/non-production: stop the current ephemeral stack, build/deploy the previous immutable commit, rerun fail-closed smoke and retain rollback evidence.
-- Verify forward-fix/restore procedure for migration failure.
+- Run `scripts/database/migration-recovery-rehearsal.ps1` in CI/non-production: apply a real bounded-context migration set to an ephemeral database, observe a controlled transactional migration failure without partial schema residue, verify a forward-fix marker, then restore the real pre-migration backup and verify the baseline state.
 
 ## Exit criteria
 A release candidate is operationally acceptable when automated CI is green, all applicable manual critical journeys above pass, no unresolved Critical/High security defect exists, backup/rollback evidence exists, and every external dependency required by the intended production scope is READY rather than BLOCKED.

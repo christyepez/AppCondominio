@@ -54,7 +54,7 @@ Application rollback:
 
 Database rollback:
 - Prefer forward-fix migrations.
-- Restore from the pre-release backup only when the migration cannot be safely forward-fixed and business owners approve data-loss implications.
+- Restore from the pre-release backup only when the migration cannot be safely forward-fixed and business owners approve data-loss implications. Rehearse both paths in non-production with `scripts/database/migration-recovery-rehearsal.ps1`; the rehearsal uses only an ephemeral probe database.
 - Never execute ad-hoc table deletion to undo a release.
 
 ## Health interpretation

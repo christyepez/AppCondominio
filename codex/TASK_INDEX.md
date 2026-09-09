@@ -96,4 +96,5 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-02 | Database migration inventory / backup-gated apply evidence | VALIDATED - PR #43 / CI `34403370897` |
 | RC-03 | SQL backup/restore rehearsal evidence in release stack | VALIDATED - PR #44 / CI `34406992413` |
 | RC-04 | Immutable image/release evidence manifest | VALIDATED - PR #45 / CI `34408707368` |
-| RC-05 | Previous immutable image-set runtime rollback rehearsal | IN VALIDATION |
+| RC-05 | Previous immutable image-set runtime rollback rehearsal | VALIDATED - PR #46 / CI `34409823073` |
+| RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | IN VALIDATION |

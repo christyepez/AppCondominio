@@ -22,7 +22,7 @@ Assert-Condition ($securityManifest.permissions.Count -ge 2) 'Portal security ma
 
 if (Test-Path $EnvironmentFile) {
     $envText = Get-Content $EnvironmentFile -Raw
-    $forbidden = @('ChangeMeOutsideGit', 'JWT_SECRET=$', 'JWT_SECRET=\s*$')
+    $forbidden = @('ChangeMeOutsideGit', '(?m)^JWT_SECRET=\s*$', '(?m)^SEQ_ADMIN_PASSWORD=\s*$')
     foreach ($pattern in $forbidden) {
         if ($envText -match $pattern) { throw "Unsafe placeholder detected in ${EnvironmentFile}: $pattern" }
     }
@@ -30,7 +30,11 @@ if (Test-Path $EnvironmentFile) {
 
 $docker = Get-Command docker -ErrorAction SilentlyContinue
 if ($null -ne $docker) {
-    docker compose config --quiet
+    if (Test-Path $EnvironmentFile) {
+        docker compose --env-file $EnvironmentFile config --quiet
+    } else {
+        docker compose config --quiet
+    }
     if ($LASTEXITCODE -ne 0) { throw 'docker compose config validation failed.' }
 } else {
     Write-Warning 'Docker is not installed in this execution environment; compose validation skipped.'

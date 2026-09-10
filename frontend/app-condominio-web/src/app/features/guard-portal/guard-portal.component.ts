@@ -4,33 +4,240 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../../core/config/api.config';
 
-interface GuardContext { communityId:string; displayName:string; }
-interface GuardVisit { id:string; visitorName:string; document:string; destination:string; validFrom:string; validTo:string; status:number; checkedInAtUtc?:string|null; checkedOutAtUtc?:string|null; gate?:string|null; }
-interface GuardIncident { id:string; type:string; description:string; location:string; reportedBy:string; reportedAtUtc:string; status:number; resolution?:string|null; }
+interface GuardContext { communityId: string; displayName: string; }
+interface GuardVisit {
+  id: string; visitorName: string; document: string; destination: string;
+  validFrom: string; validTo: string; status: number;
+  checkedInAtUtc?: string | null; checkedOutAtUtc?: string | null; gate?: string | null;
+}
+interface GuardIncident {
+  id: string; type: string; description: string; location: string;
+  reportedBy: string; reportedAtUtc: string; status: number; resolution?: string | null;
+}
+
 @Component({
- selector:'app-guard-portal',standalone:true,imports:[CommonModule,FormsModule],
- template:`
- <section class="guard-hero"><div><span class="eyebrow">Portería y Seguridad</span><h2>Turno de {{ context?.displayName || 'seguridad' }}</h2><p>Valida visitantes autorizados, registra ingresos y salidas, y reporta novedades únicamente para tu comunidad asignada.</p></div><span class="secure-pill">Contexto protegido por PortalCorporativo</span></section>
- <div class="notice error" *ngIf="error">{{error}}</div><div class="notice success" *ngIf="message">{{message}}</div>
- <section class="metric-grid" *ngIf="context"><article class="metric"><span>Visitas visibles</span><strong>{{filteredVisits.length}}</strong></article><article class="metric"><span>En comunidad</span><strong>{{checkedInCount}}</strong></article><article class="metric"><span>Incidentes abiertos</span><strong>{{incidents.length}}</strong></article><article class="metric"><span>Operador</span><strong class="small-value">{{context.displayName}}</strong></article></section>
- <section class="panel" *ngIf="context"><div class="panel-title"><h3>Visitantes autorizados</h3><button type="button" class="button secondary" (click)="loadVisits()" [disabled]="busy">Actualizar</button></div><div class="guard-search"><label>Buscar por nombre, documento o destino<input [(ngModel)]="search" name="search" placeholder="Ej. 1712345678"></label></div>
- <div class="visit-grid" *ngIf="filteredVisits.length;else noVisits"><article class="visit-card" *ngFor="let v of filteredVisits"><div class="visit-main"><div><strong>{{v.visitorName}}</strong><small>{{v.document}} · {{v.destination}}</small></div><span class="status-pill" [class.ok]="v.status===0" [class.inside]="v.status===1">{{visitStatus(v.status)}}</span></div><div class="visit-meta"><span>Desde {{v.validFrom|date:'short'}}</span><span>Hasta {{v.validTo|date:'short'}}</span><span *ngIf="v.gate">Puerta: {{v.gate}}</span></div><div class="visit-actions"><input *ngIf="v.status===0" [(ngModel)]="gateByVisit[v.id]" [name]="'gate-'+v.id" placeholder="Puerta / acceso"><button *ngIf="v.status===0" type="button" class="button primary" (click)="checkIn(v.id)" [disabled]="busy||!gateByVisit[v.id]">Registrar ingreso</button><button *ngIf="v.status===1" type="button" class="button secondary" (click)="checkOut(v.id)" [disabled]="busy">Registrar salida</button></div></article></div><ng-template #noVisits><p class="empty-state">No existen autorizaciones vigentes en el rango operativo.</p></ng-template></section>
- <div class="guard-columns" *ngIf="context"><section class="panel"><h3>Reportar incidente</h3><form class="form-grid" (ngSubmit)="reportIncident()"><label>Tipo<input [(ngModel)]="incident.type" name="type" required placeholder="Acceso, ruido, emergencia..."></label><label>Ubicación<input [(ngModel)]="incident.location" name="location" required></label><label class="wide">Descripción<textarea [(ngModel)]="incident.description" name="description" rows="4" required></textarea></label><div class="form-actions"><button class="button primary" [disabled]="busy">Registrar novedad</button></div></form></section>
- <section class="panel"><div class="panel-title"><h3>Incidentes pendientes</h3><button type="button" class="button secondary" (click)="loadIncidents()">Actualizar</button></div><div class="incident-list" *ngIf="incidents.length;else noIncidents"><article *ngFor="let i of incidents"><div><strong>{{i.type}}</strong><small>{{i.location}} · {{i.reportedAtUtc|date:'short'}}</small></div><p>{{i.description}}</p><span class="status-pill">{{incidentStatus(i.status)}}</span></article></div><ng-template #noIncidents><p class="empty-state">No hay incidentes abiertos o escalados.</p></ng-template></section></div>
- `,
- styles:[`.guard-hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}.guard-hero h2{font-size:32px;margin:4px 0 6px}.guard-hero p{margin:0;color:#746b7d;max-width:720px}.secure-pill{background:#eef8f0;color:#23653b;border:1px solid #cee8d5;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700}.guard-search{margin-bottom:16px;max-width:520px}.guard-search label{display:grid;gap:6px}.visit-grid{display:grid;gap:12px}.visit-card{border:1px solid #e1dae6;border-radius:13px;padding:15px}.visit-main,.visit-meta,.visit-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.visit-main{justify-content:space-between}.visit-main div{display:grid}.visit-main small,.visit-meta{color:#756b7c}.visit-meta{font-size:12px;margin:10px 0}.visit-actions input{max-width:180px}.status-pill{font-size:11px;font-weight:700;border-radius:999px;padding:5px 9px;background:#f0edf2}.status-pill.ok{background:#eaf7ef;color:#216b3b}.status-pill.inside{background:#eef4ff;color:#285e9b}.guard-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}.incident-list{display:grid;gap:10px}.incident-list article{border-bottom:1px solid #eee7f0;padding-bottom:12px}.incident-list article div{display:grid}.incident-list small{color:#756b7c}.incident-list p{margin:7px 0}.small-value{font-size:18px!important}@media(max-width:850px){.guard-hero{flex-direction:column}.guard-columns{grid-template-columns:1fr}}`]
+  selector: 'app-guard-portal',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
+    <section class="guard-hero">
+      <div>
+        <span class="eyebrow">Portería y Seguridad</span>
+        <h2>Turno de {{ context?.displayName || 'seguridad' }}</h2>
+        <p>Valida visitantes autorizados, registra ingresos y salidas, y reporta novedades únicamente para tu comunidad asignada.</p>
+      </div>
+      <span class="secure-pill">Contexto protegido por PortalCorporativo</span>
+    </section>
+
+    <div class="notice error" *ngIf="error">{{error}}</div>
+    <div class="notice success" *ngIf="message">{{message}}</div>
+
+    <section class="metric-grid" *ngIf="context">
+      <article class="metric"><span>Visitas visibles</span><strong>{{filteredVisits.length}}</strong></article>
+      <article class="metric"><span>En comunidad</span><strong>{{checkedInCount}}</strong></article>
+      <article class="metric"><span>Incidentes abiertos</span><strong>{{incidents.length}}</strong></article>
+      <article class="metric"><span>Operador</span><strong class="small-value">{{context.displayName}}</strong></article>
+    </section>
+
+    <section class="panel" *ngIf="context">
+      <div class="panel-title">
+        <div><h3>Visitantes autorizados</h3><small>Ventana operativa: últimas 12 h / próximas 24 h</small></div>
+        <button type="button" class="button secondary" (click)="loadVisits()" [disabled]="busy">Actualizar</button>
+      </div>
+
+      <div class="guard-search">
+        <label>Buscar por nombre, documento, destino o acceso
+          <input [(ngModel)]="search" name="search" placeholder="Ej. visitante, cédula o puerta">
+        </label>
+        <button *ngIf="search" type="button" class="button link" (click)="search=''">Limpiar</button>
+      </div>
+
+      <div class="visit-grid" *ngIf="filteredVisits.length; else noVisits">
+        <article class="visit-card" *ngFor="let v of filteredVisits">
+          <div class="visit-main">
+            <div><strong>{{v.visitorName}}</strong><small>{{v.document}} · {{v.destination}}</small></div>
+            <span class="status-pill" [class.ok]="v.status===0" [class.inside]="v.status===1">{{visitStatus(v.status)}}</span>
+          </div>
+          <div class="visit-meta">
+            <span>Desde {{v.validFrom|date:'short'}}</span>
+            <span>Hasta {{v.validTo|date:'short'}}</span>
+            <span *ngIf="v.gate">Acceso: {{v.gate}}</span>
+          </div>
+          <div class="visit-actions">
+            <select *ngIf="v.status===0" [(ngModel)]="gateByVisit[v.id]" [name]="'gate-'+v.id">
+              <option value="">Seleccione acceso</option>
+              <option *ngFor="let gate of gateOptions" [value]="gate">{{gate}}</option>
+            </select>
+            <button *ngIf="v.status===0" type="button" class="button primary" (click)="checkIn(v.id)" [disabled]="busy||!gateByVisit[v.id]">Registrar ingreso</button>
+            <button *ngIf="v.status===1" type="button" class="button secondary" (click)="checkOut(v.id)" [disabled]="busy">Registrar salida</button>
+          </div>
+        </article>
+      </div>
+      <ng-template #noVisits><p class="empty-state">No existen autorizaciones vigentes en el rango operativo.</p></ng-template>
+    </section>
+
+    <div class="guard-columns" *ngIf="context">
+      <section class="panel">
+        <h3>Reportar incidente</h3>
+        <form class="form-grid" (ngSubmit)="reportIncident()">
+          <label>Tipo
+            <select [(ngModel)]="incident.type" name="type" required>
+              <option value="">Seleccione tipo</option>
+              <option *ngFor="let type of incidentTypes" [value]="type">{{type}}</option>
+            </select>
+          </label>
+          <label>Ubicación
+            <select [(ngModel)]="incident.location" name="location" required>
+              <option value="">Seleccione ubicación</option>
+              <option *ngFor="let location of incidentLocations" [value]="location">{{location}}</option>
+            </select>
+          </label>
+          <label class="wide">Descripción
+            <textarea [(ngModel)]="incident.description" name="description" rows="4" required maxlength="1000"></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="button primary" [disabled]="busy||!canReportIncident">Registrar novedad</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title"><h3>Incidentes pendientes</h3><button type="button" class="button secondary" (click)="loadIncidents()" [disabled]="busy">Actualizar</button></div>
+        <div class="incident-list" *ngIf="incidents.length; else noIncidents">
+          <article *ngFor="let i of incidents">
+            <div><strong>{{i.type}}</strong><small>{{i.location}} · {{i.reportedAtUtc|date:'short'}}</small></div>
+            <p>{{i.description}}</p>
+            <span class="status-pill">{{incidentStatus(i.status)}}</span>
+          </article>
+        </div>
+        <ng-template #noIncidents><p class="empty-state">No hay incidentes abiertos o escalados.</p></ng-template>
+      </section>
+    </div>
+  `,
+  styles: [`
+    .guard-hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}
+    .guard-hero h2{font-size:32px;margin:4px 0 6px}.guard-hero p{margin:0;color:#746b7d;max-width:720px}
+    .secure-pill{background:#eef8f0;color:#23653b;border:1px solid #cee8d5;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700}
+    .guard-search{display:flex;align-items:end;gap:10px;margin-bottom:16px;max-width:660px}.guard-search label{display:grid;gap:6px;flex:1}
+    .visit-grid{display:grid;gap:12px}.visit-card{border:1px solid #e1dae6;border-radius:13px;padding:15px}
+    .visit-main,.visit-meta,.visit-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.visit-main{justify-content:space-between}.visit-main div{display:grid}
+    .visit-main small,.visit-meta,.panel-title small{color:#756b7c}.visit-meta{font-size:12px;margin:10px 0}.visit-actions select{min-width:190px}
+    .status-pill{font-size:11px;font-weight:700;border-radius:999px;padding:5px 9px;background:#f0edf2}.status-pill.ok{background:#eaf7ef;color:#216b3b}.status-pill.inside{background:#eef4ff;color:#285e9b}
+    .guard-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}.incident-list{display:grid;gap:10px}.incident-list article{border-bottom:1px solid #eee7f0;padding-bottom:12px}
+    .incident-list article div{display:grid}.incident-list small{color:#756b7c}.incident-list p{margin:7px 0}.small-value{font-size:18px!important}
+    @media(max-width:850px){.guard-hero{flex-direction:column}.guard-columns{grid-template-columns:1fr}.guard-search{align-items:stretch;flex-direction:column}}
+  `]
 })
 export class GuardPortalComponent implements OnInit {
- private readonly http=inject(HttpClient);context?:GuardContext;visits:GuardVisit[]=[];incidents:GuardIncident[]=[];search='';gateByVisit:Record<string,string>={};busy=false;error='';message='';incident={type:'',location:'',description:''};
- get filteredVisits():GuardVisit[]{const q=this.search.trim().toLowerCase();return q?this.visits.filter(v=>`${v.visitorName} ${v.document} ${v.destination}`.toLowerCase().includes(q)):this.visits;}
- get checkedInCount():number{return this.visits.filter(v=>v.status===1).length;}
- ngOnInit():void{this.loadContext();}
- loadContext():void{this.busy=true;this.http.get<GuardContext>(`${API_BASE_URL}/guard/me`).subscribe({next:x=>{this.context=x;this.busy=false;this.loadVisits();this.loadIncidents();},error:e=>{this.busy=false;this.error=this.describe(e?.status);}});}
- loadVisits():void{const params=new HttpParams().set('from',new Date(Date.now()-12*60*60*1000).toISOString()).set('to',new Date(Date.now()+24*60*60*1000).toISOString());this.http.get<GuardVisit[]>(`${API_BASE_URL}/guard/visits`,{params}).subscribe({next:x=>this.visits=x??[],error:e=>this.error=this.describe(e?.status)});}
- loadIncidents():void{this.http.get<GuardIncident[]>(`${API_BASE_URL}/guard/incidents`).subscribe({next:x=>this.incidents=x??[],error:e=>this.error=this.describe(e?.status)});}
- checkIn(id:string):void{this.busy=true;this.error='';this.message='';this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-in`,{at:new Date().toISOString(),gate:this.gateByVisit[id]}).subscribe({next:()=>{this.busy=false;this.message='Ingreso registrado.';this.loadVisits();},error:e=>{this.busy=false;this.error=this.describe(e?.status);}});}
- checkOut(id:string):void{this.busy=true;this.error='';this.message='';this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-out`,{at:new Date().toISOString()}).subscribe({next:()=>{this.busy=false;this.message='Salida registrada.';this.loadVisits();},error:e=>{this.busy=false;this.error=this.describe(e?.status);}});}
- reportIncident():void{this.busy=true;this.error='';this.message='';this.http.post(`${API_BASE_URL}/guard/incidents`,this.incident).subscribe({next:()=>{this.busy=false;this.message='Incidente registrado.';this.incident={type:'',location:'',description:''};this.loadIncidents();},error:e=>{this.busy=false;this.error=this.describe(e?.status);}});}
- visitStatus(s:number):string{return ({0:'Autorizado',1:'Dentro',2:'Salida registrada',3:'Cancelado'} as Record<number,string>)[s]??'Desconocido';} incidentStatus(s:number):string{return ({0:'Abierto',1:'Escalado',2:'Resuelto'} as Record<number,string>)[s]??'Desconocido';}
- private describe(status?:number):string{return status===401?'Debe iniciar sesión mediante PortalCorporativo.':status===403?'Su usuario no tiene habilitado el Portal de Portería.':'No fue posible completar la operación.';}
+  private readonly http = inject(HttpClient);
+  readonly gateOptions = ['Principal', 'Peatonal', 'Vehicular', 'Servicio'];
+  readonly incidentTypes = ['Acceso no autorizado', 'Ruido', 'Emergencia', 'Daño', 'Otro'];
+  readonly incidentLocations = ['Acceso principal', 'Acceso peatonal', 'Acceso vehicular', 'Área común', 'Perímetro', 'Otro'];
+
+  context?: GuardContext;
+  visits: GuardVisit[] = [];
+  incidents: GuardIncident[] = [];
+  search = '';
+  gateByVisit: Record<string, string> = {};
+  busy = false;
+  error = '';
+  message = '';
+  incident = { type: '', location: '', description: '' };
+
+  get filteredVisits(): GuardVisit[] {
+    const q = this.search.trim().toLowerCase();
+    return q
+      ? this.visits.filter(v => `${v.visitorName} ${v.document} ${v.destination} ${v.gate ?? ''}`.toLowerCase().includes(q))
+      : this.visits;
+  }
+
+  get checkedInCount(): number { return this.visits.filter(v => v.status === 1).length; }
+  get canReportIncident(): boolean {
+    return !!this.incident.type && !!this.incident.location && this.incident.description.trim().length > 0;
+  }
+
+  ngOnInit(): void { this.loadContext(); }
+
+  loadContext(): void {
+    this.busy = true;
+    this.http.get<GuardContext>(`${API_BASE_URL}/guard/me`).subscribe({
+      next: x => { this.context = x; this.busy = false; this.loadVisits(); this.loadIncidents(); },
+      error: e => { this.busy = false; this.error = this.describe(e?.status); }
+    });
+  }
+
+  loadVisits(): void {
+    const params = new HttpParams()
+      .set('from', new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString())
+      .set('to', new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+    this.http.get<GuardVisit[]>(`${API_BASE_URL}/guard/visits`, { params }).subscribe({
+      next: x => this.visits = x ?? [],
+      error: e => this.error = this.describe(e?.status)
+    });
+  }
+
+  loadIncidents(): void {
+    this.http.get<GuardIncident[]>(`${API_BASE_URL}/guard/incidents`).subscribe({
+      next: x => this.incidents = x ?? [],
+      error: e => this.error = this.describe(e?.status)
+    });
+  }
+
+  checkIn(id: string): void {
+    const gate = this.gateByVisit[id];
+    if (!gate) { return; }
+    this.busy = true; this.error = ''; this.message = '';
+    this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-in`, { at: new Date().toISOString(), gate }).subscribe({
+      next: () => {
+        this.busy = false;
+        this.message = 'Ingreso registrado.';
+        delete this.gateByVisit[id];
+        this.loadVisits();
+      },
+      error: e => { this.busy = false; this.error = this.describe(e?.status); }
+    });
+  }
+
+  checkOut(id: string): void {
+    this.busy = true; this.error = ''; this.message = '';
+    this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-out`, { at: new Date().toISOString() }).subscribe({
+      next: () => { this.busy = false; this.message = 'Salida registrada.'; this.loadVisits(); },
+      error: e => { this.busy = false; this.error = this.describe(e?.status); }
+    });
+  }
+
+  reportIncident(): void {
+    if (!this.canReportIncident) { return; }
+    this.busy = true; this.error = ''; this.message = '';
+    const payload = {
+      type: this.incident.type,
+      location: this.incident.location,
+      description: this.incident.description.trim()
+    };
+    this.http.post(`${API_BASE_URL}/guard/incidents`, payload).subscribe({
+      next: () => {
+        this.busy = false;
+        this.message = 'Incidente registrado.';
+        this.incident = { type: '', location: '', description: '' };
+        this.loadIncidents();
+      },
+      error: e => { this.busy = false; this.error = this.describe(e?.status); }
+    });
+  }
+
+  visitStatus(status: number): string {
+    return ({ 0: 'Autorizado', 1: 'Dentro', 2: 'Salida registrada', 3: 'Cancelado' } as Record<number, string>)[status] ?? 'Desconocido';
+  }
+
+  incidentStatus(status: number): string {
+    return ({ 0: 'Abierto', 1: 'Escalado', 2: 'Resuelto' } as Record<number, string>)[status] ?? 'Desconocido';
+  }
+
+  private describe(status?: number): string {
+    return status === 401
+      ? 'Debe iniciar sesión mediante PortalCorporativo.'
+      : status === 403
+        ? 'Su usuario no tiene habilitado el Portal de Portería.'
+        : 'No fue posible completar la operación.';
+  }
 }

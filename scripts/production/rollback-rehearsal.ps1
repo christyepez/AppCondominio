@@ -10,9 +10,33 @@ Push-Location $repoRoot
 $tempWorktree = $null
 try {
     $currentSha = (& git rev-parse HEAD).Trim()
-    $previousSha = (& git rev-parse $PreviousCommit).Trim()
-    if ($currentSha -notmatch '^[a-f0-9]{40}$' -or $previousSha -notmatch '^[a-f0-9]{40}$') {
-        throw 'Unable to resolve current/previous release SHA.'
+    if ($LASTEXITCODE -ne 0 -or $currentSha -notmatch '^[a-f0-9]{40}$') {
+        throw 'Unable to resolve current release SHA.'
+    }
+
+    $previousExpression = $PreviousCommit
+    if ($PreviousCommit -eq 'HEAD^') {
+        $parentTokens = ((& git rev-list --parents -n 1 HEAD).Trim() -split '\s+')
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect current release commit ancestry.' }
+
+        # pull_request workflows check out GitHub's synthetic merge commit. In that
+        # shape HEAD^ is the target branch (for example main), not the previous
+        # immutable source revision. Resolve the second parent (PR head) and roll
+        # back to its parent instead. Normal push/branch executions keep HEAD^.
+        if ($parentTokens.Count -ge 3) {
+            $sourceHeadSha = $parentTokens[2]
+            & git cat-file -e "$sourceHeadSha^" 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                & git fetch --no-tags --depth=2 origin $sourceHeadSha
+                if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch PR source history for rollback rehearsal.' }
+            }
+            $previousExpression = "$sourceHeadSha^"
+        }
+    }
+
+    $previousSha = (& git rev-parse $previousExpression).Trim()
+    if ($LASTEXITCODE -ne 0 -or $previousSha -notmatch '^[a-f0-9]{40}$') {
+        throw 'Unable to resolve previous release SHA.'
     }
     if ($currentSha -eq $previousSha) { throw 'Rollback target must differ from current release SHA.' }
     if (-not (Test-Path '.env')) { throw 'Rollback rehearsal requires the prepared .env file.' }

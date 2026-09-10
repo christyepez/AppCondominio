@@ -63,7 +63,7 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-PWA | Installable PWA shell / static offline safety | VALIDATED in stacked UI chain through PR #41 / CI `34379512223` |
 | UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | VALIDATED - PR #41 / CI `34379512223` |
 
-Current delivery head: `feature/ui14-treasury-supplier-selector` / PR #41. The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
+Current validated delivery head: `feature/rc-migration-recovery-rehearsal` / PR #47 / SHA `70fe98baf8ae82b7569d30c65d8cab913bcfab6c`. The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
 
 First-pass Admin screens intentionally allow explicit GUID entry where the backend does not yet expose safe list/search contracts. Subsequent UX hardening will replace those fields with selectors only where real authorized lookup endpoints are available; it must not invent cross-tenant lookup behavior.
 
@@ -97,4 +97,4 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-03 | SQL backup/restore rehearsal evidence in release stack | VALIDATED - PR #44 / CI `34406992413` |
 | RC-04 | Immutable image/release evidence manifest | VALIDATED - PR #45 / CI `34408707368` |
 | RC-05 | Previous immutable image-set runtime rollback rehearsal | VALIDATED - PR #46 / CI `34409823073` |
-| RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | IN VALIDATION |
+| RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | VALIDATED - PR #47 / CI `34411290846` |

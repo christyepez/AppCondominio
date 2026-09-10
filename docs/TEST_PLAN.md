@@ -247,3 +247,10 @@ A release candidate is operationally acceptable when automated CI is green, all 
 - After a successful check-in, the selected gate state must be cleared before the next operation.
 - Incident reporting must use guided type/location selectors and reject blank or whitespace-only descriptions before calling the API.
 - Existing Guard Portal 401/403 behavior, community isolation and backend contracts must remain unchanged.
+
+## 27. UI-17 Supplier Portal bid workflow acceptance
+- Bid submission must require an open process, amount greater than zero, integer delivery days greater than or equal to zero, and a non-blank proposal reference.
+- The selected sourcing round closing time must remain visible while preparing the offer.
+- Proposal reference must be trimmed before submission and invalid input must be rejected before calling the API.
+- After a successful bid, amount/delivery/reference and selected process state must be reset before the next offer.
+- Existing Supplier Portal 401/403 behavior, supplier isolation and backend contracts must remain unchanged.

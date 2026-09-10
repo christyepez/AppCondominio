@@ -75,3 +75,6 @@ The application is intentionally fail-closed or partially blocked for Portal cap
 - Start with `scripts/local/start-dockerhub.ps1`, which performs pull, Compose validation, `--no-build` startup, service-state verification and smoke testing.
 - Local deletion of AppCondominio application images is a supported portability check; the next startup must pull the exact approved digests from Docker Hub.
 - Base infrastructure images may remain local or be pulled normally; this mode specifically guarantees API/Worker/Web provenance from Docker Hub.
+- On Windows hosts where PowerShell script execution is restricted, use `scripts/local/start-dockerhub.cmd`; it applies `-ExecutionPolicy Bypass` only to that process and does not change machine policy.
+- Before pulling, the launcher checks Docker Hub access for the immutable API digest and fails with an actionable `docker login` message when authentication is stale or missing.
+- Portability acceptance should be repeated independently on each target workstation; local `localhost` addresses always refer to the workstation where the browser is running.

@@ -14,6 +14,7 @@ $required = @(
     '.env.example',
     'AppCondominio.sln',
     'scripts/local/start-dockerhub.ps1',
+    'scripts/local/start-dockerhub.cmd',
     'scripts/database/migration-contexts.ps1',
     'scripts/database/migration-precheck.ps1',
     'scripts/database/apply-migrations.ps1',

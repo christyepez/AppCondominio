@@ -63,12 +63,12 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-PWA | Installable PWA shell / static offline safety | VALIDATED in stacked UI chain through PR #41 / CI `34379512223` |
 | UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | VALIDATED - PR #41 / CI `34379512223` |
 
-Current validated delivery head: `feature/final-integration-security-adr` / PR #49 / SHA `d80506b4c1b86b6199c1d2da2439e639a94acb69`, validated by CI `34492871882` (run #599). The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
+Current validated delivery head: `feature/final-integration-security-adr` / PR #49 / SHA `7aa4b43bbd0e01f3d72c74fd0c46de01bbcfe996`, validated by CI `34502095940` (run #601). The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
 
 First-pass Admin screens intentionally allow explicit GUID entry where the backend does not yet expose safe list/search contracts. Subsequent UX hardening will replace those fields with selectors only where real authorized lookup endpoints are available; it must not invent cross-tenant lookup behavior.
 
 ## Product-completeness note
-The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The application-owned backend/platform, all four end-user UI channels and release-candidate operational evidence are validated through PR #49 / CI `34492871882`. Product release remains conditional on the explicitly blocked Portal-owned capabilities required by the intended deployment scope and on explicit environment/infrastructure approval.
+The 18-sprint backend/platform roadmap is complete and validated except for explicitly blocked Portal-owned capabilities. The application-owned backend/platform, all four end-user UI channels and release-candidate operational evidence are validated through PR #49 / CI `34502095940`. Product release remains conditional on the explicitly blocked Portal-owned capabilities required by the intended deployment scope and on explicit environment/infrastructure approval.
 
 ## Release rule
 A release is not production-ready merely because code CI is green. Production requires explicit environment/infrastructure approval, restorable backup evidence, migration precheck, Portal dependency readiness for the intended scope, production secrets supplied outside Git, SRI certification/provider configuration where Tax issuance is enabled, smoke tests and applicable manual critical journeys from `docs/TEST_PLAN.md`.
@@ -98,4 +98,5 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-04 | Immutable image/release evidence manifest | VALIDATED - PR #45 / CI `34408707368` |
 | RC-05 | Previous immutable image-set runtime rollback rehearsal | VALIDATED - PR #46 / CI `34409823073` |
 | RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | VALIDATED - PR #47 / CI `34411290846` |
-| RC-FINAL | Final integration, ADR continuity and cumulative release validation | VALIDATED - PR #49 / CI `34492871882` |
+| RC-FINAL | Final integration, ADR continuity and cumulative release validation | VALIDATED - PR #49 / CI `34502095940` |
+| RC-07 | Docker Hub immutable runtime portability / pull-only local deployment | IN VALIDATION |

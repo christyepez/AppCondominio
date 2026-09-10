@@ -220,3 +220,10 @@
 
 ## Exit criteria
 A release candidate is operationally acceptable when automated CI is green, all applicable manual critical journeys above pass, no unresolved Critical/High security defect exists, backup/rollback evidence exists, and every external dependency required by the intended production scope is READY rather than BLOCKED.
+
+## 23. Docker Hub runtime portability
+- Populate `APPCONDOMINIO_API_IMAGE`, `APPCONDOMINIO_WORKER_IMAGE` and `APPCONDOMINIO_WEB_IMAGE` with immutable `@sha256:` references from the approved Docker Hub repositories.
+- Run `scripts/local/start-dockerhub.ps1`; it must pull the three application images, validate the Compose overlay and start the stack with `--no-build`.
+- Confirm API, Worker and Web are running from the pulled Hub digests, not from locally built `appcondominio-*` images.
+- Re-run release smoke using ports resolved from `.env`; isolated environments expect readiness 503 until required Portal capabilities are available.
+- Deleting local AppCondominio application images and repeating pull + startup must produce the same healthy runtime behavior.

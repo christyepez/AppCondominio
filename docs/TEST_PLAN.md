@@ -228,8 +228,15 @@ A release candidate is operationally acceptable when automated CI is green, all 
 - Re-run release smoke using ports resolved from `.env`; isolated environments expect readiness 503 until required Portal capabilities are available.
 - Deleting local AppCondominio application images and repeating pull + startup must produce the same healthy runtime behavior.
 
-## 23. Multi-workstation Docker Hub portability
+## 24. Multi-workstation Docker Hub portability
 - Validate the Docker Hub runtime independently on every workstation that will host the stack; do not treat another workstation's `localhost` as reachable locally.
 - On Windows hosts with restrictive PowerShell policy, launch via `scripts/local/start-dockerhub.cmd` and verify that machine policy is not modified.
 - With valid Docker Hub authentication, execute pull-only startup and confirm API root 200, live 200, isolated readiness 503, unauthenticated session 401 and Web 200 on each workstation.
 - Confirm API, Worker and Web resolve to the approved immutable `@sha256:` references and are not local build tags.
+
+## 25. UI-15 isolated dashboard acceptance
+- With API reachable and no Portal session, open /dashboard; runtime/API status must remain visible and the page must not appear blank.
+- Verify /api/ and /api/health/live are queried and displayed independently from authentication state.
+- A 401 from /api/session must render Sin sesión / Portal guidance and must not be treated as a runtime failure.
+- Protected /api/communities/dashboard metrics must only be requested after an authenticated session is confirmed; 401/403 remain fail-closed.
+- Rebuild Angular production bundle and verify the existing authenticated dashboard behavior remains available when Portal supplies a valid session.

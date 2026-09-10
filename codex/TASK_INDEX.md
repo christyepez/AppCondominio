@@ -62,6 +62,7 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-13 | Guard portal | VALIDATED - PR #31 |
 | UI-PWA | Installable PWA shell / static offline safety | VALIDATED in stacked UI chain through PR #41 / CI `34379512223` |
 | UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | VALIDATED - PR #41 / CI `34379512223` |
+| UI-15 | Isolated-runtime dashboard / Portal-unavailable UX | IN VALIDATION |
 
 Current validated delivery head: `feature/final-integration-security-adr` / PR #49 / SHA `7aa4b43bbd0e01f3d72c74fd0c46de01bbcfe996`, validated by CI `34502095940` (run #601). The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
 

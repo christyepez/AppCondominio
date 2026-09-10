@@ -240,3 +240,10 @@ A release candidate is operationally acceptable when automated CI is green, all 
 - A 401 from /api/session must render Sin sesión / Portal guidance and must not be treated as a runtime failure.
 - Protected /api/communities/dashboard metrics must only be requested after an authenticated session is confirmed; 401/403 remain fail-closed.
 - Rebuild Angular production bundle and verify the existing authenticated dashboard behavior remains available when Portal supplies a valid session.
+
+## 26. UI-16 Guard Portal guided workflow acceptance
+- Guard visit search must match visitor name, document, destination and recorded gate/access.
+- Authorized visits awaiting entry must require selection from the supported gate list before check-in can be submitted.
+- After a successful check-in, the selected gate state must be cleared before the next operation.
+- Incident reporting must use guided type/location selectors and reject blank or whitespace-only descriptions before calling the API.
+- Existing Guard Portal 401/403 behavior, community isolation and backend contracts must remain unchanged.

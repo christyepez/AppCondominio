@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" /><ProjectReference Include="..\Governance.Application\Governance.Application.csproj" /></ItemGroup><ItemGroup><PackageReference Include="Microsoft.EntityFrameworkCore.Design"><PrivateAssets>all</PrivateAssets></PackageReference></ItemGroup></Project>

@@ -1,0 +1,7 @@
+repository=christyepez/CodexCommonAgents
+branch=main
+commit=493d90a6991287b8cec6d7ae8d4295318d0f64d4
+policy=pin-per-sprint
+backend_agent=agents/03-backend-agent.md
+backend_runtime=.NET 10 / ASP.NET Core 10 / net10.0
+update_rule=Update only through an explicit architecture/chore story after reviewing common-agent changes.

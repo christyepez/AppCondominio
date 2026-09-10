@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><Description>Properties domain model.</Description></PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\..\..\AppCondominio.SharedKernel\AppCondominio.SharedKernel.csproj" /></ItemGroup>
+</Project>

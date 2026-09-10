@@ -1,0 +1,10 @@
+services:
+  appcondominio-api:
+    image: ${APPCONDOMINIO_API_IMAGE:?APPCONDOMINIO_API_IMAGE must reference a Docker Hub tag or digest}
+    build: null
+  appcondominio-worker:
+    image: ${APPCONDOMINIO_WORKER_IMAGE:?APPCONDOMINIO_WORKER_IMAGE must reference a Docker Hub tag or digest}
+    build: null
+  appcondominio-web:
+    image: ${APPCONDOMINIO_WEB_IMAGE:?APPCONDOMINIO_WEB_IMAGE must reference a Docker Hub tag or digest}
+    build: null

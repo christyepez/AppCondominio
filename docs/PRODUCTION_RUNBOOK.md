@@ -67,3 +67,14 @@ Capture correlation ID, UTC timestamp, tenant/community identifiers available at
 
 ## Known external blockers
 The application is intentionally fail-closed or partially blocked for Portal capabilities whose trusted contracts are not yet production-ready: tenant/community identity resolution, Audit ingestion identity, Notification tenant/service identity, Content/File API, Catalog API and tenant-aware Configuration. See the ADRs and `docs/DEPENDENCY_MATRIX.md`.
+
+## Docker Hub deployment mode
+- Publish API, Worker and Web images from the approved release SHA to Docker Hub and record immutable `@sha256:` references.
+- Set the three `APPCONDOMINIO_*_IMAGE` variables outside Git and validate them with `scripts/production/validate-release.ps1`.
+- Use `docker-compose.hub.yml` together with `docker-compose.yml`; application services must have local builds disabled by the overlay.
+- Start with `scripts/local/start-dockerhub.ps1`, which performs pull, Compose validation, `--no-build` startup, service-state verification and smoke testing.
+- Local deletion of AppCondominio application images is a supported portability check; the next startup must pull the exact approved digests from Docker Hub.
+- Base infrastructure images may remain local or be pulled normally; this mode specifically guarantees API/Worker/Web provenance from Docker Hub.
+- On Windows hosts where PowerShell script execution is restricted, use `scripts/local/start-dockerhub.cmd`; it applies `-ExecutionPolicy Bypass` only to that process and does not change machine policy.
+- Before pulling, the launcher checks Docker Hub access for the immutable API digest and fails with an actionable `docker login` message when authentication is stale or missing.
+- Portability acceptance should be repeated independently on each target workstation; local `localhost` addresses always refer to the workstation where the browser is running.

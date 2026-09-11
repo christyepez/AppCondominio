@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main, 'foundation/**', 'feature/**', 'fix/**' ]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Restore application
+        run: dotnet restore AppCondominio.sln
+      - name: NuGet vulnerability scan
+        shell: bash
+        run: |
+          set -o pipefail
+          dotnet list AppCondominio.sln package --vulnerable --include-transitive | tee nuget-vulnerabilities.txt
+          if grep -q "has the following vulnerable packages" nuget-vulnerabilities.txt; then
+            echo "Vulnerable NuGet packages detected."
+            exit 1
+          fi
+      - name: Build application
+        run: dotnet build AppCondominio.sln -c Release --no-restore
+      - name: Migration inventory precheck
+        shell: pwsh
+        run: ./scripts/database/migration-precheck.ps1 -SkipBuild
+      - name: Unit tests
+        run: dotnet test tests/AppCondominio.UnitTests/AppCondominio.UnitTests.csproj -c Release --logger trx
+      - name: Architecture tests
+        run: dotnet test tests/AppCondominio.ArchitectureTests/AppCondominio.ArchitectureTests.csproj -c Release --logger trx
+      - name: Integration tests
+        run: dotnet test tests/AppCondominio.IntegrationTests/AppCondominio.IntegrationTests.csproj -c Release --logger trx
+      - name: Validate Portal provisioning assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $scripts = Get-ChildItem 'scripts/portal/*.ps1'
+          foreach ($script in $scripts) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($script.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error "$($script.Name): $($_.Message)" }
+              exit 1
+            }
+          }
+          Get-Content 'infrastructure/portal/security/appcondominio-security-registration.json' -Raw | ConvertFrom-Json | Out-Null
+          Get-Content 'infrastructure/portal/menu/appcondominio-menu-registration.json' -Raw | ConvertFrom-Json | Out-Null
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/app-condominio-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: npm vulnerability scan
+        run: npm audit --audit-level=high
+      - run: npm run build
+
+  production-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate production scripts and required documentation
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $required = @(
+            'docs/PRODUCTION_RUNBOOK.md',
+            'docs/DEPENDENCY_MATRIX.md',
+            'docs/TEST_PLAN.md',
+            'scripts/production/validate-release.ps1',
+            'scripts/production/smoke-test.ps1',
+            'scripts/production/rollback-rehearsal.ps1',
+            'scripts/database/migration-contexts.ps1',
+            'scripts/database/migration-precheck.ps1',
+            'scripts/database/apply-migrations.ps1',
+            'scripts/database/backup-restore-smoke.ps1',
+            'scripts/database/migration-recovery-rehearsal.ps1'
+          )
+          foreach ($path in $required) {
+            if (-not (Test-Path $path)) { throw "Required production-readiness artifact missing: $path" }
+          }
+          $scriptPaths = @(Get-ChildItem 'scripts/production/*.ps1') + @(Get-ChildItem 'scripts/database/*.ps1')
+          foreach ($script in $scriptPaths) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($script.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Error "$($script.Name): $($_.Message)" }
+              exit 1
+            }
+          }
+      - name: Prepare CI release environment
+        shell: bash
+        run: |
+          cp .env.example .env
+          sed -i 's/ChangeMeOutsideGit_123!/CiOnly_StrongPassword_123!/' .env
+          sed -i 's/ChangeMeOutsideGit/CiOnlyRabbitPassword/' .env
+          sed -i 's|^JWT_SECRET=$|JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes|' .env
+          sed -i 's|^SEQ_ADMIN_PASSWORD=$|SEQ_ADMIN_PASSWORD=CI-only-seq-admin-Strong_123!|' .env
+      - name: Validate release prerequisites and compose model
+        shell: pwsh
+        run: ./scripts/production/validate-release.ps1
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend, production-readiness]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Prepare CI environment
+        run: |
+          cp .env.example .env
+          sed -i 's/ChangeMeOutsideGit_123!/CiOnly_StrongPassword_123!/' .env
+          sed -i 's/ChangeMeOutsideGit/CiOnlyRabbitPassword/' .env
+          sed -i 's|^JWT_SECRET=$|JWT_SECRET=CI-only-jwt-secret-with-at-least-32-bytes|' .env
+          sed -i 's|^SEQ_ADMIN_PASSWORD=$|SEQ_ADMIN_PASSWORD=CI-only-seq-admin-Strong_123!|' .env
+      - name: Build images
+        run: docker compose build
+      - name: Capture immutable image evidence
+        shell: pwsh
+        run: ./scripts/production/capture-image-evidence.ps1
+      - name: Start runtime stack
+        run: docker compose up -d
+      - name: Run SQL backup/restore rehearsal
+        shell: pwsh
+        run: ./scripts/database/backup-restore-smoke.ps1
+      - name: Run fail-closed runtime smoke
+        shell: pwsh
+        run: ./scripts/production/smoke-test.ps1 -ReadyExpectedStatus 503
+      - name: Run migration failure recovery rehearsal
+        shell: pwsh
+        run: ./scripts/database/migration-recovery-rehearsal.ps1
+      - name: Run runtime rollback rehearsal
+        shell: pwsh
+        run: ./scripts/production/rollback-rehearsal.ps1
+      - name: Upload release evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence-${{ github.sha }}
+          path: artifacts/release/
+          if-no-files-found: error
+      - name: Dump runtime logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=250
+      - name: Stop runtime stack
+        if: always()
+        run: docker compose down -v --remove-orphans
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

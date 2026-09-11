@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "app-condominio-web": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/app-condominio-web",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "styles": ["src/styles.css"],
+            "assets": [{"glob":"**/*","input":"public"}]
+          },
+          "configurations": {
+            "production": {"outputHashing":"all","budgets":[{"type":"initial","maximumWarning":"750kB","maximumError":"1MB"}]},
+            "development": {"optimization":false,"sourceMap":true,"extractLicenses":false}
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {"buildTarget":"app-condominio-web:build:production"},
+            "development": {"buildTarget":"app-condominio-web:build:development"}
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {"polyfills":["zone.js","zone.js/testing"],"tsConfig":"tsconfig.spec.json","styles":["src/styles.css"],"assets":[{"glob":"**/*","input":"public"}]}
+        }
+      }
+    }
+  }
+}

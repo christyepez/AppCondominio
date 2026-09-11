@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><Description>People and occupancy application use cases.</Description></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\People.Domain\People.Domain.csproj" />
+    <ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+  </ItemGroup>
+</Project>

@@ -254,3 +254,10 @@ A release candidate is operationally acceptable when automated CI is green, all 
 - Proposal reference must be trimmed before submission and invalid input must be rejected before calling the API.
 - After a successful bid, amount/delivery/reference and selected process state must be reset before the next offer.
 - Existing Supplier Portal 401/403 behavior, supplier isolation and backend contracts must remain unchanged.
+
+## 28. UI-18 Resident Portal guided self-service acceptance
+- Reservation submission must remain disabled until an authorized area is selected, start/end timestamps are valid with end after start, and guest count is an integer within 1..area capacity.
+- Invalid reservation ranges or guest counts must be rejected in the UI before any API call is made.
+- Visit authorization must require non-blank visitor name, document and destination plus a valid end-after-start authorization window.
+- Visitor text fields must be trimmed before POST; successful reservation and visit submissions must clear their respective forms while keeping the selected resident unit.
+- Existing Resident Portal 401/403 behavior, unit/community isolation and backend contracts must remain unchanged.

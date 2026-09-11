@@ -103,3 +103,5 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | VALIDATED - PR #47 / CI `34411290846` |
 | RC-FINAL | Final integration, ADR continuity and cumulative release validation | VALIDATED - PR #49 / CI `34502095940` |
 | RC-07 | Docker Hub immutable runtime portability / pull-only local deployment | IN VALIDATION |
+
+| UI-18 | Resident Portal guided self-service validation | IN VALIDATION - developed on trabajo; reservation range/capacity + visit validity/input normalization |

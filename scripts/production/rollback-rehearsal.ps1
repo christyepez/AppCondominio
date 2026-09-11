@@ -19,11 +19,13 @@ try {
         $parentTokens = ((& git rev-list --parents -n 1 HEAD).Trim() -split '\s+')
         if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect current release commit ancestry.' }
 
-        # pull_request workflows check out GitHub's synthetic merge commit. In that
-        # shape HEAD^ is the target branch (for example main), not the previous
-        # immutable source revision. Resolve the second parent (PR head) and roll
-        # back to its parent instead. Normal push/branch executions keep HEAD^.
-        if ($parentTokens.Count -ge 3) {
+        # pull_request workflows check out GitHub's synthetic merge commit. Only in
+        # that event shape should the second parent be treated as the PR source head
+        # and rolled back to its parent. A normal push can itself point at a real
+        # merge commit; in that case HEAD^ (the first parent) is the correct previous
+        # release-capable revision and must not be replaced by the second-parent path.
+        $isPullRequestEvent = $env:GITHUB_EVENT_NAME -eq 'pull_request'
+        if ($isPullRequestEvent -and $parentTokens.Count -ge 3) {
             $sourceHeadSha = $parentTokens[2]
             & git cat-file -e "$sourceHeadSha^" 2>$null
             if ($LASTEXITCODE -ne 0) {

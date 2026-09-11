@@ -261,3 +261,92 @@ A release candidate is operationally acceptable when automated CI is green, all 
 - Visit authorization must require non-blank visitor name, document and destination plus a valid end-after-start authorization window.
 - Visitor text fields must be trimmed before POST; successful reservation and visit submissions must clear their respective forms while keeping the selected resident unit.
 - Existing Resident Portal 401/403 behavior, unit/community isolation and backend contracts must remain unchanged.
+
+## 29. UI-19 Maintenance guided asset/KPI acceptance
+- Asset creation must remain disabled until an authorized community and non-blank code, name, category and location are provided.
+- Asset text fields must be trimmed before POST; successful creation must clear asset detail fields while preserving the selected community.
+- KPI lookup must require an authorized community and must reject malformed or future as-of dates before calling the API.
+- The date input must not allow selecting a date after today.
+- Existing Maintenance 401/403 behavior, community isolation and backend contracts must remain unchanged.
+
+## 30. UI-20 Reservations guided area/booking acceptance
+- Area creation must require an authorized community, non-blank code/name, integer capacity >= 1 and non-negative finite fee before calling the API.
+- Area code/name must be trimmed before POST; successful creation must clear area details while preserving the selected community and refresh booking options when applicable.
+- Booking submission must require an authorized community, area and requester, a valid end-after-start interval and an integer guest count within 1..selected area capacity.
+- Invalid date ranges or guest counts must be rejected in the UI before any API call is made.
+- Existing Reservations 401/403 behavior and cross-community selector isolation must remain unchanged.
+
+## 31. UI-21 Security visit/guard acceptance
+- Visit authorization must require community, host, non-blank visitor/document/destination and a valid end-after-start validity range before calling the API.
+- Visit free-text inputs must be trimmed before POST; successful authorization must clear visit details while preserving the selected community.
+- Guard access must require community, non-blank Portal User Id/display name and, when provided, a valid future expiration before calling the API.
+- Guard free-text inputs must be trimmed before POST; successful creation must preserve the selected community and clear user-specific fields.
+- Existing Security 401/403 behavior, host selector isolation and KPI community scoping must remain unchanged.
+
+## 32. UI-22 Billing guided monthly-period acceptance
+- Monthly period requires an authorized community, integer year 2000..2100, month 1..12, issue date and due date.
+- Due date cannot be earlier than issue date; invalid forms are rejected before the API call.
+- Year/month are normalized to numeric values before POST.
+- Successful creation preserves community/year/month and clears issue/due dates for the next operation.
+- Statement lookup requires community + unit and unit options remain scoped to the selected community.
+- Existing Billing 401/403 handling remains unchanged.
+
+## 33. UI-23 Procurement guided requisition/supplier-access acceptance
+- Requisition requires authorized community, nonblank number/description/requester and finite amount greater than zero.
+- Requisition text values are trimmed before POST and community is preserved after success.
+- Supplier access requires authorized community, supplier and nonblank Portal User Id.
+- Optional supplier-access expiry must be a valid future date-time.
+- Supplier/round selectors remain isolated by selected community.
+- Existing Procurement 401/403 handling remains unchanged.
+## 34. UI-24 Treasury guided payable acceptance
+- Creating a payable requires an authorized community and an eligible supplier from that community.
+- Document number, expense account, and payable account must contain non-whitespace text.
+- Document date and due date must be valid dates, with due date on or after document date.
+- Amount must be finite and greater than zero before the API call is attempted.
+- Text values are trimmed and amount is normalized before POSTing the payable.
+- After success, the selected community is preserved while payable details are reset and eligible suppliers are refreshed.
+- Existing Treasury 401/403 behavior and community-scoped cash forecast remain unchanged.
+
+## 35. UI-25 Collections payment/query acceptance
+- Payment requires community, nonblank reference, allowed payment method, valid received date and finite amount > 0 before API call.
+- Reference and optional external transaction id are trimmed before POST; blank external transaction becomes null.
+- Successful payment preserves selected community and clears payment-specific fields.
+- Receivables/aging require a community and reject an invalid optional cutoff date before API call.
+- Community change clears unit/result state; unit options remain community-scoped.
+- Existing Collections 401/403 behavior remains unchanged.
+
+## 36. UI-26 Accounting guided period/trial-balance acceptance
+- Opening a period requires an authorized community.
+- Year must be an integer from 2000 through 2100.
+- Month must be an integer from 1 through 12.
+- Invalid period input is rejected before the API call.
+- Year/month are normalized to numeric values before POST.
+- Trial balance requires a selected community and remains community-scoped.
+- Existing Accounting 401/403 behavior remains unchanged.
+
+## 37. UI-27 Budgeting guided plan/variance acceptance
+- Plan creation requires an authorized community, integer year 2000..2100, integer version >= 1 and trimmed non-empty name.
+- Invalid plans are rejected client-side before the Budgeting API is called.
+- Year/version are normalized to numbers and name is trimmed before POST.
+- Successful creation preserves community/year/version, clears the plan name and reloads community-scoped plans.
+- Variance lookup requires both community and plan context and clears stale variance when community changes.
+- Existing Budgeting 401/403 behavior remains unchanged.
+
+## 38. UI-28 SaaS commercial-plan acceptance
+- Commercial plan requires nonblank code/name and exactly 3-letter currency.
+- Unit/user/storage limits must be positive integers; price must be finite and nonnegative.
+- Billing period is restricted to supported values 1, 3 or 12.
+- At least one normalized module is required; duplicates and blanks are removed.
+- Code/name/currency are trimmed and currency is uppercased before POST.
+- Entitlements lookup requires an organization selection.
+- Existing SaaS 401/403 handling remains unchanged.
+
+## 39. UI-29 Supplier + Guard Portal final hardening acceptance
+- Supplier bids require an existing selected round that is still open.
+- Bid amount must be finite and greater than zero; delivery days must be a non-negative integer.
+- Proposal reference is trimmed before POST; closed/invalid rounds cannot be selected for submission.
+- Purchase-order acknowledge is allowed only for an existing order in Issued state.
+- Guard check-in requires an authorized visit plus one configured gate from the allowed catalog.
+- Guard check-out is allowed only for a visit currently inside the community.
+- Guard incidents accept only configured type/location values and a nonblank trimmed description.
+- Existing PortalCorporativo 401/403 behavior remains unchanged in both portals.

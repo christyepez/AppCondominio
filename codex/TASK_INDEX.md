@@ -105,3 +105,22 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-07 | Docker Hub immutable runtime portability / pull-only local deployment | IN VALIDATION |
 
 | UI-18 | Resident Portal guided self-service validation | IN VALIDATION - developed on trabajo; reservation range/capacity + visit validity/input normalization |
+| UI-19 | Maintenance guided asset/KPI workflow | IN VALIDATION - developed on trabajo; normalized asset inputs + guarded KPI date |
+| UI-20 | Reservations guided area/booking validation | IN VALIDATION - developed on trabajo; normalized area inputs + capacity/date booking guardrails |
+| UI-21 | Security visit/guard guided validation | IN VALIDATION - developed on trabajo; normalized visit/guard inputs + validity/expiry guardrails |
+
+| UI-22 | Billing guided monthly-period validation | IN VALIDATION - developed on trabajo; guarded year/month + issue/due-date ordering + statement isolation |
+
+| UI-23 | Procurement guided requisition/supplier-access validation | IN VALIDATION - developed on trabajo; normalized requisitions + positive amount + future supplier-access expiry guardrails |
+| UI-24 | Treasury guided payable validation | IN VALIDATION - developed on trabajo; normalized payable inputs + amount/date guardrails |
+
+| UI-25 | Collections guided payment/query validation | IN VALIDATION - developed on trabajo; normalized payments + positive amount/method/date guardrails + query date validation |
+
+| UI-26 | Accounting guided period/trial-balance validation | IN VALIDATION - developed on trabajo; guarded integer year/month + defensive trial-balance community scope |
+
+| UI-27 | Budgeting guided plan/variance validation | IN VALIDATION - developed on trabajo; guarded year/version/name + variance community/plan context |
+
+| UI-28 | SaaS guided commercial-plan validation | IN VALIDATION - developed on trabajo; normalized commercial-plan inputs + integer limits + ISO currency + allowed billing period/modules guardrails |
+
+| UI-29 | Supplier + Guard Portal final guided hardening | IN VALIDATION - finite/positive bid amounts, open-round enforcement, order-state guard, allowed gate/status transitions and incident catalog enforcement |
+| RC-07A | Dual-machine immutable Web image portability evidence | VALIDATED LOCALLY - trabajo and MarketingIndo run identical private Docker Hub digest through pull-only compose override with Web/API/health smoke 200 |

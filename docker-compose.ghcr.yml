@@ -6,5 +6,5 @@ services:
     image: ghcr.io/christyepez/appcondominio-worker@sha256:d3a971a9bf994ca848d8c58a0c4f48bec942b1d92b5ff8d2b4e966d9db89ba94
     build: null
   appcondominio-web:
-    image: ghcr.io/christyepez/appcondominio-web@sha256:6e9b202f33bcbbbeedd1236838b02d003ee7a8e174392e241f90b82f9cb4e785
+    image: ghcr.io/christyepez/appcondominio-web@sha256:fbe811710f5a9d08d194491ca758322f9c58bb9a7f69fe01291c44f3e14f1e00
     build: null

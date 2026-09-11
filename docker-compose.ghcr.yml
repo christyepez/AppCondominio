@@ -1,0 +1,10 @@
+services:
+  appcondominio-api:
+    image: ghcr.io/christyepez/appcondominio-api@sha256:3c32b51bb672e9ce0a60907747ff94e9fa2bc2fa50726ac6b94e6ab869c091d0
+    build: null
+  appcondominio-worker:
+    image: ghcr.io/christyepez/appcondominio-worker@sha256:d3a971a9bf994ca848d8c58a0c4f48bec942b1d92b5ff8d2b4e966d9db89ba94
+    build: null
+  appcondominio-web:
+    image: ghcr.io/christyepez/appcondominio-web@sha256:9252bc38ce419255c8fb0648714c260dfa384ac4b66cf149f68ed955def08afb
+    build: null

@@ -153,7 +153,7 @@ export class GuardPortalComponent implements OnInit {
 
   get checkedInCount(): number { return this.visits.filter(v => v.status === 1).length; }
   get canReportIncident(): boolean {
-    return !!this.incident.type && !!this.incident.location && this.incident.description.trim().length > 0;
+    return this.incidentTypes.includes(this.incident.type) && this.incidentLocations.includes(this.incident.location) && this.incident.description.trim().length > 0;
   }
 
   ngOnInit(): void { this.loadContext(); }
@@ -185,7 +185,8 @@ export class GuardPortalComponent implements OnInit {
 
   checkIn(id: string): void {
     const gate = this.gateByVisit[id];
-    if (!gate) { return; }
+    const visit = this.visits.find(v => v.id === id);
+    if (!visit || visit.status !== 0 || !this.gateOptions.includes(gate)) { return; }
     this.busy = true; this.error = ''; this.message = '';
     this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-in`, { at: new Date().toISOString(), gate }).subscribe({
       next: () => {
@@ -199,6 +200,8 @@ export class GuardPortalComponent implements OnInit {
   }
 
   checkOut(id: string): void {
+    const visit = this.visits.find(v => v.id === id);
+    if (!visit || visit.status !== 1) { return; }
     this.busy = true; this.error = ''; this.message = '';
     this.http.post(`${API_BASE_URL}/guard/visits/${id}/check-out`, { at: new Date().toISOString() }).subscribe({
       next: () => { this.busy = false; this.message = 'Salida registrada.'; this.loadVisits(); },

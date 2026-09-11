@@ -102,4 +102,28 @@ A release is not production-ready merely because code CI is green. Production re
 | RC-05 | Previous immutable image-set runtime rollback rehearsal | VALIDATED - PR #46 / CI `34409823073` |
 | RC-06 | Migration failure forward-fix / backup-restore recovery rehearsal | VALIDATED - PR #47 / CI `34411290846` |
 | RC-FINAL | Final integration, ADR continuity and cumulative release validation | VALIDATED - PR #49 / CI `34502095940` |
-| RC-07 | Docker Hub immutable runtime portability / pull-only local deployment | IN VALIDATION |
+| RC-07 | Docker Hub immutable runtime portability / pull-only local deployment | VALIDATED - PR #56 / CI `34650136667`; dual-machine pull-only digest evidence confirmed |
+
+| UI-18 | Resident Portal guided self-service validation | VALIDATED - PR #56 / CI `34650136667` |
+| UI-19 | Maintenance guided asset/KPI workflow | VALIDATED - PR #56 / CI `34650136667` |
+| UI-20 | Reservations guided area/booking validation | VALIDATED - PR #56 / CI `34650136667` |
+| UI-21 | Security visit/guard guided validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-22 | Billing guided monthly-period validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-23 | Procurement guided requisition/supplier-access validation | VALIDATED - PR #56 / CI `34650136667` |
+| UI-24 | Treasury guided payable validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-25 | Collections guided payment/query validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-26 | Accounting guided period/trial-balance validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-27 | Budgeting guided plan/variance validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-28 | SaaS guided commercial-plan validation | VALIDATED - PR #56 / CI `34650136667` |
+
+| UI-29 | Supplier + Guard Portal final guided hardening | VALIDATED - PR #56 / CI `34650136667` |
+| RC-07A | Dual-machine immutable Web image portability evidence | VALIDATED - trabajo and MarketingIndo run identical private Docker Hub digest through pull-only compose override with Web/API/health smoke 200 |
+
+## Final guided UI / RC-07 closure
+PR #56 merged as `12f693e6395a003d29816d07c1e09e3bf1fa5b5b` after CI run `34650136667` completed successfully across backend, frontend, secrets, production-readiness and Docker release-evidence jobs. UI-18 through UI-29 and RC-07 are therefore validated for the current release candidate.

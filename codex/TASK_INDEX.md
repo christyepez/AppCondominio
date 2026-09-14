@@ -62,11 +62,11 @@ Sprints 01-18 validate the Modular Monolith foundation, SaaS, communities, prope
 | UI-13 | Guard portal | VALIDATED - PR #31 |
 | UI-PWA | Installable PWA shell / static offline safety | VALIDATED in stacked UI chain through PR #41 / CI `34379512223` |
 | UI-14 | Cross-channel E2E, selectors/workflows and UX hardening | VALIDATED - PR #41 / CI `34379512223` |
-| UI-15 | Isolated-runtime dashboard / Portal-unavailable UX | IN VALIDATION |
-| UI-16 | Guard Portal guided operational workflow | IN VALIDATION |
-| UI-17 | Supplier Portal bid workflow hardening | IN VALIDATION |
+| UI-15 | Isolated-runtime dashboard / Portal-unavailable UX | VALIDATED - cumulative PR #56 / CI `34650136667` |
+| UI-16 | Guard Portal guided operational workflow | VALIDATED - cumulative PR #56 / CI `34650136667` |
+| UI-17 | Supplier Portal bid workflow hardening | VALIDATED - cumulative PR #56 / CI `34650136667` |
 
-Current validated delivery head: `feature/final-integration-security-adr` / PR #49 / SHA `7aa4b43bbd0e01f3d72c74fd0c46de01bbcfe996`, validated by CI `34502095940` (run #601). The Angular 21 Admin, Resident, Supplier and Guard channels are implemented in the stacked UI chain. Authorized selector contracts preserve backend tenant/community validation and explicit 401/403 behavior without creating a local authentication/token engine.
+Current validated delivery head: `main` at v1.1 release-closure baseline. Application-owned Sprints 01-18, UI-01 through UI-29, RC-01 through RC-07 and RC-07A are validated. The only remaining delivery blockers are the explicitly external Portal/SRI contracts listed above.
 
 First-pass Admin screens intentionally allow explicit GUID entry where the backend does not yet expose safe list/search contracts. Subsequent UX hardening will replace those fields with selectors only where real authorized lookup endpoints are available; it must not invent cross-tenant lookup behavior.
 
@@ -127,3 +127,14 @@ A release is not production-ready merely because code CI is green. Production re
 
 ## Final guided UI / RC-07 closure
 PR #56 merged as `12f693e6395a003d29816d07c1e09e3bf1fa5b5b` after CI run `34650136667` completed successfully across backend, frontend, secrets, production-readiness and Docker release-evidence jobs. UI-18 through UI-29 and RC-07 are therefore validated for the current release candidate.
+
+
+## v1.1 engineering closure
+
+- PR #75: deterministic frontend dependency install/lockfile hardening.
+- PR #76: Angular deprecation cleanup.
+- PR #77 and #79: GitHub Actions Node 24 compatibility hardening.
+- PR #80: Angular 21 LTS patch alignment.
+- PR #81: migration from legacy build-angular/Karma chain to `@angular/build` 21.2.24 + Vitest 4.1.11, with mandatory frontend unit-test CI gate and zero npm audit findings.
+- PR #60: Gitleaks Action v3 / Node 24 runtime compatibility.
+- Release gate: backend/unit/architecture/integration, frontend `npm ci`/audit/unit/build, production-readiness, Docker runtime, SQL backup/restore, fail-closed smoke, migration recovery, rollback rehearsal and immutable evidence must all pass on final `main`.

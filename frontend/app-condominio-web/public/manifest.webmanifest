@@ -1,0 +1,21 @@
+{
+  "name": "Conjunto al Día",
+  "short_name": "Conjunto Día",
+  "description": "Administración y autoservicio para comunidades, residentes, proveedores y portería.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f5f8",
+  "theme_color": "#3c235f",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {"src":"/icons/app-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Mi comunidad","short_name":"Residente","url":"/resident"},
+    {"name":"Portal proveedor","short_name":"Proveedor","url":"/supplier"},
+    {"name":"Portería","short_name":"Portería","url":"/guard"}
+  ]
+}

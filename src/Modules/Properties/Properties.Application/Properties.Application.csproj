@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><Description>Properties application use cases.</Description></PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\Properties.Domain\Properties.Domain.csproj" /></ItemGroup>
+</Project>

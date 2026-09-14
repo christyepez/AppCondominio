@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>Communities.Domain</AssemblyName><RootNamespace>AppCondominio.Modules.Communities.Domain</RootNamespace></PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\..\..\AppCondominio.SharedKernel\AppCondominio.SharedKernel.csproj" /></ItemGroup>
+</Project>

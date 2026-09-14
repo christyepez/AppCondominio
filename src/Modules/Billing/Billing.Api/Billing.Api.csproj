@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><FrameworkReference Include="Microsoft.AspNetCore.App" /><ProjectReference Include="..\Billing.Application\Billing.Application.csproj" /><ProjectReference Include="..\Billing.Domain\Billing.Domain.csproj" /><ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" /></ItemGroup></Project>

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Stable domain primitives shared across AppCondominio modules.</Description>
+  </PropertyGroup>
+</Project>

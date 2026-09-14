@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><Description>People, ownership and occupancy domain.</Description></PropertyGroup>
+  <ItemGroup><ProjectReference Include="..\..\..\AppCondominio.SharedKernel\AppCondominio.SharedKernel.csproj" /></ItemGroup>
+</Project>

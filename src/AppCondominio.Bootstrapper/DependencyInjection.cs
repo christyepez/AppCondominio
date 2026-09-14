@@ -1,0 +1,20 @@
+using AppCondominio.Modules.Accounting.Infrastructure;
+using AppCondominio.Modules.Banking.Infrastructure;
+using AppCondominio.Modules.Billing.Infrastructure;
+using AppCondominio.Modules.Budgeting.Infrastructure;
+using AppCondominio.Modules.Collections.Infrastructure;
+using AppCondominio.Modules.Communities.Infrastructure;
+using AppCondominio.Modules.Governance.Infrastructure;
+using AppCondominio.Modules.Maintenance.Infrastructure;
+using AppCondominio.Modules.Organizations.Infrastructure;
+using AppCondominio.Modules.People.Infrastructure;
+using AppCondominio.Modules.Procurement.Infrastructure;
+using AppCondominio.Modules.Properties.Infrastructure;
+using AppCondominio.Modules.Reservations.Infrastructure;
+using AppCondominio.Modules.SecurityOperations.Infrastructure;
+using AppCondominio.Modules.Tax.Infrastructure;
+using AppCondominio.Modules.Treasury.Infrastructure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+namespace AppCondominio.Bootstrapper;
+public static class DependencyInjection{public static IServiceCollection AddAppCondominio(this IServiceCollection services,IConfiguration configuration){ArgumentNullException.ThrowIfNull(services);ArgumentNullException.ThrowIfNull(configuration);services.AddOrganizationsModule(configuration);services.AddCommunitiesModule(configuration);services.AddPropertiesModule(configuration);services.AddPeopleModule(configuration);services.AddResidentAccessContext();services.AddBillingModule(configuration);services.AddCollectionsModule(configuration);services.AddBankingModule(configuration);services.AddTaxModule(configuration);services.AddAccountingModule(configuration);services.AddTreasuryModule(configuration);services.AddBudgetingModule(configuration);services.AddProcurementModule(configuration);services.AddMaintenanceModule(configuration);services.AddReservationsModule(configuration);services.AddSecurityOperationsModule(configuration);services.AddGovernanceModule(configuration);return services;}}

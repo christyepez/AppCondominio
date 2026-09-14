@@ -1,0 +1,29 @@
+using AppCondominio.Contracts.Security;using AppCondominio.Modules.SecurityOperations.Application;using Microsoft.AspNetCore.Builder;using Microsoft.AspNetCore.Http;using Microsoft.AspNetCore.Routing;
+namespace AppCondominio.Modules.SecurityOperations.Api;
+public static class SecurityOperationsEndpoints
+{
+ public static IEndpointRouteBuilder MapSecurityOperationsEndpoints(this IEndpointRouteBuilder app)
+ {
+  var g=app.MapGroup("/api/security-operations").RequireAuthorization();
+  g.MapPost("/visits",async(AuthorizeVisitRequest r,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(new{Id=await s.AuthorizeVisitAsync(r.CommunityId,r.HostPersonId,r.VisitorName,r.Document,r.Destination,r.ValidFrom,r.ValidTo,ct)})).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/visits/{id:guid}/check-in",async(Guid id,CheckInRequest r,SecurityOperationsService s,CancellationToken ct)=>{await s.CheckInAsync(id,r.At,r.Gate,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/visits/{id:guid}/check-out",async(Guid id,CheckOutRequest r,SecurityOperationsService s,CancellationToken ct)=>{await s.CheckOutAsync(id,r.At,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/incidents",async(ReportSecurityIncidentRequest r,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(new{Id=await s.ReportIncidentAsync(r.CommunityId,r.Type,r.Description,r.Location,r.ReportedBy,ct)})).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/incidents/{id:guid}/escalate",async(Guid id,SecurityOperationsService s,CancellationToken ct)=>{await s.EscalateIncidentAsync(id,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/incidents/{id:guid}/resolve",async(Guid id,ResolveSecurityIncidentRequest r,SecurityOperationsService s,CancellationToken ct)=>{await s.ResolveIncidentAsync(id,r.Resolution,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapGet("/communities/{communityId:guid}/kpi",async(Guid communityId,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(await s.GetKpiAsync(communityId,ct))).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Read);
+  g.MapPost("/communities/{communityId:guid}/guard-access",async(Guid communityId,GrantGuardAccessRequest r,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(new{Id=await s.GrantGuardPortalAccessAsync(communityId,r.ExternalUserId,r.DisplayName,r.ExpiresAtUtc,ct)})).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+  g.MapPost("/guard-access/{id:guid}/revoke",async(Guid id,RevokeGuardAccessRequest r,SecurityOperationsService s,CancellationToken ct)=>{await s.RevokeGuardPortalAccessAsync(id,r.Reason,ct);return Results.NoContent();}).RequireAuthorization(AppCondominioPermissions.SecurityOperations.Manage);
+
+  var guard=app.MapGroup("/api/guard").WithTags("Guard Portal").RequireAuthorization(AppCondominioPermissions.GuardPortal.Access);
+  guard.MapGet("/me",async(ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(await s.GetGuardPortalContextAsync(RequireUser(identity),ct)));
+  guard.MapGet("/visits",async(DateTimeOffset? from,DateTimeOffset? to,ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(await s.GetGuardVisitsAsync(RequireUser(identity),from,to,ct)));
+  guard.MapPost("/visits/{id:guid}/check-in",async(Guid id,GuardCheckInRequest r,ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>{await s.CheckInForGuardAsync(RequireUser(identity),id,r.At,r.Gate,ct);return Results.NoContent();});
+  guard.MapPost("/visits/{id:guid}/check-out",async(Guid id,GuardCheckOutRequest r,ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>{await s.CheckOutForGuardAsync(RequireUser(identity),id,r.At,ct);return Results.NoContent();});
+  guard.MapGet("/incidents",async(ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>Results.Ok(await s.GetGuardIncidentsAsync(RequireUser(identity),ct)));
+  guard.MapPost("/incidents",async(GuardIncidentRequest r,ICurrentIdentity identity,SecurityOperationsService s,CancellationToken ct)=>Results.Created("/api/guard/incidents",new{Id=await s.ReportGuardIncidentAsync(RequireUser(identity),r.Type,r.Description,r.Location,ct)}));
+  return app;
+ }
+ private static string RequireUser(ICurrentIdentity identity)=>identity.IsAuthenticated&&!string.IsNullOrWhiteSpace(identity.UserId)?identity.UserId:throw new UnauthorizedAccessException("Authenticated Portal user identifier is required.");
+}
+public sealed record AuthorizeVisitRequest(Guid CommunityId,Guid HostPersonId,string VisitorName,string Document,string Destination,DateTimeOffset ValidFrom,DateTimeOffset ValidTo);public sealed record CheckInRequest(DateTimeOffset At,string Gate);public sealed record CheckOutRequest(DateTimeOffset At);public sealed record ReportSecurityIncidentRequest(Guid CommunityId,string Type,string Description,string Location,string ReportedBy);public sealed record ResolveSecurityIncidentRequest(string Resolution);public sealed record GrantGuardAccessRequest(string ExternalUserId,string DisplayName,DateTimeOffset? ExpiresAtUtc);public sealed record RevokeGuardAccessRequest(string Reason);public sealed record GuardCheckInRequest(DateTimeOffset At,string Gate);public sealed record GuardCheckOutRequest(DateTimeOffset At);public sealed record GuardIncidentRequest(string Type,string Description,string Location);

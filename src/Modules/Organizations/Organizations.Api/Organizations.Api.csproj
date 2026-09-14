@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Organizations HTTP endpoints.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+    <ProjectReference Include="..\Organizations.Application\Organizations.Application.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+{
+  "module":{"moduleCode":"appcondominio","name":"Conjunto al Día"},
+  "items":[
+    {"parentId":null,"code":"appcondominio.organizations","label":"Organizations","route":"/organizations","icon":"business","order":10,"resourceKey":"appcondominio.organizations","permissionCode":"appcondominio.organizations.read","metadataJson":"{\"surface\":\"admin\"}"},
+    {"parentId":null,"code":"appcondominio.resident","label":"Mi comunidad","route":"/resident","icon":"home","order":20,"resourceKey":"appcondominio.resident","permissionCode":"appcondominio.resident.access","metadataJson":"{\"surface\":\"resident\"}"},
+    {"parentId":null,"code":"appcondominio.supplier","label":"Portal proveedor","route":"/supplier","icon":"local_shipping","order":30,"resourceKey":"appcondominio.supplier","permissionCode":"appcondominio.supplier.access","metadataJson":"{\"surface\":\"supplier\"}"},
+    {"parentId":null,"code":"appcondominio.guard","label":"Portería","route":"/guard","icon":"shield","order":40,"resourceKey":"appcondominio.guard","permissionCode":"appcondominio.guard.access","metadataJson":"{\"surface\":\"guard\"}"}
+  ]
+}

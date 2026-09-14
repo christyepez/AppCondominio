@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\People.Application\People.Application.csproj" />
+    <ProjectReference Include="..\People.Domain\People.Domain.csproj" />
+    <ProjectReference Include="..\..\..\AppCondominio.Contracts\AppCondominio.Contracts.csproj" />
+  </ItemGroup>
+</Project>

@@ -20,9 +20,11 @@
     "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "21.2.24",
     "@angular/cli": "21.2.24",
     "@angular/compiler-cli": "21.2.23",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "@angular/build": "21.2.24",
+    "vitest": "4.1.11",
+    "jsdom": "^26.1.0"
   }
 }

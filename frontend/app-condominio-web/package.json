@@ -9,7 +9,7 @@
     "lint": "ng lint"
   },
   "dependencies": {
-    "@angular/animations": "21.2.22",
+    "@angular/animations": "22.1.6",
     "@angular/common": "21.2.22",
     "@angular/compiler": "21.2.22",
     "@angular/core": "21.2.22",

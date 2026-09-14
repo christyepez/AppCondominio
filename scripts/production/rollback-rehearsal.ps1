@@ -19,20 +19,30 @@ try {
         $parentTokens = ((& git rev-list --parents -n 1 HEAD).Trim() -split '\s+')
         if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect current release commit ancestry.' }
 
-        # pull_request workflows check out GitHub's synthetic merge commit. Only in
-        # that event shape should the second parent be treated as the PR source head
-        # and rolled back to its parent. A normal push can itself point at a real
-        # merge commit; in that case HEAD^ (the first parent) is the correct previous
-        # release-capable revision and must not be replaced by the second-parent path.
-        $isPullRequestEvent = $env:GITHUB_EVENT_NAME -eq 'pull_request'
-        if ($isPullRequestEvent -and $parentTokens.Count -ge 3) {
+        # GitHub pull_request workflows can check out a synthetic merge commit where
+        # the second parent is the PR source head. Roll back to the source head's
+        # parent so the rehearsal represents the release before the proposed change.
+        #
+        # A push of a real merge commit to main has a different shape: the first
+        # parent can be an older integration line that is not release-capable, while
+        # the second parent is the validated source release. In that case roll back
+        # to the second parent itself. Single-parent pushes keep the normal HEAD^.
+        if ($parentTokens.Count -ge 3) {
             $sourceHeadSha = $parentTokens[2]
-            & git cat-file -e "$sourceHeadSha^" 2>$null
-            if ($LASTEXITCODE -ne 0) {
-                & git fetch --no-tags --depth=2 origin $sourceHeadSha
-                if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch PR source history for rollback rehearsal.' }
+            $isPullRequestEvent = $env:GITHUB_EVENT_NAME -eq 'pull_request'
+            $isPushEvent = $env:GITHUB_EVENT_NAME -eq 'push'
+
+            if ($isPullRequestEvent) {
+                & git cat-file -e "$sourceHeadSha^" 2>$null
+                if ($LASTEXITCODE -ne 0) {
+                    & git fetch --no-tags --depth=2 origin $sourceHeadSha
+                    if ($LASTEXITCODE -ne 0) { throw 'Unable to fetch PR source history for rollback rehearsal.' }
+                }
+                $previousExpression = "$sourceHeadSha^"
             }
-            $previousExpression = "$sourceHeadSha^"
+            elseif ($isPushEvent) {
+                $previousExpression = $sourceHeadSha
+            }
         }
     }
 

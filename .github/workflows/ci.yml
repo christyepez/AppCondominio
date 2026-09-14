@@ -71,6 +71,8 @@ jobs:
         run: npm audit --audit-level=high
       - name: production dependency vulnerability scan
         run: npm audit --omit=dev --audit-level=moderate
+      - name: Frontend unit tests
+        run: npm test -- --watch=false
       - run: npm run build
 
   production-readiness:
